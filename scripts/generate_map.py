@@ -833,7 +833,7 @@ def build_tradition_overlay_specs(
             cb_place_names.append(format_bilingual_plain(place.place_name_gaelic, place.place_name_english))
 
         cb_place_names_sorted = sorted(cb_place_names, key=lambda s: s.casefold())
-        cb_places_hover = "<br><br>".join(
+        cb_places_hover = "<br>".join(
             cb_place_names_sorted) if cb_place_names_sorted else "No linked Cape Breton places"
 
         tradition_label_plain = format_bilingual_plain(
