@@ -15,7 +15,7 @@ The repository contains:
 
 Open the map here:
 
-[Launch the Map](../index.html)
+[Launch the Map](https://kistwright.github.io/cape-breton-map/index.html)
 
 ---
 
