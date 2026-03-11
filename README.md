@@ -18,7 +18,7 @@ The project generates a **stand-alone HTML web application** using a Python scri
 
 The current version of the map can be viewed here:
 
-**[Open the Map](./index.html)**
+**[Open the Map](https://kistwright.github.io/cape-breton-map/index.html)**
 
 This HTML file is self-contained and can be hosted on GitHub Pages or opened locally.
 
