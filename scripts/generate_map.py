@@ -424,6 +424,7 @@ PEOPLE_CSV = "people.csv"
 COMMUNITIES_CSV = "communities.csv"
 TRADITIONS_CSV = "traditions.csv"
 OUTPUT_HTML = "cape_breton_people_map.html"
+BASE_URL = "13.62.226.132"
 
 MAP_CENTER = {"lat": 46.25, "lon": -60.65}
 MAP_ZOOM = 7.8
@@ -672,6 +673,9 @@ def build_people_lookup(people_df: pd.DataFrame) -> dict[str, list[dict[str, str
                     "id": cleaned_text(row.get("Informant ID", "")),
                     "yob_yod": yob_yod,
                     "sloinneadh": cleaned_text(row.get("Sloinneadh", "")),
+                    "number_of_recordings": first_present_value(row, ["Number of Recordings", "Number of recordings"]),
+                    "person_page_url": f"http://{BASE_URL}/cisc/informants/{cleaned_text(row.get('Informant ID', ''))}" if cleaned_text(row.get("Informant ID", "")) else "",
+                    "recordings_url": f"http://{BASE_URL}/cisc/informants/{cleaned_text(row.get('Informant ID', ''))}#recordings" if cleaned_text(row.get("Informant ID", "")) else "",
                 }
             )
 
@@ -746,6 +750,9 @@ def build_all_people_index(people_df: pd.DataFrame, places_df: pd.DataFrame) -> 
                 "place_name_english": place["place_name_english"],
                 "latitude": place["latitude"],
                 "longitude": place["longitude"],
+                "number_of_recordings": first_present_value(row, ["Number of Recordings", "Number of recordings"]),
+                "person_page_url": f"http://{BASE_URL}/cisc/informants/{cleaned_text(row.get('Informant ID', ''))}" if cleaned_text(row.get("Informant ID", "")) else "",
+                "recordings_url": f"http://{BASE_URL}/cisc/informants/{cleaned_text(row.get('Informant ID', ''))}#recordings" if cleaned_text(row.get("Informant ID", "")) else "",
             }
         )
 
@@ -1222,7 +1229,52 @@ def render_html(
         flex-direction: column;
         gap: 10px;
     }}
-
+    
+    .recordings-meta-block {{
+        width: 100%;
+    }}
+    
+    .recordings-meta-row {{
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+    }}
+    
+    .recordings-meta-left {{
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        min-width: 0;
+        flex-wrap: wrap;
+    }}
+    
+    .recordings-link-btn {{
+        margin-left: auto;
+        flex-shrink: 0;
+    }}
+    
+    .person-page-link-btn,
+    .recordings-link-btn {{
+        display: inline-block;
+        padding: 8px 12px;
+        border: 1px solid rgba(25, 41, 48, 0.15);
+        border-radius: 999px;
+        background: #ffffff;
+        color: {TITLE_COLOUR};
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.2;
+        white-space: nowrap;
+    }}
+    
+    .person-page-link-btn:hover,
+    .recordings-link-btn:hover {{
+        border-color: {ACCENT};
+        color: {ACCENT};
+    }}
+    
     .side-panel-mode-toggle {{
         display: flex;
         gap: 6px;
@@ -1233,30 +1285,26 @@ def render_html(
         z-index: 3;
     }}
     
-    details.person-card.selected > summary,
-    details.all-people-card.selected > summary {{
+    details.person-card.selected > summary {{
         background: #1F5F99;
         color: #ffffff;
     }}
     
-    details.person-card.selected .english-highlight-person,
-    details.all-people-card.selected .english-highlight-person {{
+    details.person-card.selected .english-highlight-person {{
         color: #ffffff;
     }}
     
-    details.person-card.selected > summary::after,
-    details.all-people-card.selected > summary::after {{
+    details.person-card.selected > summary::after {{
         color: #ffffff;
     }}
     
-    details.person-card.selected .separator-accent,
-    details.all-people-card.selected .separator-accent {{
+    details.person-card.selected .separator-accent {{
         color: #ffffff;
     }}
 
     .mode-btn {{
         position: relative;
-        padding: 10px 16px 9px 16px;
+        padding: 10px 18px 9px 18px;
         border: 1px solid rgba(25, 41, 48, 0.15);
         border-bottom: 1px solid rgba(25, 41, 48, 0.12);
         background: #f4f8fb;
@@ -1277,6 +1325,37 @@ def render_html(
         border-bottom-color: #ffffff;
         box-shadow: none;
         z-index: 4;
+    }}
+
+    .mode-btn .gaelic-dark {{
+        color: {TITLE_COLOUR};
+    }}
+    
+    .mode-btn .english-accent {{
+        color: {ACCENT};
+    }}
+    
+    .mode-btn .separator-accent {{
+        color: {ACCENT};
+    }}
+    
+    .mode-btn.active .gaelic-dark {{
+        color: {TITLE_COLOUR};
+    }}
+    
+    .mode-btn.active .english-accent {{
+        color: {ACCENT};
+    }}
+    
+    .mode-btn.active .separator-accent {{
+        color: {ACCENT};
+    }}
+
+    .mode-btn .gaelic-dark,
+    .mode-btn .english-accent,
+    .mode-btn .separator-accent {{
+        font-weight: 700;
+        white-space: nowrap;
     }}
 
     .panel-view {{
@@ -1736,8 +1815,7 @@ def render_html(
         border: 1px solid rgba(0, 0, 0, 0.08);
     }}
 
-    .person-card,
-    .people-master-card {{
+    .person-card {{
         background: {CARD_BG};
         border: 1px solid rgba(25, 41, 48, 0.08);
         border-left: 4px solid {ACCENT};
@@ -1747,8 +1825,7 @@ def render_html(
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
     }}
 
-    details.person-card summary,
-    details.people-master-card summary {{
+    details.person-card summary {{
         cursor: pointer;
         padding: 10px 12px;
         list-style: none;
@@ -1762,13 +1839,11 @@ def render_html(
         text-transform: none;
     }}
 
-    details.person-card summary::-webkit-details-marker,
-    details.people-master-card summary::-webkit-details-marker {{
+    details.person-card summary::-webkit-details-marker {{
         display: none;
     }}
 
-    details.person-card > summary::after,
-    details.people-master-card > summary::after {{
+    details.person-card > summary::after {{
         content: '+';
         float: right;
         color: {ACCENT};
@@ -1776,19 +1851,16 @@ def render_html(
         margin-left: 1rem;
         font-weight: 700;
     }}
-
-    details.person-card[open] > summary::after,
-    details.people-master-card[open] > summary::after {{
+    
+    details.person-card[open] > summary::after {{
         content: '–';
     }}
     
-    #informants-pane details.location-person-card > summary .person-summary-name,
-    #all-people-list details.all-people-card > summary .person-summary-name {{
+    details.person-card > summary .person-summary-name {{
         font-weight: 700;
     }}
     
-    .metadata,
-    .people-master-metadata {{
+    .metadata {{
         padding: 10px 12px 12px 12px;
         border-top: 1px solid rgba(25, 41, 48, 0.06);
         background: #f7fbfe;
@@ -1800,21 +1872,24 @@ def render_html(
 
     .meta-line {{
         display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        gap: 1rem;
+        gap: 16px;
         margin-bottom: 8px;
         flex-wrap: wrap;
+        align-items: flex-start;
     }}
-
-    .meta-line-left,
-    .meta-line-right {{
+    
+    .meta-line-col {{
         min-width: 0;
+        flex: 0 1 auto;
     }}
-
-    .meta-line-right {{
+    
+    .meta-line-top .meta-line-col {{
+        min-width: 90px;
+    }}
+    
+    .meta-line-col-button {{
         margin-left: auto;
-        text-align: right;
+        flex: 0 0 auto;
     }}
 
     .meta-label {{
@@ -1832,6 +1907,45 @@ def render_html(
         word-break: break-word;
         font-size: 13px;
         line-height: 17px;
+    }}
+    
+    .meta-top-row {{
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 10px;
+        width: 100%;
+    }}
+    
+    .meta-top-item {{
+        min-width: 0;
+        flex: 0 0 110px;
+    }}
+    
+    .meta-top-item-button {{
+        margin-left: auto;
+        flex: 0 0 auto;
+    }}
+    
+    .person-page-link-btn,
+    .recordings-link-btn {{
+        display: inline-block;
+        padding: 8px 12px;
+        border: 1px solid rgba(25, 41, 48, 0.15);
+        border-radius: 999px;
+        background: #ffffff;
+        color: {TITLE_COLOUR};
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.2;
+        white-space: nowrap;
+    }}
+    
+    .person-page-link-btn:hover,
+    .recordings-link-btn:hover {{
+        border-color: {ACCENT};
+        color: {ACCENT};
     }}
 
     .empty {{
@@ -1856,6 +1970,7 @@ def render_html(
 
     .person-summary-name {{
         display: inline;
+        color: {TITLE_COLOUR};
     }}
 
     .people-letter-heading {{
@@ -1916,11 +2031,107 @@ def render_html(
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
     }}
 
-    #map .mapboxgl-ctrl-bottom-right,
-    #map .maplibregl-ctrl-bottom-right,
     #inset-map .mapboxgl-ctrl-bottom-right,
     #inset-map .maplibregl-ctrl-bottom-right {{
         display: none !important;
+    }}
+
+    /* Main map attribution/info control: move to bottom-left and keep visible */
+    #map .mapboxgl-ctrl-bottom-right,
+    #map .maplibregl-ctrl-bottom-right {{
+        left: 28px !important;
+        right: auto !important;
+        bottom: 28px !important;
+    }}
+    
+    #map .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl,
+    #map .maplibregl-ctrl-bottom-right .maplibregl-ctrl {{
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }}
+    
+    #map .mapboxgl-ctrl-attrib,
+    #map .maplibregl-ctrl-attrib {{
+        position: relative;
+        overflow: visible !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 22px !important;
+        min-width: 22px !important;
+        height: 22px !important;
+        min-height: 22px !important;
+        background: transparent !important;
+        border: none !important;
+        border-radius: 999px !important;
+        box-shadow: none !important;
+        font-size: 11px;
+        line-height: 1.2;
+        z-index: 1005;
+    }}
+
+    #map .mapboxgl-ctrl-attrib-button,
+    #map .maplibregl-ctrl-attrib-button {{
+        display: block !important;
+        width: 22px !important;
+        height: 22px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        opacity: 1 !important;
+    }}
+    
+    #map .mapboxgl-ctrl-attrib.mapboxgl-compact-show,
+    #map .maplibregl-ctrl-attrib.maplibregl-compact-show {{
+        width: 22px !important;
+        min-width: 22px !important;
+        height: 22px !important;
+        min-height: 22px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }}
+    
+    #map .mapboxgl-ctrl-attrib.attrib-open .mapboxgl-ctrl-attrib-inner,
+    #map .maplibregl-ctrl-attrib.attrib-open .maplibregl-ctrl-attrib-inner {{
+        position: absolute !important;
+        left: 30px !important;
+        bottom: 50% !important;
+        transform: translateY(50%) !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        white-space: nowrap !important;
+    }}
+
+    #map .mapboxgl-ctrl-attrib:not(.attrib-open) .mapboxgl-ctrl-attrib-inner,
+    #map .maplibregl-ctrl-attrib:not(.attrib-open) .maplibregl-ctrl-attrib-inner {{
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }}
+
+    #map .mapboxgl-ctrl-attrib .mapboxgl-ctrl-attrib-inner,
+    #map .maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-inner {{
+        position: absolute;
+        left: 30px;
+        bottom: 50%;
+        transform: translateY(50%);
+        display: block !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transition: none !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        white-space: nowrap;
     }}
 
     @media (max-width: 1200px) {{
@@ -1997,16 +2208,32 @@ def render_html(
         flex-direction: column;
         align-items: stretch;
     }}
-
-    .meta-line-right {{
+    
+    .meta-line-col {{
+        min-width: 0;
+    }}
+    
+    .meta-line-col-button {{
         margin-left: 0;
-        text-align: left;
     }}
 
     .selected-place-label {{
         max-width: 280px;
         white-space: normal;
         transform: translate(16px, -100%);
+    }}
+
+    .meta-top-row {{
+        flex-direction: column;
+        align-items: stretch;
+    }}
+    
+    .meta-top-item {{
+        flex: 0 0 auto;
+    }}
+    
+    .meta-top-item-button {{
+        margin-left: 0;
     }}
 
     :root {{
@@ -2055,10 +2282,13 @@ def render_html(
     <div class="content">
         <aside class="side-panel">
             <div class="side-panel-mode-toggle">
-                <button id="mode-location-btn" class="mode-btn active" type="button">Location details</button>
-                <button id="mode-all-people-btn" class="mode-btn" type="button">List All People</button>
+                <button id="mode-location-btn" class="mode-btn active" type="button">
+                    <span class="gaelic-dark">Àitichean</span><span class="separator-accent"> | </span><span class="english-accent">Places</span>
+                </button>
+                <button id="mode-all-people-btn" class="mode-btn" type="button">
+                    <span class="gaelic-dark">Daoine</span><span class="separator-accent"> | </span><span class="english-accent">People</span>
+                </button>
             </div>
-
             <div id="location-panel-view" class="panel-view active">
                 <div class="info-header">
                     <p class="intro">Click a map marker to list all linked people for that place.</p>
@@ -2156,6 +2386,16 @@ def render_html(
             .replace(/'/g, '&#39;');
     }}
 
+    function formatRecordingCount(value) {{
+        const text = String(value ?? '').trim();
+        if (!text) return '—';
+        const num = Number(text);
+        if (Number.isFinite(num)) {{
+            return Number.isInteger(num) ? String(num) : String(num);
+        }}
+        return escapeHtml(text);
+    }}
+
     function formatBilingualHtml(gaelic, english, englishClass = 'english-accent') {{
         const gd = String(gaelic || '').trim();
         const en = String(english || '').trim();
@@ -2200,6 +2440,76 @@ def render_html(
         }}
         return `<span class="gaelic">${{escapeHtml(gaelic || place.place_name || '')}}</span>`;
     }}
+
+    function renderPersonCard(person, options = {{}}) {{
+    const placeKey = options.placeKey || person.place_key || '';
+    const latitude = options.latitude || person.latitude || '';
+    const longitude = options.longitude || person.longitude || '';
+    const placeOriginHtml = options.placeOriginHtml || '—';
+
+    const gaelicName = person.gaelic_name || '';
+    const englishName = person.english_name || '';
+
+    let summaryName = '';
+    if (gaelicName && englishName) {{
+        summaryName = `${{escapeHtml(gaelicName)}}<span class="separator-accent"> / </span><span class="english-highlight-person">${{escapeHtml(englishName)}}</span>`;
+    }} else if (englishName) {{
+        summaryName = `<span class="english-highlight-person">${{escapeHtml(englishName)}}</span>`;
+    }} else {{
+        summaryName = escapeHtml(gaelicName || person.display_name || person.id || 'Unnamed person');
+    }}
+
+    return `
+        <details class="person-card"
+            data-place-key="${{escapeHtml(String(placeKey))}}"
+            data-lat="${{escapeHtml(String(latitude))}}"
+            data-lon="${{escapeHtml(String(longitude))}}">
+            <summary><span class="person-summary-name">${{summaryName}}</span></summary>
+            <div class="metadata">
+                <div class="meta-top-row">
+                    <div class="meta-top-item">
+                        <div class="meta-label">ID</div>
+                        <div class="meta-inline-value">${{escapeHtml(person.id || '—')}}</div>
+                    </div>
+                    <div class="meta-top-item">
+                        <div class="meta-label">Dates</div>
+                        <div class="meta-inline-value">${{escapeHtml(person.yob_yod || '—')}}</div>
+                    </div>
+                    <div class="meta-top-item meta-top-item-button">
+                        ${{
+                            person.person_page_url
+                                ? `<a class="person-page-link-btn" href="${{escapeHtml(person.person_page_url)}}" target="_blank" rel="noopener noreferrer">View person page</a>`
+                                : ''
+                        }}
+                    </div>
+                </div>
+
+                <div class="meta-block">
+                    <div class="meta-label">Sloinneadh</div>
+                    <div class="meta-value">${{escapeHtml(person.sloinneadh || '—')}}</div>
+                </div>
+
+                <div class="meta-block">
+                    <div class="meta-label">Place of origin</div>
+                    <div class="meta-value">${{placeOriginHtml}}</div>
+                </div>
+
+                <div class="meta-block recordings-meta-block">
+                    <div class="recordings-meta-row">
+                        <div class="recordings-meta-left">
+                            <div class="meta-label">Number of recordings</div>
+                            <div class="meta-value">${{formatRecordingCount(person.number_of_recordings)}}</div>
+                        </div>
+                        ${{
+                            person.recordings_url
+                                ? `<a class="recordings-link-btn" href="${{escapeHtml(person.recordings_url)}}" target="_blank" rel="noopener noreferrer">View all recordings</a>`
+                                : ''
+                        }}
+                    </div>
+                </div>
+            </div>
+        </details>`;
+}}
 
     function resetInfoPanel() {{
         placeHeader.innerHTML = '';
@@ -2452,7 +2762,6 @@ def render_html(
         }}
     
         currentLocationPlaceKey = String(placeKey);
-        locationTraditionsVisible = false;
     
         let headerHtml = '';
         const placeGaelic = place.place_name_gaelic || '';
@@ -2474,56 +2783,34 @@ def render_html(
         }} else {{
             let peopleHtml = '';
             for (const person of people) {{
-                const gaelicName = person.gaelic_name || '';
-                const englishName = person.english_name || '';
-    
-                let summaryName = '';
-                if (gaelicName && englishName) {{
-                    summaryName = `${{escapeHtml(gaelicName)}}<span class="separator-accent"> / </span><span class="english-highlight-person">${{escapeHtml(englishName)}}</span>`;
-                }} else if (englishName) {{
-                    summaryName = `<span class="english-highlight-person">${{escapeHtml(englishName)}}</span>`;
-                }} else {{
-                    summaryName = escapeHtml(gaelicName || person.name);
-                }}
-    
-                peopleHtml += `
-                    <details class="person-card location-person-card"
-                        data-place-key="${{escapeHtml(String(placeKey))}}"
-                        data-lat="${{escapeHtml(String(place.latitude))}}"
-                        data-lon="${{escapeHtml(String(place.longitude))}}">
-                        <summary><span class="person-summary-name">${{summaryName}}</span></summary>
-                        <div class="metadata">
-                            <div class="meta-line">
-                                <div class="meta-line-left">
-                                    <div class="meta-label">ID</div>
-                                    <div class="meta-inline-value">${{escapeHtml(person.id || '—')}}</div>
-                                </div>
-                                <div class="meta-line-right">
-                                    <div class="meta-label">Dates</div>
-                                    <div class="meta-inline-value">${{escapeHtml(person.yob_yod || '—')}}</div>
-                                </div>
-                            </div>
-                            <div class="meta-block">
-                                <div class="meta-label">Sloinneadh</div>
-                                <div class="meta-value">${{escapeHtml(person.sloinneadh || '—')}}</div>
-                            </div>
-                        </div>
-                    </details>`;
+                peopleHtml += renderPersonCard(person, {{
+                placeKey: String(placeKey),
+                latitude: place.latitude,
+                longitude: place.longitude,
+                placeOriginHtml: formatBilingualHtml(
+                    place.place_name_gaelic || '',
+                    place.place_name_english || ''
+                )
+            }});
             }}
             informantsPane.innerHTML = peopleHtml;
         }}
     
-        associatedPane.innerHTML = '';
-        associatedPane.hidden = true;
         locationTraditionsToggleBtn.style.display = 'block';
-        locationTraditionsToggleBtn.textContent = 'Show traditions associated with this place';
-    
-        clearInsetSelectionRing();
-        hideInsetSelectedPlaceLabel();
-        clearAllTraditionsAndControls();
-    
+        
+        if (locationTraditionsVisible) {{
+            showLocationTraditionsSection(currentLocationPlaceKey);
+        }} else {{
+            associatedPane.innerHTML = '';
+            associatedPane.hidden = true;
+            locationTraditionsToggleBtn.textContent = 'Show traditions associated with this place';
+            clearAllTraditionsAndControls();
+            clearInsetSelectionRing();
+            hideInsetSelectedPlaceLabel();
+        }}
+
         wireLocationPersonSelectionBehaviour();
-    }}
+        }}
 
     function buildOverlayRowHtml(item, checked) {{
         const labelHtml = formatBilingualHtml(item.label_gaelic || '', item.label_english || '');
@@ -2644,48 +2931,18 @@ def render_html(
             html += `<summary>${{escapeHtml(letter)}}</summary>`;
             html += `<div class="people-letter-group-body">`;
     
-            for (const person of grouped[letter]) {{
-                let summaryName = '';
-                if (person.gaelic_name && person.english_name) {{
-                    summaryName = `${{escapeHtml(person.gaelic_name)}}<span class="separator-accent"> / </span><span class="english-highlight-person">${{escapeHtml(person.english_name)}}</span>`;
-                }} else if (person.english_name) {{
-                    summaryName = `<span class="english-highlight-person">${{escapeHtml(person.english_name)}}</span>`;
-                }} else {{
-                    summaryName = escapeHtml(person.display_name || person.id || 'Unnamed person');
-                }}
-    
+            for (const person of grouped[letter]) {{ 
                 const placeLabel = formatBilingualHtml(
                     person.place_name_gaelic || '',
                     person.place_name_english || ''
                 );
     
-                html += `
-                    <details class="person-card all-people-card"
-                        data-place-key="${{escapeHtml(person.place_key)}}"
-                        data-lat="${{escapeHtml(person.latitude)}}"
-                        data-lon="${{escapeHtml(person.longitude)}}">
-                        <summary><span class="person-summary-name">${{summaryName}}</span></summary>
-                        <div class="metadata">
-                            <div class="meta-line">
-                                <div class="meta-line-left">
-                                    <div class="meta-label">ID</div>
-                                    <div class="meta-inline-value">${{escapeHtml(person.id || '—')}}</div>
-                                </div>
-                                <div class="meta-line-right">
-                                    <div class="meta-label">Dates</div>
-                                    <div class="meta-inline-value">${{escapeHtml(person.yob_yod || '—')}}</div>
-                                </div>
-                            </div>
-                            <div class="meta-block">
-                                <div class="meta-label">Sloinneadh</div>
-                                <div class="meta-value">${{escapeHtml(person.sloinneadh || '—')}}</div>
-                            </div>
-                            <div class="meta-block">
-                                <div class="meta-label">Place of origin</div>
-                                <div class="meta-value">${{placeLabel}}</div>
-                            </div>
-                        </div>
-                    </details>`;
+                html += renderPersonCard(person, {{
+                    placeKey: String(person.place_key || ''),
+                    latitude: person.latitude || '',
+                    longitude: person.longitude || '',
+                    placeOriginHtml: placeLabel
+                }});
             }}
     
             html += `</div></details>`;
@@ -2713,7 +2970,7 @@ def render_html(
     let selectedPersonCard = null;
 
     function clearSelectedPerson() {{
-        document.querySelectorAll('details.person-card.selected, details.all-people-card.selected').forEach((card) => {{
+        document.querySelectorAll('details.person-card.selected').forEach((card) => {{
             card.classList.remove('selected');
         }});
     
@@ -2725,7 +2982,7 @@ def render_html(
     function selectPersonCard(card) {{
         if (!card) return;
     
-        document.querySelectorAll('details.person-card.selected, details.all-people-card.selected').forEach((el) => {{
+        document.querySelectorAll('details.person-card.selected').forEach((el) => {{
             if (el !== card) el.classList.remove('selected');
         }});
     
@@ -2751,7 +3008,7 @@ def render_html(
     }}
     
     function wirePersonSelectionBehaviour() {{
-        document.querySelectorAll('#all-people-list details.all-people-card').forEach((card) => {{
+        document.querySelectorAll('#all-people-list details.person-card').forEach((card) => {{
             const summary = card.querySelector(':scope > summary');
             if (!summary) return;
     
@@ -2788,7 +3045,7 @@ def render_html(
         document.querySelectorAll('#all-people-list details.people-letter-group').forEach((el) => {{
             el.open = false;
         }});
-        document.querySelectorAll('#all-people-list details.all-people-card').forEach((el) => {{
+        document.querySelectorAll('#all-people-list details.person-card').forEach((el) => {{
             el.open = false;
         }});
         visibleRecordsExpanded = false;
@@ -2818,7 +3075,7 @@ def render_html(
         document.querySelectorAll('#all-people-list details.people-letter-group').forEach((group, groupIndex) => {{
             if (!group.open) return;
     
-            const cards = group.querySelectorAll('details.all-people-card');
+            const cards = group.querySelectorAll('details.person-card');
             cards.forEach((card, cardIndex) => {{
                 visibleCards.push({{
                     key: `${{groupIndex}}-${{cardIndex}}`,
@@ -2845,7 +3102,7 @@ def render_html(
     }}
     
     function wireLocationPersonSelectionBehaviour() {{
-        document.querySelectorAll('#informants-pane details.location-person-card').forEach((card) => {{
+        document.querySelectorAll('#informants-pane details.person-card').forEach((card) => {{
             const summary = card.querySelector(':scope > summary');
             if (!summary) return;
     
@@ -2872,7 +3129,6 @@ def render_html(
     const placeHeader = document.getElementById('place-header');
     const informantsPane = document.getElementById('informants-pane');
     const associatedPane = document.getElementById('associated-pane');
-
     const modeLocationBtn = document.getElementById('mode-location-btn');
     const modeAllPeopleBtn = document.getElementById('mode-all-people-btn');
     const locationPanelView = document.getElementById('location-panel-view');
@@ -2893,6 +3149,40 @@ def render_html(
     let currentLocationPlaceKey = null;
     let locationTraditionsVisible = false;
 
+    function wireMainMapAttributionToggle() {{
+        const attrib =
+            mapDiv.querySelector('.mapboxgl-ctrl-attrib, .maplibregl-ctrl-attrib');
+    
+        if (!attrib) return;
+    
+        const originalButton =
+            attrib.querySelector('.mapboxgl-ctrl-attrib-button, .maplibregl-ctrl-attrib-button');
+    
+        if (!originalButton) return;
+    
+        if (attrib.dataset.customAttribWired === '1') return;
+        attrib.dataset.customAttribWired = '1';
+    
+        const newButton = originalButton.cloneNode(true);
+        originalButton.parentNode.replaceChild(newButton, originalButton);
+    
+        newButton.addEventListener('click', function(event) {{
+            event.preventDefault();
+            event.stopPropagation();
+            attrib.classList.toggle('attrib-open');
+        }});
+    
+        attrib.addEventListener('click', function(event) {{
+            event.stopPropagation();
+        }});
+    
+        document.addEventListener('click', function(event) {{
+            if (!attrib.contains(event.target)) {{
+                attrib.classList.remove('attrib-open');
+            }}
+        }});
+    }}
+
     Plotly.newPlot(
         mapDiv,
         mainFigureSpec.data,
@@ -2904,6 +3194,7 @@ def render_html(
         }}
     ).then(function() {{
         keepOnlySnapshotButton();
+        wireMainMapAttributionToggle();
 
         Plotly.newPlot(
             insetMapDiv,
@@ -3092,7 +3383,7 @@ def render_html(
     }});
 
     document.addEventListener('click', function(event) {{
-        const clickedPersonCard = event.target.closest('details.all-people-card, details.person-card');
+        const clickedPersonCard = event.target.closest('details.person-card');
         if (clickedPersonCard) return;
     
         const clickedMapMarker = event.target.closest('#map, #selected-place-label');
