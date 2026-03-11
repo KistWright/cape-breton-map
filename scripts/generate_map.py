@@ -1285,21 +1285,27 @@ def render_html(
         z-index: 3;
     }}
     
+    details.person-card.selected {{
+        border-left: 6px solid {TITLE_COLOUR};
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(25, 41, 48, 0.08);
+    }}
+    
     details.person-card.selected > summary {{
-        background: #1F5F99;
-        color: #ffffff;
+        background: rgba(31, 95, 153, 0.08);
+        color: {TITLE_COLOUR};
     }}
     
     details.person-card.selected .english-highlight-person {{
-        color: #ffffff;
+        color: {ACCENT};
     }}
     
     details.person-card.selected > summary::after {{
-        color: #ffffff;
+        color: {ACCENT};
     }}
     
     details.person-card.selected .separator-accent {{
-        color: #ffffff;
+        color: {ACCENT};
     }}
 
     .mode-btn {{
@@ -1380,6 +1386,8 @@ def render_html(
         min-height: 0;
         overflow-y: auto;
         padding-right: 4px;
+        display: flex;
+        flex-direction: column;
     }}
     
     .location-lower-panel {{
@@ -1389,6 +1397,10 @@ def render_html(
         gap: 8px;
         padding-top: 8px;
         min-height: 0;
+    }}
+    
+    .location-lower-panel[hidden] {{
+        display: none !important;
     }}
     
     .location-traditions-toggle-wrap {{
@@ -1753,6 +1765,12 @@ def render_html(
         line-height: 18px;
     }}
 
+    .location-intro {{
+        margin: 0 auto 14px auto;
+        text-align: center;
+        max width: 420px;        
+    }}
+
     .gaelic-dark {{
         color: {TITLE_COLOUR};
     }}
@@ -1823,6 +1841,7 @@ def render_html(
         margin-bottom: 10px;
         overflow: hidden;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        transition: border-color 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease;
     }}
 
     details.person-card summary {{
@@ -1833,8 +1852,9 @@ def render_html(
         background: #fff;
         font-size: 14px;
         line-height: 19px;
+        transition: background-color 0.14s ease, color 0.14s ease;
     }}
-
+    
     details.person-card summary {{
         text-transform: none;
     }}
@@ -1850,6 +1870,7 @@ def render_html(
         font-size: 0.95rem;
         margin-left: 1rem;
         font-weight: 700;
+        transition: color 0.14s ease;
     }}
     
     details.person-card[open] > summary::after {{
@@ -1957,6 +1978,48 @@ def render_html(
         padding: 12px;
         font-size: 13px;
         line-height: 17px;
+    }}
+
+    .location-empty-state {{
+        position: relative;
+        flex: 1 1 auto;
+        min-height: 0;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        padding: 18px;
+        background: linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.92),
+            rgba(247, 251, 254, 0.92)
+        );
+        border: 1px dashed rgba(25, 41, 48, 0.12);
+        border-left: 4px solid rgba(140, 199, 234, 0.95);
+        border-radius: 6px;
+        color: rgba(25, 41, 48, 0.82);
+        text-align: center;
+    }}
+
+    .location-empty-message {{
+        position: relative;
+        z-index: 1;
+        display: inline-block;
+        max-width: 280px;
+        color: {TITLE_COLOUR};
+        font-size: 16px;
+        line-height: 22px;
+        font-weight: 700;
+    }}
+
+    .location-empty-state::before {{
+        content: "";
+        position: absolute;
+        inset: 12px;
+        border: 1px dashed rgba(25, 41, 48, 0.05);
+        border-radius: 4px;
+        pointer-events: none;
     }}
 
     .english-highlight-place {{
@@ -2291,16 +2354,18 @@ def render_html(
             </div>
             <div id="location-panel-view" class="panel-view active">
                 <div class="info-header">
-                    <p class="intro">Click a map marker to list all linked people for that place.</p>
+                    <p class="intro location-intro">Click a map marker to view details of that place and its people.</p>
                 </div>
             
                 <div id="place-header"></div>
             
                 <div id="informants-pane" class="informants-pane">
-                    <div class="empty">Select a place on the map to begin.</div>
+                    <div class="empty location-empty-state">
+                        <span class="location-empty-message">Select a place on the map to begin.</span>
+                    </div>
                 </div>
             
-                <div class="location-lower-panel">
+                <div id="location-lower-panel" class="location-lower-panel" hidden>
                     <div class="location-traditions-toggle-wrap">
                         <button id="location-traditions-toggle-btn" class="map-reset-btn" type="button">
                             Show traditions associated with this place
@@ -2376,6 +2441,7 @@ def render_html(
     const locationTraditionsToggleBtn = document.getElementById('location-traditions-toggle-btn');
     const INITIAL_CENTER = {json.dumps(MAP_CENTER)};
     const INITIAL_ZOOM = {MAP_ZOOM};
+    const locationLowerPanel = document.getElementById('location-lower-panel');
 
     function escapeHtml(value) {{
         return String(value)
@@ -2513,10 +2579,11 @@ def render_html(
 
     function resetInfoPanel() {{
         placeHeader.innerHTML = '';
-        informantsPane.innerHTML = '<div class="empty">Select a place on the map to begin.</div>';
+        informantsPane.innerHTML = '<div class="empty location-empty-state"><span class="location-empty-message">Select a place on the map to begin.</span></div>';
         associatedPane.innerHTML = '';
         associatedPane.hidden = true;
         locationTraditionsToggleBtn.style.display = 'none';
+        locationLowerPanel.hidden = true;
         locationTraditionsToggleBtn.textContent = 'Show traditions associated with this place';
         currentLocationPlaceKey = null;
         locationTraditionsVisible = false;
@@ -2702,6 +2769,7 @@ def render_html(
         associatedPane.hidden = true;
         associatedPane.innerHTML = '';
         locationTraditionsToggleBtn.style.display = 'block';
+        locationLowerPanel.hidden = false;
         locationTraditionsToggleBtn.textContent = 'Show traditions associated with this place';
         clearAllTraditionsAndControls();
     }}
@@ -2728,6 +2796,7 @@ def render_html(
     
         locationTraditionsVisible = true;
         currentLocationPlaceKey = String(placeKey);
+        locationLowerPanel.hidden = false;
         locationTraditionsToggleBtn.style.display = 'block';
         locationTraditionsToggleBtn.textContent = 'Hide associated traditions';
     
@@ -2757,6 +2826,7 @@ def render_html(
             associatedPane.innerHTML = '';
             associatedPane.hidden = true;
             locationTraditionsToggleBtn.style.display = 'none';
+            locationLowerPanel.hidden = true;
             clearAllTraditionsAndControls();
             return;
         }}
@@ -2795,9 +2865,10 @@ def render_html(
             }}
             informantsPane.innerHTML = peopleHtml;
         }}
-    
-        locationTraditionsToggleBtn.style.display = 'block';
         
+        locationLowerPanel.hidden = false;
+        locationTraditionsToggleBtn.style.display = 'block';
+
         if (locationTraditionsVisible) {{
             showLocationTraditionsSection(currentLocationPlaceKey);
         }} else {{
