@@ -1431,7 +1431,7 @@ def render_html(
         flex: 0 0 auto;
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: flex-start;
         gap: 7px;
         margin: 0 0 10px 0;
         padding: 0 4px 0 2px;
@@ -1446,7 +1446,8 @@ def render_html(
         flex: 0 0 auto;
     }}
 
-    .places-index-wrap .location-intro {{
+    .places-index-wrap .location-intro,
+    #all-people-panel-view .people-intro {{
         margin: 4px auto 14px auto;
         max-width: 430px;
     }}
@@ -1465,20 +1466,32 @@ def render_html(
         cursor: pointer;
         font: inherit;
         font-weight: 600;
-        color: rgba(25, 41, 48, 0.72);
         line-height: inherit;
         border-bottom: 1px solid transparent;
-        transition: color 0.14s ease, border-color 0.14s ease;
+        transition: color 0.14s ease, border-color 0.14s ease, opacity 0.14s ease;
+    }}
+
+    .place-sort-btn.sort-gd {{
+        color: {TITLE_COLOUR};
+    }}
+
+    .place-sort-btn.sort-en {{
+        color: {ACCENT};
     }}
 
     .place-sort-btn:hover {{
-        color: {TITLE_COLOUR};
+        opacity: 0.84;
     }}
 
     .place-sort-btn.active {{
         font-weight: 700;
-        color: {BODY_TEXT};
         border-bottom-color: {ACCENT};
+        opacity: 1;
+    }}
+
+    .place-sort-btn:not(.active) {{
+        font-weight: 600;
+        opacity: 0.94;
     }}
 
     .place-sort-separator {{
@@ -1816,7 +1829,7 @@ def render_html(
         flex: 0 0 auto;
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: flex-start;
         gap: 7px;
         margin: 0 0 10px 0;
         padding: 0 4px 0 2px;
@@ -1847,6 +1860,8 @@ def render_html(
     .overlay-list {{
         display: grid;
         gap: 6px;
+        align-content: start;
+        grid-auto-rows: max-content;
         overflow-y: auto;
         padding-right: 2px;
         font-size: 13px;
@@ -2661,10 +2676,10 @@ def render_html(
                         <p class="intro location-intro">Click a <strong>place</strong> on the map or list to show its people and traditions.</p>
                     </div>
                     <div class="places-index-controls">
-                        <span class="place-sort-label">Sort</span>
-                        <button id="sort-gaelic-btn" class="place-sort-btn active" type="button">Gaelic</button>
+                        <span class="place-sort-label">⇅</span>
+                        <button id="sort-gaelic-btn" class="place-sort-btn sort-gd active" type="button">GD</button>
                         <span class="place-sort-separator">|</span>
-                        <button id="sort-english-btn" class="place-sort-btn" type="button">English</button>
+                        <button id="sort-english-btn" class="place-sort-btn sort-en" type="button">EN</button>
                     </div>
                     <div id="places-index-list" class="places-index-list"></div>
                 </div>
@@ -2675,10 +2690,10 @@ def render_html(
                     <p class="intro people-intro">Click on a <strong>name</strong> to view the person details and their map location.</p>
                 </div>
                 <div class="people-index-controls">
-                    <span class="place-sort-label">Sort</span>
-                    <button id="people-sort-gaelic-btn" class="place-sort-btn active" type="button">Gaelic</button>
+                    <span class="place-sort-label">⇅</span>
+                    <button id="people-sort-gaelic-btn" class="place-sort-btn sort-gd active" type="button">GD</button>
                     <span class="place-sort-separator">|</span>
-                    <button id="people-sort-english-btn" class="place-sort-btn" type="button">English</button>
+                    <button id="people-sort-english-btn" class="place-sort-btn sort-en" type="button">EN</button>
                 </div>
                 <div class="people-list-controls">
                     <button id="people-toggle-all-btn" class="tiny-btn" type="button">Collapse to letters</button>
@@ -2706,11 +2721,10 @@ def render_html(
                     <div class="combined-controls-block">
                         <div class="section-title">Fine control</div>
                         <p class="intro">Select or deselect traditions to highlight linked Cape Breton communities.</p>
-                        <div class="filters-controls">
-                            <button id="show-all-cb-pane-btn" class="tiny-btn" type="button">Show all traditions</button>
-                            <button id="show-all-traditions" class="tiny-btn" type="button">Show all</button>
-                            <button id="clear-all-traditions" class="tiny-btn" type="button">Clear all</button>
-                        </div>
+                            <div class="filters-controls">
+                                <button id="clear-all-traditions" class="tiny-btn" type="button">Clear list</button>
+                                <button id="show-all-cb-pane-btn" class="tiny-btn" type="button">Show all traditions</button>
+                            </div>
                         <div id="overlay-list" class="overlay-list">
                             <div class="overlay-empty">Select a Cape Breton place to load its associated traditions.</div>
                         </div>
@@ -3114,9 +3128,27 @@ def render_html(
         }}
     }}
 
+    function updateOverlayListActionButton() {{
+        if (!clearAllTraditionsBtn) return;
+    
+        const hasList = currentOverlayTraditionKeys.length > 0;
+        if (!hasList) {{
+            clearAllTraditionsBtn.textContent = 'Clear list';
+            clearAllTraditionsBtn.disabled = true;
+            overlayListCleared = false;
+            return;
+        }}
+    
+        clearAllTraditionsBtn.disabled = false;
+        clearAllTraditionsBtn.textContent = overlayListCleared ? 'Restore list' : 'Clear list';
+    }}
+    
     function clearAllTraditionsAndControls() {{
+        currentOverlayTraditionKeys = [];
+        overlayListCleared = false;
         setAllTraditionsVisibleByKeys([], false);
         renderOverlayControls([]);
+        updateOverlayListActionButton();
         clearInsetSelectionRing();
         hideInsetSelectedPlaceLabel();
         Plotly.redraw(mapDiv);
@@ -3130,9 +3162,12 @@ def render_html(
         clearSelectionRing();
         hideSelectedPlaceLabel();
         const allKeys = overlayControlsAll.map((item) => String(item.tradition_key));
+        currentOverlayTraditionKeys = allKeys.slice();
+        overlayListCleared = false;
         renderPlacesIndex(null);
-        renderOverlayControls(allKeys, true);
-        setAllTraditionsVisibleByKeys(allKeys, true);
+        renderOverlayControls(currentOverlayTraditionKeys, true);
+        setAllTraditionsVisibleByKeys(currentOverlayTraditionKeys, true);
+        updateOverlayListActionButton();
         clearInsetSelectionRing();
         hideInsetSelectedPlaceLabel();
         Plotly.redraw(mapDiv);
@@ -3148,26 +3183,36 @@ def render_html(
             'map.zoom': INITIAL_ZOOM
         }});
     }}
+    
+    let currentOverlayTraditionKeys = [];
+    let overlayListCleared = false;
 
     function showLocationTraditionsSection(placeKey) {{
         const place = placesLookup[String(placeKey)];
         if (!place) {{
+            currentOverlayTraditionKeys = [];
+            overlayListCleared = false;
             renderOverlayControls([]);
             setAllTraditionsVisibleByKeys([], false);
+            updateOverlayListActionButton();
             clearInsetSelectionRing();
             hideInsetSelectedPlaceLabel();
             Plotly.redraw(mapDiv);
             Plotly.redraw(insetMapDiv);
             return;
         }}
-
+    
         const associatedKeys = (place.traditions || []).map((item) => String(item.key));
-        renderOverlayControls(associatedKeys, true);
-        setAllTraditionsVisibleByKeys(associatedKeys, true);
-
+        currentOverlayTraditionKeys = associatedKeys.slice();
+        overlayListCleared = false;
+    
+        renderOverlayControls(currentOverlayTraditionKeys, true);
+        setAllTraditionsVisibleByKeys(currentOverlayTraditionKeys, true);
+        updateOverlayListActionButton();
+    
         clearInsetSelectionRing();
         hideInsetSelectedPlaceLabel();
-
+    
         Plotly.redraw(mapDiv);
         Plotly.redraw(insetMapDiv);
     }}
@@ -3217,23 +3262,25 @@ def render_html(
     function renderOverlayControls(activeTraditionKeys, checkedState = true) {{
         const keySet = new Set((activeTraditionKeys || []).map(String));
         const items = overlayControlsAll.filter((item) => keySet.has(String(item.tradition_key)));
-
+    
         if (!items.length) {{
             overlayList.innerHTML = '<div class="overlay-empty">Select a Cape Breton place to load associated traditions.</div>';
+            updateOverlayListActionButton();
             return;
         }}
-
+    
         overlayList.innerHTML = items.map((item) => buildOverlayRowHtml(item, checkedState)).join('');
-
+        updateOverlayListActionButton();
+    
         document.querySelectorAll('.tradition-toggle').forEach((checkbox) => {{
             checkbox.addEventListener('change', function() {{
                 const mainTraceIndex = Number(this.dataset.mainTraceIndex);
                 const insetTraceIndex = Number(this.dataset.insetTraceIndex);
                 const visibleValue = this.checked;
-
+    
                 Plotly.restyle(mapDiv, {{visible: visibleValue}}, [mainTraceIndex]);
                 Plotly.restyle(insetMapDiv, {{visible: visibleValue}}, [insetTraceIndex]);
-
+    
                 clearInsetSelectionRing();
                 hideInsetSelectedPlaceLabel();
                 Plotly.redraw(mapDiv);
@@ -3443,6 +3490,18 @@ def render_html(
         const lon = Number(card.dataset.lon);
         const place = placesLookup[String(placeKey)];
         if (!place) return;
+
+        const previousPlaceKey = String(currentLocationPlaceKey || '');
+        const nextPlaceKey = String(placeKey || '');
+        const clickedInsideActivePlaceList = !!card.closest('#places-index-list .place-list-detail');
+
+        currentLocationPlaceKey = nextPlaceKey;
+
+        if (!(clickedInsideActivePlaceList && previousPlaceKey === nextPlaceKey)) {{
+            setActivePlaceInList(currentLocationPlaceKey);
+        }}
+
+        showLocationTraditionsSection(currentLocationPlaceKey);
     
         Plotly.restyle(
             mapDiv,
@@ -3466,6 +3525,9 @@ def render_html(
                 window.setTimeout(() => {{
                     if (toggleOff) {{
                         clearSelectedPerson({{ restoreActivePlace: false }});
+                        currentLocationPlaceKey = null;
+                        renderPlacesIndex(null);
+                        clearAllTraditionsAndControls();
                     }} else {{
                         selectPersonCard(card);
                     }}
@@ -3583,7 +3645,6 @@ def render_html(
     const selectedPlaceLabel = document.getElementById('selected-place-label');
     const insetSelectedPlaceLabel = document.getElementById('inset-selected-place-label');
     const overlayList = document.getElementById('overlay-list');
-    const showAllTraditionsBtn = document.getElementById('show-all-traditions');
     const clearAllTraditionsBtn = document.getElementById('clear-all-traditions');
     const floatingOverlays = document.getElementById('floating-overlays');
     const floatingInset = document.getElementById('floating-inset');
@@ -3730,6 +3791,7 @@ def render_html(
         ).then(function() {{
             renderPlacesIndex(null);
             renderOverlayControls([]);
+            updateOverlayListActionButton();
             setOverlayPanelVisibility(true);
             setInsetPanelVisibility(true);
             setSidePanelMode('location');
@@ -3845,10 +3907,6 @@ def render_html(
         resetMainMapAndPanels();
     }});
 
-    showAllTraditionsBtn.addEventListener('click', function() {{
-        showAllTraditionsInCapeBreton();
-    }});
-
     showAllCbBtn.addEventListener('click', function() {{
         showAllTraditionsInCapeBreton();
     }});
@@ -3858,7 +3916,17 @@ def render_html(
     }});
 
     clearAllTraditionsBtn.addEventListener('click', function() {{
-        setAllVisibleInCurrentOverlayPane(false);
+        if (!currentOverlayTraditionKeys.length) return;
+    
+        if (!overlayListCleared) {{
+            setAllVisibleInCurrentOverlayPane(false);
+            overlayListCleared = true;
+        }} else {{
+            setAllVisibleInCurrentOverlayPane(true);
+            overlayListCleared = false;
+        }}
+    
+        updateOverlayListActionButton();
     }});
 
     modeLocationBtn.addEventListener('click', function() {{
