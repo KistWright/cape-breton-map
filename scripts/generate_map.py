@@ -670,12 +670,14 @@ def build_people_lookup(people_df: pd.DataFrame) -> dict[str, list[dict[str, str
                     "sort_name": row["sort_name"],
                     "gaelic_name": cleaned_text(row.get("gaelic_name", "")),
                     "english_name": cleaned_text(row.get("english_name", "")),
+                    "gaelic_first": cleaned_text(row.get("Ainm", "")),
+                    "gaelic_last": cleaned_text(row.get("Cinneadh", "")) or cleaned_text(row.get("Cinneadh-breithe", "")) or cleaned_text(row.get("Sloinneadh", "")),
                     "id": cleaned_text(row.get("Informant ID", "")),
                     "yob_yod": yob_yod,
                     "sloinneadh": cleaned_text(row.get("Sloinneadh", "")),
                     "number_of_recordings": first_present_value(row, ["Number of Recordings", "Number of recordings"]),
                     "person_page_url": f"http://{BASE_URL}/cisc/informants/{cleaned_text(row.get('Informant ID', ''))}" if cleaned_text(row.get("Informant ID", "")) else "",
-                    "recordings_url": f"http://{BASE_URL}/cisc/informants/{cleaned_text(row.get('Informant ID', ''))}#recordings" if cleaned_text(row.get("Informant ID", "")) else "",
+                    "recordings_url": f"http://{BASE_URL}/cisc/informants/{cleaned_text(row.get('Informant ID', ''))}#informant-recordings" if cleaned_text(row.get("Informant ID", "")) else "",
                 }
             )
 
@@ -725,10 +727,12 @@ def build_all_people_index(people_df: pd.DataFrame, places_df: pd.DataFrame) -> 
 
         english_last = cleaned_text(row.get("Informant Last Name", ""))
         english_first = cleaned_text(row.get("Informant First Name", ""))
+        gaelic_first = cleaned_text(row.get("Ainm", ""))
+        gaelic_last = cleaned_text(row.get("Cinneadh", "")) or cleaned_text(row.get("Cinneadh-breithe", "")) or cleaned_text(row.get("Sloinneadh", ""))
         gaelic_name = cleaned_text(row.get("gaelic_name", ""))
         english_name = cleaned_text(row.get("english_name", ""))
         display_name = cleaned_text(row.get("display_name", ""))
-        initial = (english_last[:1] or display_name[:1] or "#").upper()
+        initial = ((gaelic_last if gaelic_last else english_last)[:1] or display_name[:1] or "#").upper()
         if not initial.isalpha():
             initial = "#"
 
@@ -740,6 +744,8 @@ def build_all_people_index(people_df: pd.DataFrame, places_df: pd.DataFrame) -> 
                 "english_name": english_name,
                 "english_last": english_last,
                 "english_first": english_first,
+                "gaelic_last": gaelic_last,
+                "gaelic_first": gaelic_first,
                 "yob_yod": yob_yod,
                 "sloinneadh": cleaned_text(row.get("Sloinneadh", "")),
                 "letter": initial,
@@ -752,7 +758,7 @@ def build_all_people_index(people_df: pd.DataFrame, places_df: pd.DataFrame) -> 
                 "longitude": place["longitude"],
                 "number_of_recordings": first_present_value(row, ["Number of Recordings", "Number of recordings"]),
                 "person_page_url": f"http://{BASE_URL}/cisc/informants/{cleaned_text(row.get('Informant ID', ''))}" if cleaned_text(row.get("Informant ID", "")) else "",
-                "recordings_url": f"http://{BASE_URL}/cisc/informants/{cleaned_text(row.get('Informant ID', ''))}#recordings" if cleaned_text(row.get("Informant ID", "")) else "",
+                "recordings_url": f"http://{BASE_URL}/cisc/informants/{cleaned_text(row.get('Informant ID', ''))}#informant-recordings" if cleaned_text(row.get("Informant ID", "")) else "",
             }
         )
 
@@ -1075,6 +1081,19 @@ def render_html(
         }
         for idx, spec in enumerate(tradition_specs)
     ]
+    map_controls_svg_path = Path(__file__).resolve().parent / "map_controls.svg"
+    if map_controls_svg_path.exists():
+        map_controls_svg = map_controls_svg_path.read_text(encoding="utf-8")
+    else:
+        map_controls_svg = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 180"><rect width="300" height="180" rx="14" fill="white" stroke="#8CC7EA"/><text x="150" y="92" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#1F5F99">Map controls graphic not found</text></svg>'''
+
+    place_keys_sorted = [
+        str(int(row.place_key))
+        for row in places_df.sort_values(
+            by=["place_name", "place_name_gaelic", "place_name_english"],
+            key=lambda s: s.fillna("").astype(str).str.casefold() if hasattr(s, 'fillna') else s,
+        ).itertuples(index=False)
+    ]
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -1310,18 +1329,22 @@ def render_html(
 
     .mode-btn {{
         position: relative;
-        padding: 10px 18px 9px 18px;
+        flex: 1 1 50%;
+        width: 50%;
+        padding: 12px 14px 11px 14px;
         border: 1px solid rgba(25, 41, 48, 0.15);
         border-bottom: 1px solid rgba(25, 41, 48, 0.12);
         background: #f4f8fb;
         color: {BODY_TEXT};
-        font-size: 12px;
+        font-size: 15px;
         font-weight: 700;
-        text-transform: uppercase;
+        text-transform: none;
+        text-align: center;
         cursor: pointer;
         border-radius: 8px 8px 0 0;
         box-shadow: none;
         margin-bottom: -1px;
+        line-height: 1.2;
     }}
     
     .mode-btn.active {{
@@ -1362,6 +1385,8 @@ def render_html(
     .mode-btn .separator-accent {{
         font-weight: 700;
         white-space: nowrap;
+        font-size: 19px;
+        line-height: 1.2;
     }}
 
     .panel-view {{
@@ -1389,9 +1414,193 @@ def render_html(
         display: flex;
         flex-direction: column;
     }}
+
+
+    .places-index-wrap {{
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }}
+
+    .places-index-title {{
+        display: none;
+    }}
+
+    .places-index-controls {{
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 7px;
+        margin: 0 0 10px 0;
+        padding: 0 4px 0 2px;
+        font-size: 12px;
+        line-height: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: rgba(25, 41, 48, 0.72);
+    }}
+
+    .places-index-wrap .info-header {{
+        flex: 0 0 auto;
+    }}
+
+    .places-index-wrap .location-intro {{
+        margin: 4px auto 14px auto;
+        max-width: 430px;
+    }}
+
+    .place-sort-label {{
+        color: rgba(25, 41, 48, 0.68);
+        font-weight: 700;
+    }}
+
+    .place-sort-btn {{
+        appearance: none;
+        border: none;
+        background: transparent;
+        padding: 1px 0;
+        margin: 0;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 600;
+        color: rgba(25, 41, 48, 0.72);
+        line-height: inherit;
+        border-bottom: 1px solid transparent;
+        transition: color 0.14s ease, border-color 0.14s ease;
+    }}
+
+    .place-sort-btn:hover {{
+        color: {TITLE_COLOUR};
+    }}
+
+    .place-sort-btn.active {{
+        font-weight: 700;
+        color: {BODY_TEXT};
+        border-bottom-color: {ACCENT};
+    }}
+
+    .place-sort-separator {{
+        color: {ACCENT};
+        font-weight: 700;
+    }}
+
+    .places-index-list {{
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        overflow-y: auto;
+        padding-right: 2px;
+    }}
+
+    .place-list-btn {{
+        width: 100%;
+        text-align: left;
+        padding: 8px 10px;
+        border: 1px solid rgba(25, 41, 48, 0.10);
+        border-left: 4px solid rgba(31, 95, 153, 0.18);
+        border-radius: 6px;
+        background: #fff;
+        cursor: pointer;
+        font: inherit;
+        line-height: 1.25;
+        color: {BODY_TEXT};
+        transition: border-color 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease, background-color 0.14s ease;
+    }}
+
+    .place-list-btn:hover {{
+        border-color: {ACCENT};
+    }}
+
+    .place-list-btn.active {{
+        border-left-color: {TITLE_COLOUR};
+        background: rgba(31, 95, 153, 0.06);
+        box-shadow: 0 2px 8px rgba(25, 41, 48, 0.08);
+        transform: translateY(-1px);
+        animation: placeSelectPulse 0.18s ease-out;
+    }}
+
+    @keyframes placeSelectPulse {{
+        0% {{
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(25, 41, 48, 0.03);
+        }}
+        100% {{
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(25, 41, 48, 0.08);
+        }}
+    }}
+
+    .place-list-name {{
+        display: block;
+        font-size: 14px;
+        line-height: 18px;
+        font-weight: 700;
+    }}
+
+    .place-list-detail {{
+        margin-top: 6px;
+        padding: 4px 0 2px 0;
+        animation: placeDetailReveal 0.18s ease-out;
+        transform-origin: top center;
+    }}
+
+    @keyframes placeDetailReveal {{
+        0% {{
+            opacity: 0;
+            transform: translateY(-4px);
+        }}
+        100% {{
+            opacity: 1;
+            transform: translateY(0);
+        }}
+    }}
+
+    .place-list-detail .place-meta {{
+        display: none;
+    }}
+
+    .place-list-detail .informants-pane {{
+        margin-top: 4px;
+        padding: 10px 12px 2px 12px;
+        border: 1px solid rgba(25, 41, 48, 0.06);
+        border-radius: 6px;
+        background: #f7fbfe;
+        box-shadow: none;
+        overflow: visible;
+    }}
+
+    .place-list-detail .informants-pane .empty {{
+        margin-top: 0;
+    }}
+
+    .place-list-meta {{
+        display: block;
+        margin-top: 3px;
+        font-size: 11px;
+        line-height: 14px;
+        color: rgba(25, 41, 48, 0.72);
+        text-transform: uppercase;
+    }}
+
+    .place-list-item {{
+        padding-bottom: 6px;
+        border-bottom: 1px solid rgba(25, 41, 48, 0.06);
+    }}
+
+    .place-list-item:last-child {{
+        border-bottom: none;
+    }}
+
+    .associated-pane .overlay-empty {{
+        padding-top: 8px;
+    }}
     
     .location-lower-panel {{
-        flex: 0 0 calc(46px + 8px + 22vh);
+        flex: 0 0 22vh;
         display: flex;
         flex-direction: column;
         gap: 8px;
@@ -1399,25 +1608,19 @@ def render_html(
         min-height: 0;
     }}
     
-    .location-lower-panel[hidden] {{
+    
+    .location-traditions-toggle-wrap {{
         display: none !important;
     }}
     
-    .location-traditions-toggle-wrap {{
-        flex: 0 0 46px;
-    }}
-    
     #location-traditions-toggle-btn {{
-        width: 100%;
-        height: 46px;
-        display: none;
-        text-align: center;
+        display: none !important;
     }}
     
     .associated-pane {{
-        flex: 0 0 22vh;
+        flex: 1 1 auto;
         min-height: 0;
-        max-height: 22vh;
+        max-height: none;
         overflow-y: auto;
         padding-top: 4px;
         padding-right: 4px;
@@ -1468,34 +1671,7 @@ def render_html(
 
     .overlay-toggle-btn,
     .inset-toggle-btn {{
-        position: absolute;
-        z-index: 1003;
-        padding: 8px 12px;
-        border: 1px solid rgba(25, 41, 48, 0.15);
-        background: rgba(255, 255, 255, 0.98);
-        color: {BODY_TEXT};
-        font-size: 12px;
-        font-weight: 700;
-        text-transform: uppercase;
-        cursor: pointer;
-        border-radius: 4px;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-    }}
-
-    .overlay-toggle-btn:hover,
-    .inset-toggle-btn:hover {{
-        border-color: {ACCENT};
-        color: {ACCENT};
-    }}
-
-    .overlay-toggle-btn {{
-        right: 16px;
-        bottom: 16px;
-    }}
-
-    .inset-toggle-btn {{
-        top: 12px;
-        right: 64px;
+        display: none !important;
     }}
 
     .floating-panel {{
@@ -1535,12 +1711,40 @@ def render_html(
 
     .floating-overlays {{
         right: 16px;
+        top: 48px;
         bottom: 56px;
+        height: auto;
+        width: min(22%, 320px);
     }}
 
     .floating-inset {{
-        top: 48px;
-        right: 16px;
+        display: none !important;
+    }}
+
+    .combined-traditions-body {{
+        gap: 12px;
+    }}
+
+    .combined-inset-block {{
+        position: relative;
+        flex: 0 0 43%;
+        min-height: 220px;
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(25, 41, 48, 0.08);
+    }}
+
+    .combined-controls-block {{
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }}
+
+    .combined-controls-block .overlay-list {{
+        flex: 1 1 auto;
+        min-height: 0;
     }}
 
     .floating-panel .section-title {{
@@ -1606,6 +1810,21 @@ def render_html(
         gap: 6px;
         margin-bottom: 8px;
         flex-wrap: wrap;
+    }}
+
+    .people-index-controls {{
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 7px;
+        margin: 0 0 10px 0;
+        padding: 0 4px 0 2px;
+        font-size: 12px;
+        line-height: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: rgba(25, 41, 48, 0.72);
     }}
 
     .tiny-btn {{
@@ -1765,10 +1984,24 @@ def render_html(
         line-height: 18px;
     }}
 
-    .location-intro {{
-        margin: 0 auto 14px auto;
+    .location-intro,
+    .people-intro {{
+        margin: 4px auto 16px auto;
         text-align: center;
-        max width: 420px;        
+        max-width: 420px;
+        font-size: 14px;
+        line-height: 20px;
+        color: rgba(25, 41, 48, 0.75);
+    }}
+
+    .location-intro::after,
+    .people-intro::after {{
+        content: "";
+        display: block;
+        width: 48px;
+        height: 1px;
+        background: rgba(25, 41, 48, 0.10);
+        margin: 10px auto 0 auto;
     }}
 
     .gaelic-dark {{
@@ -2197,6 +2430,73 @@ def render_html(
         white-space: nowrap;
     }}
 
+
+    .map-controls-btn {{
+        position: absolute;
+        left: 28px;
+        bottom: 58px;
+        width: 28px;
+        height: 28px;
+        border: 1px solid rgba(25, 41, 48, 0.12);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        cursor: pointer;
+        z-index: 1006;
+    }}
+
+    .map-controls-btn:hover {{
+        border-color: {ACCENT};
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+    }}
+
+    .map-controls-btn svg {{
+        width: 18px;
+        height: 18px;
+        display: block;
+    }}
+
+    .map-controls-btn svg * {{
+        stroke: {TITLE_COLOUR};
+    }}
+
+    .map-controls-popup {{
+        position: absolute;
+        left: 28px;
+        bottom: 92px;
+        z-index: 1007;
+        width: 300px;
+        max-width: calc(100% - 56px);
+    }}
+
+    .map-controls-popup.hidden {{
+        display: none;
+    }}
+
+    .map-controls-popup svg {{
+        display: block;
+        width: 100%;
+        height: auto;
+    }}
+
+    .map-controls-popup-close {{
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        z-index: 1008;
+        width: 22px;
+        height: 22px;
+        border: none;
+        background: transparent;
+        color: transparent;
+        cursor: pointer;
+        padding: 0;
+    }}
+
     @media (max-width: 1200px) {{
     }}
 
@@ -2307,12 +2607,14 @@ def render_html(
 
     .floating-overlays {{
         right: 12px;
+        top: 48px;
         bottom: 52px;
+        height: auto;
+        width: min(74vw, 300px);
     }}
 
     .floating-inset {{
-        top: 48px;
-        right: 12px;
+        display: none !important;
     }}
 
     .overlay-toggle-btn {{
@@ -2337,8 +2639,8 @@ def render_html(
         </h1>
         
         <div class="subheading">
-            <span class="gaelic-banner">Mapa Dhaoine is Dhualchasan</span>
-            <span class="english-highlight-banner">Map of People and Traditions</span>
+            <span class="gaelic-banner">Àiteachan, Daoine, Dualchasan</span>
+            <span class="english-highlight-banner">Places, People, Traditions</span>
         </div>
     </header>
 
@@ -2353,35 +2655,33 @@ def render_html(
                 </button>
             </div>
             <div id="location-panel-view" class="panel-view active">
-                <div class="info-header">
-                    <p class="intro location-intro">Click a map marker to view details of that place and its people.</p>
-                </div>
-            
-                <div id="place-header"></div>
-            
-                <div id="informants-pane" class="informants-pane">
-                    <div class="empty location-empty-state">
-                        <span class="location-empty-message">Select a place on the map to begin.</span>
+                <div class="places-index-wrap">
+                    <div class="places-index-title">Cape Breton places</div>
+                    <div class="info-header">
+                        <p class="intro location-intro">Click a <strong>place</strong> on the map or list to show its people and traditions.</p>
                     </div>
-                </div>
-            
-                <div id="location-lower-panel" class="location-lower-panel" hidden>
-                    <div class="location-traditions-toggle-wrap">
-                        <button id="location-traditions-toggle-btn" class="map-reset-btn" type="button">
-                            Show traditions associated with this place
-                        </button>
+                    <div class="places-index-controls">
+                        <span class="place-sort-label">Sort</span>
+                        <button id="sort-gaelic-btn" class="place-sort-btn active" type="button">Gaelic</button>
+                        <span class="place-sort-separator">|</span>
+                        <button id="sort-english-btn" class="place-sort-btn" type="button">English</button>
                     </div>
-            
-                    <div id="associated-pane" class="associated-pane" hidden></div>
+                    <div id="places-index-list" class="places-index-list"></div>
                 </div>
             </div>
 
             <div id="all-people-panel-view" class="panel-view">
                 <div class="info-header">
-                    <p class="intro">Browse all people alphabetically by English surname. Click a person to highlight their place of origin on the main map.</p>
+                    <p class="intro people-intro">Click on a <strong>name</strong> to view the person details and their map location.</p>
+                </div>
+                <div class="people-index-controls">
+                    <span class="place-sort-label">Sort</span>
+                    <button id="people-sort-gaelic-btn" class="place-sort-btn active" type="button">Gaelic</button>
+                    <span class="place-sort-separator">|</span>
+                    <button id="people-sort-english-btn" class="place-sort-btn" type="button">English</button>
                 </div>
                 <div class="people-list-controls">
-                    <button id="people-toggle-all-btn" class="tiny-btn" type="button">Hide all people</button>
+                    <button id="people-toggle-all-btn" class="tiny-btn" type="button">Collapse to letters</button>
                     <button id="people-expand-visible-btn" class="tiny-btn" type="button">Expand visible records</button>
                 </div>
                 <div id="all-people-list" class="people-list"></div>
@@ -2394,36 +2694,48 @@ def render_html(
                 <button id="show-all-cb-btn" class="map-reset-btn" type="button">Show all traditions</button>
             </div>
 
-            <div id="floating-inset" class="floating-panel floating-inset hidden">
+            <div id="floating-overlays" class="floating-panel floating-overlays combined-traditions-panel">
                 <div class="floating-panel-header">
                     <div class="section-title">Associated traditions</div>
                 </div>
-                <div class="floating-panel-body" style="position:relative;">
-                    <div id="inset-selected-place-label" class="inset-selected-place-label"></div>
-                    <div id="inset-map"></div>
-                </div>
-            </div>
-
-            <button id="inset-toggle-btn" class="inset-toggle-btn" type="button">Show inset</button>
-
-            <div id="floating-overlays" class="floating-panel floating-overlays hidden">
-                <div class="floating-panel-header">
-                    <div class="section-title">Associated traditions</div>
-                    <p class="intro">Select or deselect traditions to highlight linked Cape Breton communities.</p>
-                </div>
-                <div class="floating-panel-body">
-                    <div class="filters-controls">
-                        <button id="show-all-cb-pane-btn" class="tiny-btn" type="button">Show all traditions in Cape Breton</button>
-                        <button id="show-all-traditions" class="tiny-btn" type="button">Show all</button>
-                        <button id="clear-all-traditions" class="tiny-btn" type="button">Clear all</button>
+                <div class="floating-panel-body combined-traditions-body">
+                    <div class="combined-inset-block">
+                        <div id="inset-selected-place-label" class="inset-selected-place-label"></div>
+                        <div id="inset-map"></div>
                     </div>
-                    <div id="overlay-list" class="overlay-list">
-                        <div class="overlay-empty">Select a Cape Breton place to load associated traditions.</div>
+                    <div class="combined-controls-block">
+                        <div class="section-title">Fine control</div>
+                        <p class="intro">Select or deselect traditions to highlight linked Cape Breton communities.</p>
+                        <div class="filters-controls">
+                            <button id="show-all-cb-pane-btn" class="tiny-btn" type="button">Show all traditions</button>
+                            <button id="show-all-traditions" class="tiny-btn" type="button">Show all</button>
+                            <button id="clear-all-traditions" class="tiny-btn" type="button">Clear all</button>
+                        </div>
+                        <div id="overlay-list" class="overlay-list">
+                            <div class="overlay-empty">Select a Cape Breton place to load its associated traditions.</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <button id="overlay-toggle-btn" class="overlay-toggle-btn" type="button">Show overlays</button>
+
+            <button id="map-controls-btn" class="map-controls-btn" type="button" aria-label="Show map controls">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="5" y="2.5" width="8" height="13" rx="4" stroke-width="1.8"/>
+                    <line x1="9" y1="2.5" x2="9" y2="6.5" stroke-width="1.8" stroke-linecap="round"/>
+                    <line x1="15.5" y1="12" x2="21.5" y2="12" stroke-width="1.8" stroke-linecap="round"/>
+                    <polyline points="17.8,9.8 15.5,12 17.8,14.2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="19.2,9.8 21.5,12 19.2,14.2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <line x1="18.5" y1="16" x2="18.5" y2="22" stroke-width="1.8" stroke-linecap="round"/>
+                    <polyline points="16.3,18.3 18.5,16 20.7,18.3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="16.3,19.7 18.5,22 20.7,19.7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+
+            <div id="map-controls-popup" class="map-controls-popup hidden" aria-hidden="true">
+                <button id="map-controls-popup-close" class="map-controls-popup-close" type="button" aria-label="Close map controls"></button>
+                {map_controls_svg}
+            </div>
 
             <div id="selected-place-label" class="selected-place-label"></div>
             <div id="map"></div>
@@ -2438,10 +2750,9 @@ def render_html(
     const peopleByPlace = {json.dumps(people_lookup, ensure_ascii=False)};
     const allPeopleIndex = {json.dumps(all_people_index, ensure_ascii=False)};
     const overlayControlsAll = {json.dumps(overlay_controls_all, ensure_ascii=False)};
-    const locationTraditionsToggleBtn = document.getElementById('location-traditions-toggle-btn');
     const INITIAL_CENTER = {json.dumps(MAP_CENTER)};
     const INITIAL_ZOOM = {MAP_ZOOM};
-    const locationLowerPanel = document.getElementById('location-lower-panel');
+    const allPlaceKeys = {json.dumps(place_keys_sorted, ensure_ascii=False)};
 
     function escapeHtml(value) {{
         return String(value)
@@ -2505,6 +2816,112 @@ def render_html(
             return `<span class="english">${{escapeHtml(english)}}</span>`;
         }}
         return `<span class="gaelic">${{escapeHtml(gaelic || place.place_name || '')}}</span>`;
+    }}
+
+
+    function renderPlaceInlineDetail(placeKey) {{
+        const place = placesLookup[String(placeKey)];
+        const people = (peopleByPlace[String(placeKey)] || []).slice().sort((a, b) =>
+            a.sort_name.localeCompare(b.sort_name) || a.name.localeCompare(b.name)
+        );
+
+        if (!place) {{
+            return '<div class="place-list-detail"><div class="empty">No data found for that place.</div></div>';
+        }}
+
+        let html = '<div class="place-list-detail">';
+
+        if (!people.length) {{
+            html += '<div class="informants-pane"><div class="empty">No people are linked to this place key.</div></div>';
+        }} else {{
+            let peopleHtml = '';
+            for (const person of people) {{
+                peopleHtml += renderPersonCard(person, {{
+                    placeKey: String(placeKey),
+                    latitude: place.latitude,
+                    longitude: place.longitude,
+                    placeOriginHtml: formatBilingualHtml(
+                        place.place_name_gaelic || '',
+                        place.place_name_english || ''
+                    )
+                }});
+            }}
+            html += `<div class="informants-pane">${{peopleHtml}}</div>`;
+        }}
+
+        html += '</div>';
+        return html;
+    }}
+
+    let currentPlaceSort = 'gaelic';
+
+    function getPlaceSortLabel(placeKey, mode = currentPlaceSort) {{
+        const place = placesLookup[String(placeKey)] || {{}};
+        if (mode === 'english') {{
+            return (place.place_name_english || place.place_name_gaelic || place.place_name || '').trim();
+        }}
+        return (place.place_name_gaelic || place.place_name_english || place.place_name || '').trim();
+    }}
+
+    function getSortedPlaceKeys(mode = currentPlaceSort) {{
+        return allPlaceKeys.slice().sort((a, b) => {{
+            const aLabel = getPlaceSortLabel(a, mode).toLocaleLowerCase();
+            const bLabel = getPlaceSortLabel(b, mode).toLocaleLowerCase();
+            return aLabel.localeCompare(bLabel) || String(a).localeCompare(String(b));
+        }});
+    }}
+
+    function updatePlaceSortButtons() {{
+        if (sortGaelicBtn) sortGaelicBtn.classList.toggle('active', currentPlaceSort === 'gaelic');
+        if (sortEnglishBtn) sortEnglishBtn.classList.toggle('active', currentPlaceSort === 'english');
+    }}
+
+    function renderPlacesIndex(activePlaceKey = null) {{
+        if (!placesIndexList) return;
+
+        updatePlaceSortButtons();
+
+        const html = getSortedPlaceKeys().map((placeKey) => {{
+            const place = placesLookup[String(placeKey)] || {{}};
+            const isActive = String(activePlaceKey || '') === String(placeKey);
+            const labelHtml = formatBilingualHtml(place.place_name_gaelic || '', place.place_name_english || '', 'english-highlight-place');
+            const peopleCount = Number(place.people_count || 0);
+            return `
+                <div class="place-list-item${{isActive ? ' active' : ''}}" data-place-key="${{escapeHtml(String(placeKey))}}">
+                    <button class="place-list-btn${{isActive ? ' active' : ''}}" type="button" data-place-key="${{escapeHtml(String(placeKey))}}">
+                        <span class="place-list-name">${{labelHtml}}</span>
+                        <span class="place-list-meta">Informants: ${{peopleCount}}</span>
+                    </button>
+                    ${{isActive ? renderPlaceInlineDetail(placeKey) : ''}}
+                </div>`;
+        }}).join('');
+
+        placesIndexList.innerHTML = html;
+        placesIndexList.querySelectorAll('.place-list-btn').forEach((btn) => {{
+            btn.addEventListener('click', function() {{
+                const placeKey = this.dataset.placeKey;
+                const isAlreadyActive = String(currentLocationPlaceKey || '') === String(placeKey);
+                if (isAlreadyActive) {{
+                    clearActivePlaceSelection();
+                    return;
+                }}
+                activatePlace(placeKey, {{ source: 'list' }});
+            }});
+        }});
+    }}
+
+    function setActivePlaceInList(placeKey = null) {{
+        renderPlacesIndex(placeKey);
+        if (!placeKey || !placesIndexList) return;
+        const activeItem = placesIndexList.querySelector('.place-list-item.active');
+        if (activeItem && typeof activeItem.scrollIntoView === 'function') {{
+            activeItem.scrollIntoView({{ block: 'nearest' }});
+        }}
+    }}
+
+    function setPlaceSort(mode) {{
+        currentPlaceSort = mode === 'english' ? 'english' : 'gaelic';
+        setActivePlaceInList(currentLocationPlaceKey);
     }}
 
     function renderPersonCard(person, options = {{}}) {{
@@ -2578,15 +2995,15 @@ def render_html(
 }}
 
     function resetInfoPanel() {{
-        placeHeader.innerHTML = '';
-        informantsPane.innerHTML = '<div class="empty location-empty-state"><span class="location-empty-message">Select a place on the map to begin.</span></div>';
-        associatedPane.innerHTML = '';
-        associatedPane.hidden = true;
-        locationTraditionsToggleBtn.style.display = 'none';
-        locationLowerPanel.hidden = true;
-        locationTraditionsToggleBtn.textContent = 'Show traditions associated with this place';
         currentLocationPlaceKey = null;
-        locationTraditionsVisible = false;
+        renderPlacesIndex(null);
+    }}
+
+    function clearActivePlaceSelection() {{
+        currentLocationPlaceKey = null;
+        renderPlacesIndex(null);
+        clearSelectedPerson({{ restoreActivePlace: false }});
+        clearAllTraditionsAndControls();
     }}
 
     function clearSelectionRing() {{
@@ -2702,39 +3119,28 @@ def render_html(
         renderOverlayControls([]);
         clearInsetSelectionRing();
         hideInsetSelectedPlaceLabel();
-        setOverlayPanelVisibility(false);
-        setInsetPanelVisibility(false);
         Plotly.redraw(mapDiv);
         Plotly.redraw(insetMapDiv);
     }}
 
     function showAllTraditionsInCapeBreton() {{
+        currentLocationPlaceKey = null;
         resetInfoPanel();
+        clearSelectedPerson();
         clearSelectionRing();
         hideSelectedPlaceLabel();
+        const allKeys = overlayControlsAll.map((item) => String(item.tradition_key));
+        renderPlacesIndex(null);
+        renderOverlayControls(allKeys, true);
+        setAllTraditionsVisibleByKeys(allKeys, true);
         clearInsetSelectionRing();
         hideInsetSelectedPlaceLabel();
-
-        const allKeys = overlayControlsAll.map((item) => String(item.tradition_key));
-        renderOverlayControls(allKeys);
-        setAllTraditionsVisibleByKeys(allKeys, true);
-
-        document.querySelectorAll('.tradition-toggle').forEach((checkbox) => {{
-            checkbox.checked = true;
-        }});
-
-        setOverlayPanelVisibility(true);
-        setInsetPanelVisibility(true);
-
         Plotly.redraw(mapDiv);
         Plotly.redraw(insetMapDiv);
     }}
 
     function resetMainMapAndPanels() {{
-        resetInfoPanel();
-        clearSelectionRing();
-        hideSelectedPlaceLabel();
-        clearAllTraditionsAndControls();
+        clearActivePlaceSelection();
 
         Plotly.relayout(mapDiv, {{
             'map.center.lat': INITIAL_CENTER.lat,
@@ -2743,145 +3149,59 @@ def render_html(
         }});
     }}
 
-    function renderAssociatedTraditions(traditions) {{
-        if (!traditions || !traditions.length) {{
-            return '';
-        }}
-
-        let html = '<div class="associated-box">';
-        html += '<div class="section-title">Associated traditions</div>';
-        html += '<ul class="associated-list">';
-
-        for (const item of traditions) {{
-            const colour = item.colour || '{ACCENT}';
-            const label = formatBilingualHtml(item.gaelic || '', item.english || '');
-
-            html += `<li><span class="associated-bullet" style="background:${{escapeHtml(colour)}};"></span><span>${{label}}</span></li>`;
-        }}
-
-        html += '</ul></div>';
-        return html;
-    }}
-
-
-    function hideLocationTraditionsSection() {{
-        locationTraditionsVisible = false;
-        associatedPane.hidden = true;
-        associatedPane.innerHTML = '';
-        locationTraditionsToggleBtn.style.display = 'block';
-        locationLowerPanel.hidden = false;
-        locationTraditionsToggleBtn.textContent = 'Show traditions associated with this place';
-        clearAllTraditionsAndControls();
-    }}
-    
     function showLocationTraditionsSection(placeKey) {{
         const place = placesLookup[String(placeKey)];
-        if (!place) return;
-    
-        associatedPane.innerHTML = renderAssociatedTraditions(place.traditions || []);
-        associatedPane.hidden = false;
-    
+        if (!place) {{
+            renderOverlayControls([]);
+            setAllTraditionsVisibleByKeys([], false);
+            clearInsetSelectionRing();
+            hideInsetSelectedPlaceLabel();
+            Plotly.redraw(mapDiv);
+            Plotly.redraw(insetMapDiv);
+            return;
+        }}
+
         const associatedKeys = (place.traditions || []).map((item) => String(item.key));
-        renderOverlayControls(associatedKeys);
+        renderOverlayControls(associatedKeys, true);
         setAllTraditionsVisibleByKeys(associatedKeys, true);
-    
-        document.querySelectorAll('.tradition-toggle').forEach((checkbox) => {{
-            checkbox.checked = true;
-        }});
-    
+
         clearInsetSelectionRing();
         hideInsetSelectedPlaceLabel();
-        setOverlayPanelVisibility(true);
-        setInsetPanelVisibility(true);
-    
-        locationTraditionsVisible = true;
-        currentLocationPlaceKey = String(placeKey);
-        locationLowerPanel.hidden = false;
-        locationTraditionsToggleBtn.style.display = 'block';
-        locationTraditionsToggleBtn.textContent = 'Hide associated traditions';
-    
+
         Plotly.redraw(mapDiv);
         Plotly.redraw(insetMapDiv);
-    }}
-    
-    function toggleLocationTraditionsSection() {{
-        if (!currentLocationPlaceKey) return;
-    
-        if (locationTraditionsVisible) {{
-            hideLocationTraditionsSection();
-        }} else {{
-            showLocationTraditionsSection(currentLocationPlaceKey);
-        }}
     }}
 
     function renderPlace(placeKey) {{
         const place = placesLookup[String(placeKey)];
-        const people = (peopleByPlace[String(placeKey)] || []).slice().sort((a, b) =>
-            a.sort_name.localeCompare(b.sort_name) || a.name.localeCompare(b.name)
-        );
-    
+
         if (!place) {{
-            placeHeader.innerHTML = '';
-            informantsPane.innerHTML = '<div class="empty">No data found for that place.</div>';
-            associatedPane.innerHTML = '';
-            associatedPane.hidden = true;
-            locationTraditionsToggleBtn.style.display = 'none';
-            locationLowerPanel.hidden = true;
-            clearAllTraditionsAndControls();
+            renderPlacesIndex(null);
+            renderOverlayControls([]);
             return;
         }}
-    
+
         currentLocationPlaceKey = String(placeKey);
-    
-        let headerHtml = '';
-        const placeGaelic = place.place_name_gaelic || '';
-        const placeEnglish = place.place_name_english || '';
-    
-        if (placeGaelic && placeEnglish) {{
-            headerHtml += `<div class="place-title"><strong>${{escapeHtml(placeGaelic)}}<span class="separator-accent"> | </span><span class="english-highlight-place">${{escapeHtml(placeEnglish)}}</span></strong></div>`;
-        }} else if (placeEnglish) {{
-            headerHtml += `<div class="place-title"><strong><span class="english-highlight-place">${{escapeHtml(placeEnglish)}}</span></strong></div>`;
-        }} else {{
-            headerHtml += `<div class="place-title"><strong>${{escapeHtml(placeGaelic || place.place_name)}}</strong></div>`;
-        }}
-    
-        headerHtml += `<div class="place-meta"><span class="gaelic-dark">Luchd-aithris</span><span class="separator-accent"> | </span><span class="english-accent">Informants</span>: ${{people.length}}</div>`;
-        placeHeader.innerHTML = headerHtml;
-    
-        if (!people.length) {{
-            informantsPane.innerHTML = '<div class="empty">No people are linked to this place key.</div>';
-        }} else {{
-            let peopleHtml = '';
-            for (const person of people) {{
-                peopleHtml += renderPersonCard(person, {{
-                placeKey: String(placeKey),
-                latitude: place.latitude,
-                longitude: place.longitude,
-                placeOriginHtml: formatBilingualHtml(
-                    place.place_name_gaelic || '',
-                    place.place_name_english || ''
-                )
-            }});
-            }}
-            informantsPane.innerHTML = peopleHtml;
-        }}
-        
-        locationLowerPanel.hidden = false;
-        locationTraditionsToggleBtn.style.display = 'block';
-
-        if (locationTraditionsVisible) {{
-            showLocationTraditionsSection(currentLocationPlaceKey);
-        }} else {{
-            associatedPane.innerHTML = '';
-            associatedPane.hidden = true;
-            locationTraditionsToggleBtn.textContent = 'Show traditions associated with this place';
-            clearAllTraditionsAndControls();
-            clearInsetSelectionRing();
-            hideInsetSelectedPlaceLabel();
-        }}
-
+        setActivePlaceInList(currentLocationPlaceKey);
+        showLocationTraditionsSection(currentLocationPlaceKey);
         wireLocationPersonSelectionBehaviour();
-        }}
+    }}
+
+    function activatePlace(placeKey, options = {{}}) {{
+        const place = placesLookup[String(placeKey)];
+        if (!place) return;
+
+        clearSelectedPerson({{ restoreActivePlace: false }});
+        currentLocationPlaceKey = String(placeKey);
+        setSidePanelMode('location');
+        renderPlace(placeKey);
+        Plotly.restyle(
+            mapDiv,
+            {{ lat: [[place.latitude], [place.latitude]], lon: [[place.longitude], [place.longitude]] }},
+            [1, 2]
+        );
+        showSelectedPlaceLabel(place, place.latitude, place.longitude);
+    }}
 
     function buildOverlayRowHtml(item, checked) {{
         const labelHtml = formatBilingualHtml(item.label_gaelic || '', item.label_english || '');
@@ -2894,7 +3214,7 @@ def render_html(
             </label>`;
     }}
 
-    function renderOverlayControls(activeTraditionKeys) {{
+    function renderOverlayControls(activeTraditionKeys, checkedState = true) {{
         const keySet = new Set((activeTraditionKeys || []).map(String));
         const items = overlayControlsAll.filter((item) => keySet.has(String(item.tradition_key)));
 
@@ -2903,7 +3223,7 @@ def render_html(
             return;
         }}
 
-        overlayList.innerHTML = items.map((item) => buildOverlayRowHtml(item, true)).join('');
+        overlayList.innerHTML = items.map((item) => buildOverlayRowHtml(item, checkedState)).join('');
 
         document.querySelectorAll('.tradition-toggle').forEach((checkbox) => {{
             checkbox.addEventListener('change', function() {{
@@ -2947,21 +3267,16 @@ def render_html(
     }}
 
     function setOverlayPanelVisibility(isVisible) {{
-        floatingOverlays.classList.toggle('hidden', !isVisible);
-        overlayToggleBtn.textContent = isVisible ? 'Hide overlays' : 'Show overlays';
-        overlayToggleBtn.setAttribute('aria-expanded', String(isVisible));
+        floatingOverlays.classList.remove('hidden');
     }}
 
     function setInsetPanelVisibility(isVisible) {{
-        floatingInset.classList.toggle('hidden', !isVisible);
-        insetToggleBtn.textContent = isVisible ? 'Hide inset' : 'Show inset';
-        insetToggleBtn.setAttribute('aria-expanded', String(isVisible));
-    
-        if (isVisible) {{
-            setTimeout(() => {{
-                Plotly.Plots.resize(insetMapDiv);
-            }}, 0);
+        if (floatingInset) {{
+            floatingInset.classList.remove('hidden');
         }}
+        setTimeout(() => {{
+            Plotly.Plots.resize(insetMapDiv);
+        }}, 0);
     }}
 
     function setSidePanelMode(mode) {{
@@ -2970,44 +3285,83 @@ def render_html(
         allPeoplePanelView.classList.toggle('active', !showLocation);
         modeLocationBtn.classList.toggle('active', showLocation);
         modeAllPeopleBtn.classList.toggle('active', !showLocation);
-    
+
         if (showLocation) {{
             clearSelectedPerson();
-            }} else {{
-                associatedPane.hidden = true;
-                associatedPane.innerHTML = '';
-                locationTraditionsToggleBtn.textContent = 'Show traditions associated with this place';
-                locationTraditionsVisible = false;
-                clearAllTraditionsAndControls();
-            }}
+        }}
+    }}
+
+    let currentPeopleSort = 'gaelic';
+
+    function getPeopleSurnameForSort(person, mode = currentPeopleSort) {{
+        if (mode === 'english') {{
+            return (person.english_last || person.gaelic_last || person.sloinneadh || person.english_name || person.display_name || '').trim();
+        }}
+        return (person.gaelic_last || person.sloinneadh || person.english_last || person.gaelic_name || person.display_name || '').trim();
+    }}
+
+    function getPeopleGivenForSort(person, mode = currentPeopleSort) {{
+        if (mode === 'english') {{
+            return (person.english_first || person.english_name || person.gaelic_first || person.display_name || '').trim();
+        }}
+        return (person.gaelic_first || person.english_first || person.gaelic_name || person.english_name || person.display_name || '').trim();
+    }}
+
+    function getPeopleLetter(person, mode = currentPeopleSort) {{
+        const source = getPeopleSurnameForSort(person, mode) || person.display_name || '#';
+        const initial = (source.trim().charAt(0) || '#').toUpperCase();
+        return /[A-Za-zÀ-ÖØ-öø-ÿ]/.test(initial) ? initial : '#';
+    }}
+
+    function getSortedPeopleIndex(mode = currentPeopleSort) {{
+        return allPeopleIndex.slice().sort((a, b) => {{
+            const aSurname = getPeopleSurnameForSort(a, mode).toLocaleLowerCase();
+            const bSurname = getPeopleSurnameForSort(b, mode).toLocaleLowerCase();
+            const surnameCmp = aSurname.localeCompare(bSurname);
+            if (surnameCmp !== 0) return surnameCmp;
+
+            const aGiven = getPeopleGivenForSort(a, mode).toLocaleLowerCase();
+            const bGiven = getPeopleGivenForSort(b, mode).toLocaleLowerCase();
+            const givenCmp = aGiven.localeCompare(bGiven);
+            if (givenCmp !== 0) return givenCmp;
+
+            return String(a.id || a.display_name || '').localeCompare(String(b.id || b.display_name || ''));
+        }});
+    }}
+
+    function updatePeopleSortButtons() {{
+        if (peopleSortGaelicBtn) peopleSortGaelicBtn.classList.toggle('active', currentPeopleSort === 'gaelic');
+        if (peopleSortEnglishBtn) peopleSortEnglishBtn.classList.toggle('active', currentPeopleSort === 'english');
     }}
 
     function buildAllPeopleListHtml() {{
         if (!allPeopleIndex.length) {{
             return '<div class="people-empty">No people found.</div>';
         }}
-    
+
+        updatePeopleSortButtons();
+
         const grouped = {{}};
-        for (const person of allPeopleIndex) {{
-            const letter = person.letter || '#';
+        for (const person of getSortedPeopleIndex()) {{
+            const letter = getPeopleLetter(person, currentPeopleSort);
             if (!grouped[letter]) grouped[letter] = [];
             grouped[letter].push(person);
         }}
-    
-        const letters = Object.keys(grouped).sort();
+
+        const letters = Object.keys(grouped).sort((a, b) => a.localeCompare(b));
         let html = '';
-    
+
         for (const letter of letters) {{
             html += `<details class="people-letter-group" open>`;
             html += `<summary>${{escapeHtml(letter)}}</summary>`;
             html += `<div class="people-letter-group-body">`;
-    
-            for (const person of grouped[letter]) {{ 
+
+            for (const person of grouped[letter]) {{
                 const placeLabel = formatBilingualHtml(
                     person.place_name_gaelic || '',
                     person.place_name_english || ''
                 );
-    
+
                 html += renderPersonCard(person, {{
                     placeKey: String(person.place_key || ''),
                     latitude: person.latitude || '',
@@ -3015,13 +3369,18 @@ def render_html(
                     placeOriginHtml: placeLabel
                 }});
             }}
-    
+
             html += `</div></details>`;
         }}
-    
+
         return html;
     }}
-    
+
+    function setPeopleSort(mode) {{
+        currentPeopleSort = mode === 'english' ? 'english' : 'gaelic';
+        renderAllPeopleList();
+    }}
+
     function highlightPlaceFromPersonCard(placeKey, lat, lon) {{
             const place = placesLookup[String(placeKey)];
             if (!place) return;
@@ -3040,12 +3399,31 @@ def render_html(
 
     let selectedPersonCard = null;
 
-    function clearSelectedPerson() {{
+    function clearSelectedPerson(options = {{}}) {{
+        const restoreActivePlace = options.restoreActivePlace !== false;
+
         document.querySelectorAll('details.person-card.selected').forEach((card) => {{
             card.classList.remove('selected');
         }});
     
         selectedPersonCard = null;
+
+        if (restoreActivePlace && currentLocationPlaceKey) {{
+            const activePlace = placesLookup[String(currentLocationPlaceKey)];
+            if (activePlace) {{
+                Plotly.restyle(
+                    mapDiv,
+                    {{
+                        lat: [[activePlace.latitude], [activePlace.latitude]],
+                        lon: [[activePlace.longitude], [activePlace.longitude]]
+                    }},
+                    [1, 2]
+                );
+                showSelectedPlaceLabel(activePlace, activePlace.latitude, activePlace.longitude);
+                return;
+            }}
+        }}
+
         clearSelectionRing();
         hideSelectedPlaceLabel();
     }}
@@ -3082,13 +3460,20 @@ def render_html(
         document.querySelectorAll('#all-people-list details.person-card').forEach((card) => {{
             const summary = card.querySelector(':scope > summary');
             if (!summary) return;
-    
-            summary.addEventListener('click', function(event) {{
-                selectPersonCard(card);
+
+            summary.addEventListener('click', function() {{
+                const toggleOff = card.classList.contains('selected') && card.open;
+                window.setTimeout(() => {{
+                    if (toggleOff) {{
+                        clearSelectedPerson({{ restoreActivePlace: false }});
+                    }} else {{
+                        selectPersonCard(card);
+                    }}
+                }}, 0);
             }});
         }});
     }}
-    
+
     function renderAllPeopleList() {{
         allPeopleList.innerHTML = buildAllPeopleListHtml();
         wirePersonSelectionBehaviour();
@@ -3096,7 +3481,7 @@ def render_html(
         previousVisibleRecordStates = new Map();
         allPeopleShown = true;
         if (peopleToggleAllBtn) {{
-            peopleToggleAllBtn.textContent = 'Hide all people';
+            peopleToggleAllBtn.textContent = 'Collapse to letters';
         }}
     }}
     
@@ -3108,7 +3493,7 @@ def render_html(
         previousVisibleRecordStates = new Map();
         allPeopleShown = true;
         if (peopleToggleAllBtn) {{
-            peopleToggleAllBtn.textContent = 'Hide all people';
+            peopleToggleAllBtn.textContent = 'Collapse to letters';
         }}
     }}
     
@@ -3123,7 +3508,7 @@ def render_html(
         previousVisibleRecordStates = new Map();
         allPeopleShown = false;
         if (peopleToggleAllBtn) {{
-            peopleToggleAllBtn.textContent = 'Show all people';
+            peopleToggleAllBtn.textContent = 'Show all names';
         }}
     }}
     
@@ -3173,12 +3558,19 @@ def render_html(
     }}
     
     function wireLocationPersonSelectionBehaviour() {{
-        document.querySelectorAll('#informants-pane details.person-card').forEach((card) => {{
+        document.querySelectorAll('#places-index-list .place-list-detail details.person-card').forEach((card) => {{
             const summary = card.querySelector(':scope > summary');
             if (!summary) return;
-    
+
             summary.addEventListener('click', function() {{
-                selectPersonCard(card);
+                const toggleOff = card.classList.contains('selected') && card.open;
+                window.setTimeout(() => {{
+                    if (toggleOff) {{
+                        clearSelectedPerson({{ restoreActivePlace: true }});
+                    }} else {{
+                        selectPersonCard(card);
+                    }}
+                }}, 0);
             }});
         }});
     }}
@@ -3194,12 +3586,25 @@ def render_html(
     const showAllTraditionsBtn = document.getElementById('show-all-traditions');
     const clearAllTraditionsBtn = document.getElementById('clear-all-traditions');
     const floatingOverlays = document.getElementById('floating-overlays');
-    const overlayToggleBtn = document.getElementById('overlay-toggle-btn');
     const floatingInset = document.getElementById('floating-inset');
-    const insetToggleBtn = document.getElementById('inset-toggle-btn');
-    const placeHeader = document.getElementById('place-header');
-    const informantsPane = document.getElementById('informants-pane');
-    const associatedPane = document.getElementById('associated-pane');
+    const placesIndexList = document.getElementById('places-index-list');
+    const sortGaelicBtn = document.getElementById('sort-gaelic-btn');
+    const sortEnglishBtn = document.getElementById('sort-english-btn');
+    const peopleSortGaelicBtn = document.getElementById('people-sort-gaelic-btn');
+    const peopleSortEnglishBtn = document.getElementById('people-sort-english-btn');
+
+    if (sortGaelicBtn) {{
+        sortGaelicBtn.addEventListener('click', () => setPlaceSort('gaelic'));
+    }}
+    if (sortEnglishBtn) {{
+        sortEnglishBtn.addEventListener('click', () => setPlaceSort('english'));
+    }}
+    if (peopleSortGaelicBtn) {{
+        peopleSortGaelicBtn.addEventListener('click', () => setPeopleSort('gaelic'));
+    }}
+    if (peopleSortEnglishBtn) {{
+        peopleSortEnglishBtn.addEventListener('click', () => setPeopleSort('english'));
+    }}
     const modeLocationBtn = document.getElementById('mode-location-btn');
     const modeAllPeopleBtn = document.getElementById('mode-all-people-btn');
     const locationPanelView = document.getElementById('location-panel-view');
@@ -3207,6 +3612,9 @@ def render_html(
     const allPeopleList = document.getElementById('all-people-list');
     const peopleToggleAllBtn = document.getElementById('people-toggle-all-btn');
     const peopleExpandVisibleBtn = document.getElementById('people-expand-visible-btn');
+    const mapControlsBtn = document.getElementById('map-controls-btn');
+    const mapControlsPopup = document.getElementById('map-controls-popup');
+    const mapControlsPopupClose = document.getElementById('map-controls-popup-close');
 
     let selectedPlaceState = null;
     let insetSelectedPlaceState = null;
@@ -3218,7 +3626,6 @@ def render_html(
     let previousVisibleRecordStates = new Map();
     let allPeopleShown = true;
     let currentLocationPlaceKey = null;
-    let locationTraditionsVisible = false;
 
     function wireMainMapAttributionToggle() {{
         const attrib =
@@ -3254,6 +3661,49 @@ def render_html(
         }});
     }}
 
+
+    function setMapControlsPopupVisibility(show) {{
+        if (!mapControlsPopup) return;
+        mapControlsPopup.classList.toggle('hidden', !show);
+        mapControlsPopup.setAttribute('aria-hidden', show ? 'false' : 'true');
+    }}
+
+    function wireMapControlsPopup() {{
+        if (!mapControlsBtn || !mapControlsPopup) return;
+
+        mapControlsBtn.addEventListener('click', function(event) {{
+            event.preventDefault();
+            event.stopPropagation();
+            const willShow = mapControlsPopup.classList.contains('hidden');
+            setMapControlsPopupVisibility(willShow);
+        }});
+
+        mapControlsPopup.addEventListener('click', function(event) {{
+            event.stopPropagation();
+        }});
+
+        if (mapControlsPopupClose) {{
+            mapControlsPopupClose.addEventListener('click', function(event) {{
+                event.preventDefault();
+                event.stopPropagation();
+                setMapControlsPopupVisibility(false);
+            }});
+        }}
+
+        document.addEventListener('click', function(event) {{
+            const clickedInside = mapControlsPopup.contains(event.target) || mapControlsBtn.contains(event.target);
+            if (!clickedInside) {{
+                setMapControlsPopupVisibility(false);
+            }}
+        }});
+
+        document.addEventListener('keydown', function(event) {{
+            if (event.key === 'Escape') {{
+                setMapControlsPopupVisibility(false);
+            }}
+        }});
+    }}
+
     Plotly.newPlot(
         mapDiv,
         mainFigureSpec.data,
@@ -3261,11 +3711,11 @@ def render_html(
         {{
             responsive: true,
             displaylogo: false,
-            displayModeBar: true
+            displayModeBar: false
         }}
     ).then(function() {{
-        keepOnlySnapshotButton();
         wireMainMapAttributionToggle();
+        wireMapControlsPopup();
 
         Plotly.newPlot(
             insetMapDiv,
@@ -3278,11 +3728,13 @@ def render_html(
                 staticPlot: false
             }}
         ).then(function() {{
+            renderPlacesIndex(null);
             renderOverlayControls([]);
-            setOverlayPanelVisibility(false);
-            setInsetPanelVisibility(false);
+            setOverlayPanelVisibility(true);
+            setInsetPanelVisibility(true);
             setSidePanelMode('location');
-            
+            resetInfoPanel();
+
             setTimeout(() => {{
                 renderAllPeopleList();
             }}, 0);
@@ -3358,22 +3810,7 @@ def render_html(
             suppressNextMainBackgroundClick = true;
 
             const placeKey = point.customdata[0];
-            const place = placesLookup[String(placeKey)];
-            setSidePanelMode('location');
-            renderPlace(placeKey);
-
-            Plotly.restyle(
-                mapDiv,
-                {{
-                    lat: [[point.lat], [point.lat]],
-                    lon: [[point.lon], [point.lon]]
-                }},
-                [1, 2]
-            );
-
-            if (place) {{
-                showSelectedPlaceLabel(place, point.lat, point.lon);
-            }}
+            activatePlace(placeKey, {{ source: 'map' }});
         }});
 
         mapDiv.on('plotly_relayout', function() {{
@@ -3409,7 +3846,7 @@ def render_html(
     }});
 
     showAllTraditionsBtn.addEventListener('click', function() {{
-        setAllVisibleInCurrentOverlayPane(true);
+        showAllTraditionsInCapeBreton();
     }});
 
     showAllCbBtn.addEventListener('click', function() {{
@@ -3424,16 +3861,6 @@ def render_html(
         setAllVisibleInCurrentOverlayPane(false);
     }});
 
-    overlayToggleBtn.addEventListener('click', function() {{
-        const willShow = floatingOverlays.classList.contains('hidden');
-        setOverlayPanelVisibility(willShow);
-    }});
-
-    insetToggleBtn.addEventListener('click', function() {{
-        const willShow = floatingInset.classList.contains('hidden');
-        setInsetPanelVisibility(willShow);
-    }});
-
     modeLocationBtn.addEventListener('click', function() {{
         setSidePanelMode('location');
     }});
@@ -3441,7 +3868,7 @@ def render_html(
     modeAllPeopleBtn.addEventListener('click', function() {{
         setSidePanelMode('all');
         if (peopleToggleAllBtn) {{
-            peopleToggleAllBtn.textContent = allPeopleShown ? 'Hide all people' : 'Show all people';
+            peopleToggleAllBtn.textContent = allPeopleShown ? 'Collapse list to letters' : 'Show all names';
         }}
     }});
 
@@ -3459,13 +3886,13 @@ def render_html(
     
         const clickedMapMarker = event.target.closest('#map, #selected-place-label');
         if (clickedMapMarker) return;
+
+        const clickedPlaceListControl = event.target.closest('#places-index-list, .places-index-controls');
+        if (clickedPlaceListControl) return;
     
         clearSelectedPerson();
     }});
 
-    locationTraditionsToggleBtn.addEventListener('click', function() {{
-        toggleLocationTraditionsSection();
-    }});
 
 </script>
 </body>
