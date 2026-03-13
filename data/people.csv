@@ -47,7 +47,7 @@
 46,MACLMA01,MacLean,MacDonald,Margaret,,NicIllEathain,NicIllEathain,Mairead,Mairead bean Ruairidh Iagain Ruairidh,1909 - 2008,13,12,,1909,2008
 47,MACLJM02,MacLellan,,James M.,Jimmy M.,MacIllFhaolain,,Seumas M.,Seumas mac Sheumais a' Chlachair,1892 - 1983,18,1,,1892,1983
 48,MACDJL01,MacDonald,,Joe Lawrence,,Dòmhnullach,,Eòs,Eòs Labhrainn mac Iain J. 'ic Iain 'ic Lachlainn a' Bhuachaille,1910 - 1997,46,8,,1910,1997
-49,GOLDAL01,Goldie,,Alec,,,,Alasdair,Alasdair ,1915 - 2004,45,10,,1915,2004
+49,GOLDAL01,Goldie,,Alec,,Goldie,,Alasdair,Alasdair ,1915 - 2004,45,10,,1915,2004
 50,MACNEL01,MacNeil,MacMullin,Elizabeth,Lizzie,NicNìll,NicIlleMhaoil,Ealasaid,Ealasaid ni'n Aonghais 'ic Alasdair 'ic Nìll 'ic Iain 'ic Mhurchaidh,1892 - 1986,45,5,,1892,1986
 51,GILLN02,Gillis,,Neil,,Giollasach,,Niall ,Niall Shandaidh Sheumais ,1912 - 1985,29,1,,1912,1985
 52,GILLN04,Gillis,,Neil John,,Giollasach,,Niall,Niall mac Ruairidh ‘ac Nìll ‘ic Iain Bhàin 'ic Eòin,1916 - 2001,47,8,,1916,2001
@@ -80,7 +80,7 @@
 79,MACNJA01,MacNeil,,James,,MacNìll,,Seumas,,,71,17,,,
 80,MACDH02,MacDonald,,Hector,Hector Hughie,Dòmhnullach,,Eachann,Eachainn Alasdair Dhòmhnaill Eòghainn Duibh Dhòmhnaill Bhàin,1892 - 1979,20,1,,1892,1979
 81,MACIDA02,MacInnis,,Dan Angus,D.A.,MacAonghais,,Dòmhnall,Dòmhnaill mac Iain Dhonnchaidh,1900 - 1993,20,30,,1900,1993
-82,WILLJO02,Williams,,Johnny,,,,Seonaidh,Seonaidh Aonghuis Bhig,1914 - 2005,61,2154,,1914,2005
+82,WILLJO02,Williams,,Johnny,,Williams,,Seonaidh,Seonaidh Aonghuis Bhig,1914 - 2005,61,2154,,1914,2005
 83,MACRJE04,MacRae,Morrison,Jessie,,NicRàth,Mhoireasdan,Seònaid,Seònaid ni'n Chrisdein Dhòmhnaill Mhóir Aonghais an Tàilleir,1908 - 1995,75,10,,1908,1995
 84,MACLNO04,MacLean,,Norman,,MacIlleathain,,Tormad,Tormad Pheadair Ruairidh 'Illeasbuig,1898 - 1989,78,1,,1898,1989
 85,MACNMI01,MacNeil,,Michael John,Mike the Prompter,MacNìll,,Mìcheil,Mìcheal Iain Mhìcheil Dhòmhnaill Bhen,1916 - 1987,74,5,,1916,1987
@@ -93,7 +93,7 @@
 92,MACLTH01,MacLean,,Thomas R.,Tom,MacIllEathain,,Tòmas,Tòmas mac Ruairidh Chaluim Ghobha,1886 - 1981,76,6,,1886,1981
 93,GILLD02,Gillis,,Duncan,,Giollasach,,Donnchadh,Donnchadh Dhòmhnaill Aonghais Bhàin,1894 - 1981,38,8,,1894,1981
 94,CAMPGU02,Campbell,,Gussie,,Caimbeul,,Aonghas,Aonghas mac Aonghais Thòmais,1916 - 2002,37,4,,1916,2002
-95,FORTI02,Fortune,,Isabel,,,,Iseabail,Iseabail ni'n Bhaltair Aonghais,1914 - 2006,77,9,,1914,2006
+95,FORTI02,Fortune,,Isabel,,Fortune,,Iseabail,Iseabail ni'n Bhaltair Aonghais,1914 - 2006,77,9,,1914,2006
 96,MACDHDS02,MacDonell,,Hughie Dan,,MacDhòmhnuill,,Eòghann,Eóghann mac Sheumais Ruairidh Iain,1898 - 1976,21,9,,1898,1976
 97,MACDS02,MacDonald,MacLellan,Sadie,,Dhòmhnullach,NicIllFhaolain,Mórag,Mórag ni'n Aonghais ‘ic Dhòmhnaill,1889 - 1980,21,10,,1889,1980
 98,MACKJD02,MacKinnon,,John Dan,,MacFhionghain,,Iain ,Iain mac Phàdruig Iain,1912 - 1989,21,13,,1912,1989
@@ -129,7 +129,7 @@
 128,SMITMA04,Smith,,Malcolm,,Mac a' Ghobhainn,,Calum,Calum Uilleam Murchaidh 'ic Iain 'ic Iain,1909 - 1993,68,4,,1909,1993
 129,MACLRO02,MacLean,,Rory,Ruairidh Mathanach,MacIllEathain,,Ruairidh,Ruairidh Mathanach,1882 - 1978,72,34,,1882,1978
 130,PATTKA01,Patterson,MacNeil,Catherine,"Kate, Katie, Ceatag Ailein",MacIllPhàdruig,NicNìll,Catrìona,Catrìona nighean Ailein Chaluim Pìobaire | Ceatag Ailein,1872 - 1964,4,16,,1872,1964
-131,PATTLU01,Byrne ,Patterson,Byrne ,Patterson,Lucy,MacIllPhàdruig,,Lucy n'in Chatrìona ni'n Ailein Chaluim Pìobaire,1920 - 1990,4,2,,1920,1990
+131,PATTLU01,Byrne ,Patterson,Lucy,Patterson,Byrne ,MacIllPhàdruig,Lucy,Lucy n'in Chatrìona ni'n Ailein Chaluim Pìobaire,1920 - 1990,4,2,,1920,1990
 132,MACKDA01,MacKenzie,,Dan,Bomber,MacCoinnich,,Dòmhnall,Dòmhall Sheònaidh Iain Fhionnlaigh,1910 - 1984,5,17,,1910,1984
 133,MACNMJ01,MacNeil,,Malcolm J.,,MacNìll,,Calum,Calum Sheumais N.,1895 - 1982,5,3,,1895,1982
 134,MACNDN01,MacNeil,,Dan Neil,Danny Neil,MacNìll,,Dòmhnall,Dòmhnall Nìll Eòin Mhóir,1906 - 1985,6,10,,1906,1985
