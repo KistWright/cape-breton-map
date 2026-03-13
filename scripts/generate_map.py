@@ -412,6 +412,7 @@ Think of this script as a build system for a small standalone web app:
 
 
 import json
+import base64
 from pathlib import Path
 from typing import Any
 import numpy as np
@@ -511,6 +512,15 @@ def format_bilingual_plain(gaelic: str, english: str) -> str:
     if gaelic and english:
         return f"{gaelic} | {english}"
     return gaelic or english or ""
+
+
+def svg_path_to_data_uri(path: Path, fallback_svg: str) -> str:
+    if path.exists():
+        svg_text = path.read_text(encoding="utf-8")
+    else:
+        svg_text = fallback_svg
+    encoded = base64.b64encode(svg_text.encode("utf-8")).decode("ascii")
+    return f"data:image/svg+xml;base64,{encoded}"
 
 
 def clean_places(df: pd.DataFrame) -> pd.DataFrame:
@@ -1108,6 +1118,15 @@ def render_html(
     else:
         map_controls_svg = '''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 180"><rect width="300" height="180" rx="14" fill="white" stroke="#8CC7EA"/><text x="150" y="92" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#1F5F99">Map controls graphic not found</text></svg>'''
 
+    map_view_cb_svg_uri = svg_path_to_data_uri(
+        Path(__file__).resolve().parent / "CBscot.svg",
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1132 910"><rect width="1132" height="910" fill="#d4d9de"/></svg>'
+    )
+    map_view_scotland_svg_uri = svg_path_to_data_uri(
+        Path(__file__).resolve().parent / "SCOTcb.svg",
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1132 910"><rect width="1132" height="910" fill="#d4d9de"/></svg>'
+    )
+
     place_keys_sorted = [
         str(int(row.place_key))
         for row in places_df.sort_values(
@@ -1369,21 +1388,6 @@ def render_html(
 
     .places-index-title {{
         display: none;
-    }}
-
-    .places-index-controls {{
-        flex: 0 0 auto;
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        gap: 7px;
-        margin: 0 0 10px 0;
-        padding: 0 4px 0 2px;
-        font-size: 12px;
-        line-height: 16px;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        color: rgba(25, 41, 48, 0.72);
     }}
 
     .places-index-wrap .info-header {{
@@ -1670,6 +1674,8 @@ def render_html(
         left: 12px;
         z-index: 1001;
         display: flex;
+        align-items: center;
+        flex-wrap: wrap;
         gap: 8px;
     }}
 
@@ -1862,12 +1868,11 @@ def render_html(
         flex-wrap: wrap;
     }}
 
-    .people-index-controls {{
+    .index-controls-row {{
         flex: 0 0 auto;
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
+        align-items: flex-start;
+        gap: 0;
         margin: 0 0 10px 0;
         padding: 0 4px 0 2px;
         font-size: 12px;
@@ -1876,13 +1881,31 @@ def render_html(
         letter-spacing: 0.04em;
         color: rgba(25, 41, 48, 0.72);
     }}
-
-    .people-index-controls-left {{
+    
+    .index-controls-left {{
         display: inline-flex;
         align-items: center;
         gap: 7px;
-        min-width: 0;
         flex: 0 0 auto;
+        min-width: 0;
+    }}
+    
+    .index-controls-right {{
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+        margin-left: auto;
+        min-width: 0;
+        flex: 1 1 auto;
+        text-transform: none;
+        letter-spacing: 0;
+    }}
+
+    .index-controls-left,
+    .index-controls-right,
+    .people-detail-controls {{
+        align-self: flex-start;
     }}
 
     .people-detail-controls {{
@@ -1905,6 +1928,61 @@ def render_html(
         line-height: 16px;
         font-weight: 700;
         min-width: 0;
+    }}
+    
+    .traditions-detail-controls {{
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+        margin-left: auto;
+        min-width: 0;
+        flex: 1 1 auto;
+        text-transform: none;
+        letter-spacing: 0;
+    }}
+    
+    .traditions-show-all-btn {{
+        appearance: none;
+        border: none;
+        background: transparent;
+        padding: 1px 0;
+        margin: 0;
+        cursor: pointer;
+        font: inherit;
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: 700;
+        text-decoration: underline;
+        text-decoration-color: {ACCENT};
+        text-underline-offset: 2px;
+    }}
+    
+    .traditions-show-all-btn .gaelic-dark {{
+        color: {TITLE_COLOUR};
+    }}
+    
+    .traditions-show-all-btn .english-accent,
+    .traditions-show-all-btn .separator-accent {{
+        color: {ACCENT};
+    }}
+    
+    .traditions-show-all-btn .separator-accent {{
+        display: inline-block;
+        margin: 0 0.28em;
+    }}
+    
+    .traditions-show-all-btn:hover {{
+        opacity: 0.84;
+    }}
+    
+    .traditions-show-all-btn:focus-visible {{
+        outline: 2px solid rgba(140, 199, 234, 0.55);
+        outline-offset: 3px;
+        border-radius: 3px;
     }}
     
     .people-detail-label .separator-accent {{
@@ -2617,6 +2695,91 @@ def render_html(
     }}
 
 
+    .map-view-toggle {{
+        position: static;
+        z-index: 1006;
+        pointer-events: auto;
+        display: inline-flex;
+        align-items: center;
+    }}
+
+    .map-view-toggle-shell {{
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px;
+        background: rgba(31, 95, 153, 0.08);
+        border: 1px solid rgba(31, 95, 153, 0.20);
+        border-radius: 10px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        backdrop-filter: blur(2px);
+    }}
+
+    .map-view-btn {{
+        width: 56px;
+        height: 44px;
+        padding: 0;
+        border: 1px solid rgba(31, 95, 153, 0.18);
+        border-radius: 8px;
+        background: #eaf4fb;
+        box-shadow: 0 1px 4px rgba(31, 95, 153, 0.05);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        overflow: hidden;
+        transition:
+            border-color 0.15s ease,
+            background 0.15s ease,
+            box-shadow 0.15s ease,
+            transform 0.15s ease,
+            opacity 0.15s ease;
+    }}
+
+    .map-view-btn:hover {{
+        border-color: {TITLE_COLOUR};
+        background: #f4faff;
+        box-shadow: 0 2px 8px rgba(31, 95, 153, 0.12);
+        transform: translateY(-1px);
+    }}
+
+    .map-view-btn:focus-visible {{
+        outline: none;
+        border-color: {TITLE_COLOUR};
+        box-shadow:
+            0 0 0 2px rgba(140, 199, 234, 0.40),
+            0 2px 8px rgba(31, 95, 153, 0.12);
+    }}
+
+    .map-view-btn.is-active {{
+        background: #ffffff;
+        border-color: rgba(31, 95, 153, 0.32);
+        box-shadow:
+            0 0 0 2px rgba(140, 199, 234, 0.38),
+            0 2px 10px rgba(31, 95, 153, 0.12);
+        transform: translateY(-1px);
+    }}
+
+    .map-view-btn:not(.is-active) {{
+        opacity: 0.98;
+    }}
+
+    .map-view-btn img {{
+        width: 40px;
+        height: 32px;
+        display: block;
+        pointer-events: none;
+        user-select: none;
+    }}
+
+    .map-view-btn.is-active img {{
+        opacity: 1;
+    }}
+
+    .map-view-btn:not(.is-active) img {{
+        opacity: 0.95;
+    }}
+
     .map-controls-btn {{
         position: absolute;
         left: 28px;
@@ -2653,7 +2816,7 @@ def render_html(
     .map-controls-popup {{
         position: absolute;
         left: 28px;
-        bottom: 92px;
+        bottom: 144px;
         z-index: 1007;
         width: 300px;
         max-width: calc(100% - 56px);
@@ -2757,6 +2920,31 @@ def render_html(
         --floating-panel-height: 42%;
     }}
 
+    .map-view-toggle {{
+        position: static;
+    }}
+
+    .map-view-toggle-shell {{
+        padding: 4px;
+        gap: 4px;
+    }}
+
+    .map-view-btn {{
+        width: 50px;
+        height: 40px;
+    }}
+
+    .map-view-btn img {{
+        width: 36px;
+        height: 28px;
+    }}
+
+    .map-controls-popup {{
+        left: 12px;
+        bottom: 104px;
+        max-width: calc(100% - 24px);
+    }}
+
     .floating-overlays {{
         right: 12px;
         top: 48px;
@@ -2810,12 +2998,15 @@ def render_html(
                                 </div>
                             </div>
                         </div>
-                    <div class="places-index-controls">
-                        <span class="place-sort-label">⇅</span>
-                        <button id="sort-gaelic-btn" class="place-sort-btn sort-gd active" type="button">GD</button>
-                        <span class="place-sort-separator">|</span>
-                        <button id="sort-english-btn" class="place-sort-btn sort-en" type="button">EN</button>
-                    </div>
+                        <div class="index-controls-row">
+                            <div class="index-controls-left">
+                                <span class="place-sort-label">⇅</span>
+                                <button id="sort-gaelic-btn" class="place-sort-btn sort-gd active" type="button">GD</button>
+                                <span class="place-sort-separator">|</span>
+                                <button id="sort-english-btn" class="place-sort-btn sort-en" type="button">EN</button>
+                            </div>
+                            <div class="index-controls-right"></div>
+                        </div>
                     <div id="places-index-list" class="places-index-list"></div>
                 </div>
             </div>
@@ -2831,21 +3022,22 @@ def render_html(
                         </div>
                     </div>
                 </div>
-                <div class="people-index-controls">
-                    <div class="people-index-controls-left">
-                        <span class="place-sort-label">⇅</span>
-                        <button id="people-sort-gaelic-btn" class="place-sort-btn sort-gd active" type="button">GD</button>
-                        <span class="place-sort-separator">|</span>
-                        <button id="people-sort-english-btn" class="place-sort-btn sort-en" type="button">EN</button>
+                    <div class="index-controls-row">
+                        <div class="index-controls-left">
+                            <span class="place-sort-label">⇅</span>
+                            <button id="people-sort-gaelic-btn" class="place-sort-btn sort-gd active" type="button">GD</button>
+                            <span class="place-sort-separator">|</span>
+                            <button id="people-sort-english-btn" class="place-sort-btn sort-en" type="button">EN</button>
+                        </div>
+                    
+                        <div class="index-controls-right people-detail-controls">
+                            <span class="people-detail-label">
+                                <span class="gaelic-dark">Mion-fhiosrachadh</span><span class="separator-accent"> | </span><span class="english-accent">Detail</span>
+                            </span>
+                            <button id="people-detail-less-btn" class="people-detail-btn" type="button" aria-label="Less detail">&lt;</button>
+                            <button id="people-detail-more-btn" class="people-detail-btn" type="button" aria-label="More detail">&gt;</button>
+                        </div>
                     </div>
-                    <div class="people-detail-controls">
-                        <span class="people-detail-label">
-                            <span class="gaelic-dark">Mion-fhiosrachadh</span><span class="separator-accent"> | </span><span class="english-accent">Detail</span>
-                        </span>
-                        <button id="people-detail-less-btn" class="people-detail-btn" type="button" aria-label="Less detail">&lt;</button>
-                        <button id="people-detail-more-btn" class="people-detail-btn" type="button" aria-label="More detail">&gt;</button>
-                    </div>
-                </div>
                 <div id="all-people-list" class="people-list"></div>
             </div>
 
@@ -2862,11 +3054,18 @@ def render_html(
                                 </div>
                             </div>
                         </div>
-                    <div class="places-index-controls">
-                        <span class="place-sort-label">⇅</span>
-                        <button id="tradition-sort-gaelic-btn" class="place-sort-btn sort-gd active" type="button">GD</button>
-                        <span class="place-sort-separator">|</span>
-                        <button id="tradition-sort-english-btn" class="place-sort-btn sort-en" type="button">EN</button>
+                        <div class="index-controls-row">
+                        <div class="index-controls-left">
+                            <span class="place-sort-label">⇅</span>
+                            <button id="tradition-sort-gaelic-btn" class="place-sort-btn sort-gd active" type="button">GD</button>
+                            <span class="place-sort-separator">|</span>
+                            <button id="tradition-sort-english-btn" class="place-sort-btn sort-en" type="button">EN</button>
+                        </div>
+                        <div class="index-controls-right traditions-detail-controls">
+                            <button id="show-all-cb-btn" class="traditions-show-all-btn" type="button">
+                                <span class="gaelic-dark">Seall na Dualchasan</span><span class="separator-accent"> | </span><span class="english-accent">Show all Traditions</span>
+                            </button>
+                        </div>
                     </div>
                     <div id="traditions-index-list" class="traditions-index-list"></div>
                 </div>
@@ -2882,13 +3081,16 @@ def render_html(
                         <span class="english-accent">Reset Map</span>
                     </span>
                 </button>
-                <button id="show-all-cb-btn" class="map-reset-btn" type="button">
-                    <span class="btn-bilingual">
-                        <span class="gaelic-dark">Seall na Dualchasan</span>                        
-                        <span class="separator-accent">|</span>
-                        <span class="english-accent">Show all Traditions</span>
-                    </span>
-                </button>
+                <div class="map-view-toggle" aria-label="Map view toggle">
+                    <div class="map-view-toggle-shell" role="group" aria-label="Map view">
+                        <button id="map-view-cb-btn" class="map-view-btn is-active" type="button" aria-pressed="true" aria-label="Cape Breton main map with Scotland inset" title="Cape Breton main map with Scotland inset">
+                            <img src="{map_view_cb_svg_uri}" alt="">
+                        </button>
+                        <button id="map-view-scotland-btn" class="map-view-btn" type="button" aria-pressed="false" aria-label="Scotland main map with Cape Breton inset" title="Scotland main map with Cape Breton inset">
+                            <img src="{map_view_scotland_svg_uri}" alt="">
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div id="floating-overlays" class="floating-panel floating-overlays combined-traditions-panel">
