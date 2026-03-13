@@ -4442,22 +4442,27 @@ return Plotly;
     .overlay-empty-ghost-inner {
         max-width: 220px;
         text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
     }
+
     
     .overlay-empty-gaelic {
         color: #1F5F99;
-        font-size: 12px;
-        line-height: 17px;
+        font-size: 13px;
+        line-height: 20px;
         font-weight: 700;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
     }
     
     .overlay-empty-english {
         color: #8CC7EA;
-        font-size: 12px;
-        line-height: 17px;
+        font-size: 13px;
+        line-height: 20px;
         font-weight: 700;
     }
+
     
     .overlay-controls-hidden {
         display: none !important;
@@ -5272,7 +5277,7 @@ return Plotly;
 
     .english-highlight-person {
         color: #8CC7EA;
-        font-style: italic;
+        font-style: normal;
     }
 
     .person-summary-name {
@@ -5859,8 +5864,8 @@ return Plotly;
                     <div id="overlay-empty-default" class="overlay-empty-default">
                         <div class="overlay-empty-ghost">
                             <div class="overlay-empty-ghost-inner">
-                                <div class="overlay-empty-gaelic">Tagh àite no neach gus na dualchasan co-cheangailte ris a shealltainn.</div>
-                                <div class="overlay-empty-english">Select a place or person to load its associated traditions.</div>
+                                <div class="overlay-empty-gaelic">Tagh àite no neach bho na tabaichean air an làimh dheis, no briog air àite air a’ mhapa, gus na dualchasan co-cheangailte ris a shealltainn; tagh 'Seall na Dualchasan' bhon taba Dualchasan gus na dualchasan uile a tha co-cheangailte ri Ceap Breatainn fhaicinn.</div>
+                                <div class="overlay-empty-english">Select a place or person from the tabs on the right, or click a place on the map, to load their associated traditions; select 'Show all Traditions' from the Traditions tab to view all traditions linked to Cape Breton.</div>
                             </div>
                         </div>
                     </div>
@@ -6353,7 +6358,7 @@ return Plotly;
 
     let summaryName = '';
     if (gaelicName && englishName) {
-        summaryName = `${escapeHtml(gaelicName)}<span class="separator-accent"> / </span><span class="english-highlight-person">${escapeHtml(englishName)}</span>`;
+        summaryName = `${escapeHtml(gaelicName)}<span class="separator-accent"> | </span><span class="english-highlight-person">${escapeHtml(englishName)}</span>`;
     } else if (englishName) {
         summaryName = `<span class="english-highlight-person">${escapeHtml(englishName)}</span>`;
     } else {
