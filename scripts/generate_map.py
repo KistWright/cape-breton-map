@@ -974,7 +974,7 @@ def make_main_figure(places_df: pd.DataFrame, tradition_specs: list[dict[str, An
         )
 
     fig.update_layout(
-        map={"style": "carto-positron", "center": MAP_CENTER, "zoom": MAP_ZOOM},
+        map={"style": "carto-positron-nolabels", "center": MAP_CENTER, "zoom": MAP_ZOOM},
         margin={"l": 0, "r": 0, "t": 0, "b": 0},
         autosize=True,
         showlegend=False,
@@ -1670,13 +1670,12 @@ def render_html(
 
     .top-map-buttons {{
         position: absolute;
-        top: 12px;
-        left: 12px;
-        z-index: 1001;
+        top: 22px;
+        left: 18px;
+        z-index: 1006;
         display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
+        align-items: flex-start;
+        gap: 0;
     }}
 
     .overlay-toggle-btn,
@@ -1865,7 +1864,19 @@ def render_html(
         display: flex;
         gap: 6px;
         margin-bottom: 8px;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+    }}
+    
+        .filters-controls .tiny-btn {{
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 4px 6px;
+    }}
+    
+    .filters-controls .btn-bilingual {{
+        white-space: normal;
+        justify-content: center;
+        text-align: center;
     }}
 
     .index-controls-row {{
@@ -2596,12 +2607,11 @@ def render_html(
         display: none !important;
     }}
 
-    /* Main map attribution/info control: move to bottom-left and keep visible */
     #map .mapboxgl-ctrl-bottom-right,
     #map .maplibregl-ctrl-bottom-right {{
-        left: 28px !important;
-        right: auto !important;
-        bottom: 28px !important;
+        left: auto !important;
+        right: calc(min(22%, 340px) + 28px) !important;
+        bottom: 18px !important;
     }}
     
     #map .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl,
@@ -2658,7 +2668,8 @@ def render_html(
     #map .mapboxgl-ctrl-attrib.attrib-open .mapboxgl-ctrl-attrib-inner,
     #map .maplibregl-ctrl-attrib.attrib-open .maplibregl-ctrl-attrib-inner {{
         position: absolute !important;
-        left: 30px !important;
+        right: 30px !important;
+        left: auto !important;
         bottom: 50% !important;
         transform: translateY(50%) !important;
         display: block !important;
@@ -2678,7 +2689,8 @@ def render_html(
     #map .mapboxgl-ctrl-attrib .mapboxgl-ctrl-attrib-inner,
     #map .maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-inner {{
         position: absolute;
-        left: 30px;
+        right: 30px;
+        left: auto;
         bottom: 50%;
         transform: translateY(50%);
         display: block !important;
@@ -2716,8 +2728,8 @@ def render_html(
     }}
 
     .map-view-btn {{
-        width: 56px;
-        height: 44px;
+        width: 84px;
+        height: 66px;
         padding: 0;
         border: 1px solid rgba(31, 95, 153, 0.18);
         border-radius: 8px;
@@ -2765,8 +2777,8 @@ def render_html(
     }}
 
     .map-view-btn img {{
-        width: 40px;
-        height: 32px;
+        width: 60px;
+        height: 48px;
         display: block;
         pointer-events: none;
         user-select: none;
@@ -2782,8 +2794,10 @@ def render_html(
 
     .map-controls-btn {{
         position: absolute;
-        left: 28px;
-        bottom: 58px;
+        top: 22px;
+        right: calc(min(22%, 340px) + 28px);
+        left: auto;
+        bottom: auto;
         width: 28px;
         height: 28px;
         border: 1px solid rgba(25, 41, 48, 0.12);
@@ -2815,11 +2829,13 @@ def render_html(
 
     .map-controls-popup {{
         position: absolute;
-        left: 28px;
-        bottom: 144px;
+        top: 12px;
+        right: calc(min(22%, 340px) + 62px);
+        left: auto;
+        bottom: auto;
         z-index: 1007;
         width: 300px;
-        max-width: calc(100% - 56px);
+        max-width: calc(100% - (min(22%, 340px) + 96px));
     }}
 
     .map-controls-popup.hidden {{
@@ -2844,6 +2860,14 @@ def render_html(
         color: transparent;
         cursor: pointer;
         padding: 0;
+    }}
+
+    .map-reset-btn-floating {{
+        position: absolute;
+        left: 18px;
+        right: auto;
+        bottom: 18px;
+        z-index: 1006;
     }}
 
     @media (max-width: 1200px) {{
@@ -2940,9 +2964,11 @@ def render_html(
     }}
 
     .map-controls-popup {{
-        left: 12px;
-        bottom: 104px;
-        max-width: calc(100% - 24px);
+        top: 12px;
+        right: 48px;
+        left: auto;
+        bottom: auto;
+        max-width: calc(100% - 72px);
     }}
 
     .floating-overlays {{
@@ -3074,13 +3100,6 @@ def render_html(
 
         <div class="map-panel">
             <div class="top-map-buttons">
-                <button id="reset-map-btn" class="map-reset-btn" type="button">
-                    <span class="btn-bilingual">
-                        <span class="gaelic-dark">Ùraich am Mapa</span>                       
-                        <span class="separator-accent">|</span>
-                        <span class="english-accent">Reset Map</span>
-                    </span>
-                </button>
                 <div class="map-view-toggle" aria-label="Map view toggle">
                     <div class="map-view-toggle-shell" role="group" aria-label="Map view">
                         <button id="map-view-cb-btn" class="map-view-btn is-active" type="button" aria-pressed="true" aria-label="Cape Breton main map with Scotland inset" title="Cape Breton main map with Scotland inset">
@@ -3091,6 +3110,7 @@ def render_html(
                         </button>
                     </div>
                 </div>
+                
             </div>
 
             <div id="floating-overlays" class="floating-panel floating-overlays combined-traditions-panel">
@@ -3117,8 +3137,7 @@ def render_html(
                             <div>
                                 <span class="english-accent">Select or deselect traditions to highlight associated communities.</span>
                             </div>
-                        </div>
-                
+                        </div>   
                         <div class="filters-controls">
                             <button id="clear-all-traditions" class="tiny-btn" type="button">
                                 <span class="btn-bilingual">
@@ -3127,22 +3146,28 @@ def render_html(
                                     <span class="english-accent">Clear List</span>
                                 </span>
                             </button>
-                
-                            <button id="show-all-cb-pane-btn" class="tiny-btn" type="button">
+                        
+                            <button id="restore-all-traditions" class="tiny-btn" type="button">
                                 <span class="btn-bilingual">
-                                    <span class="gaelic-dark">Seall na Dualchasan</span>
+                                    <span class="gaelic-dark">Aisig an Liosta</span>
                                     <span class="separator-accent">|</span>
-                                    <span class="english-accent">Show all Traditions</span>
+                                    <span class="english-accent">Restore List</span>
                                 </span>
                             </button>
                         </div>
-                
                         <div id="overlay-list" class="overlay-list"></div>
                     </div>
                 </div>
             </div>
 
-
+            <button id="reset-map-btn" class="map-reset-btn map-reset-btn-floating" type="button">
+                <span class="btn-bilingual">
+                    <span class="gaelic-dark">Ùraich am Mapa</span>                       
+                    <span class="separator-accent">|</span>
+                    <span class="english-accent">Reset Map</span>
+                </span>
+            </button>
+                
             <button id="map-controls-btn" class="map-controls-btn" type="button" aria-label="Show map controls">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <rect x="5" y="2.5" width="8" height="13" rx="4" stroke-width="1.8"/>
@@ -3688,37 +3713,17 @@ def render_html(
     }}
 
     function updateOverlayListActionButton() {{
-        if (!clearAllTraditionsBtn) return;
+        if (!clearAllTraditionsBtn || !restoreAllTraditionsBtn) return;
     
-        const hasList = currentOverlayTraditionKeys.length > 0;
+        const checkboxes = [...document.querySelectorAll('.tradition-toggle')];
+        const hasList = checkboxes.length > 0;
+        const anyChecked = checkboxes.some((checkbox) => checkbox.checked);
+        const anyUnchecked = checkboxes.some((checkbox) => !checkbox.checked);
     
-        const clearListHtml = `
-            <span class="btn-bilingual">
-                <span class="gaelic-dark">Glan an Liosta</span>                
-                <span class="separator-accent">|</span>
-                <span class="english-accent">Clear List</span>
-            </span>
-        `;
-    
-        const restoreListHtml = `
-            <span class="btn-bilingual">
-                <span class="gaelic-dark">Aisig an liosta</span>                
-                <span class="separator-accent">|</span>
-                <span class="english-accent">Restore List</span>
-            </span>
-        `;
-    
-        if (!hasList) {{
-            clearAllTraditionsBtn.innerHTML = clearListHtml;
-            clearAllTraditionsBtn.disabled = true;
-            overlayListCleared = false;
-            return;
-        }}
-    
-        clearAllTraditionsBtn.disabled = false;
-        clearAllTraditionsBtn.innerHTML = overlayListCleared ? restoreListHtml : clearListHtml;
-    }}
-    
+        clearAllTraditionsBtn.disabled = !hasList || !anyChecked;
+        restoreAllTraditionsBtn.disabled = !hasList || !anyUnchecked;
+    }}  
+
     function clearAllTraditionsAndControls() {{
         currentOverlayTraditionKeys = [];
         overlayListCleared = false;
@@ -3727,8 +3732,6 @@ def render_html(
         updateOverlayListActionButton();
         clearInsetSelectionRing();
         hideInsetSelectedPlaceLabel();
-        Plotly.redraw(mapDiv);
-        Plotly.redraw(insetMapDiv);
     }}
 
     function showAllTraditionsInCapeBreton() {{
@@ -3749,8 +3752,6 @@ def render_html(
         updateOverlayListActionButton();
         clearInsetSelectionRing();
         hideInsetSelectedPlaceLabel();
-        Plotly.redraw(mapDiv);
-        Plotly.redraw(insetMapDiv);
     }}
         
     function fitMainMapToInitialBounds() {{
@@ -3790,8 +3791,6 @@ def render_html(
             updateOverlayListActionButton();
             clearInsetSelectionRing();
             hideInsetSelectedPlaceLabel();
-            Plotly.redraw(mapDiv);
-            Plotly.redraw(insetMapDiv);
             return;
         }}
     
@@ -3806,8 +3805,6 @@ def render_html(
         clearInsetSelectionRing();
         hideInsetSelectedPlaceLabel();
     
-        Plotly.redraw(mapDiv);
-        Plotly.redraw(insetMapDiv);
     }}
 
     function renderPlace(placeKey) {{
@@ -3872,8 +3869,6 @@ def render_html(
         );
         showInsetSelectedPlaceLabel(tradition.label_plain, tradition.latitude, tradition.longitude);
 
-        Plotly.redraw(mapDiv);
-        Plotly.redraw(insetMapDiv);
     }}
 
     function activateTraditionCommunityPlace(placeKey) {{
@@ -3924,14 +3919,13 @@ def render_html(
                 const mainTraceIndex = Number(this.dataset.mainTraceIndex);
                 const insetTraceIndex = Number(this.dataset.insetTraceIndex);
                 const visibleValue = this.checked;
-    
+        
                 Plotly.restyle(mapDiv, {{visible: visibleValue}}, [mainTraceIndex]);
                 Plotly.restyle(insetMapDiv, {{visible: visibleValue}}, [insetTraceIndex]);
-    
+        
                 clearInsetSelectionRing();
                 hideInsetSelectedPlaceLabel();
-                Plotly.redraw(mapDiv);
-                Plotly.redraw(insetMapDiv);
+                updateOverlayListActionButton();
             }});
         }});
     }}
@@ -3953,11 +3947,9 @@ def render_html(
 
         Plotly.restyle(mapDiv, {{visible: visibleValues}}, mainTraceIndexes);
         Plotly.restyle(insetMapDiv, {{visible: visibleValues}}, insetTraceIndexes);
-
+        
         clearInsetSelectionRing();
         hideInsetSelectedPlaceLabel();
-        Plotly.redraw(mapDiv);
-        Plotly.redraw(insetMapDiv);
     }}
 
     function setOverlayPanelVisibility(isVisible) {{
@@ -4305,11 +4297,11 @@ def render_html(
     const insetMapDiv = document.getElementById('inset-map');
     const resetBtn = document.getElementById('reset-map-btn');
     const showAllCbBtn = document.getElementById('show-all-cb-btn');
-    const showAllCbPaneBtn = document.getElementById('show-all-cb-pane-btn');
     const selectedPlaceLabel = document.getElementById('selected-place-label');
     const insetSelectedPlaceLabel = document.getElementById('inset-selected-place-label');
     const overlayList = document.getElementById('overlay-list');
     const clearAllTraditionsBtn = document.getElementById('clear-all-traditions');
+    const restoreAllTraditionsBtn = document.getElementById('restore-all-traditions');
     const floatingOverlays = document.getElementById('floating-overlays');
     const floatingInset = document.getElementById('floating-inset');
     const placesIndexList = document.getElementById('places-index-list');
@@ -4374,7 +4366,6 @@ def render_html(
     let insetSelectedPlaceState = null;
     let subplotMap = null;
     let insetSubplotMap = null;
-    let suppressNextMainBackgroundClick = false;
     let suppressNextInsetBackgroundClick = false;
     let currentLocationPlaceKey = null;
     let currentTraditionPanelKey = null;
@@ -4569,17 +4560,6 @@ def render_html(
             mapDiv?._fullLayout?.mapbox?._subplot?.map ||
             null;
 
-        if (typeof ResizeObserver === 'function') {{
-            const mainMapResizeObserver = new ResizeObserver(function() {{
-                if (!hasSeenInitialResizeObservation) {{
-                    hasSeenInitialResizeObservation = true;
-                    return;
-                }}
-                refitMainMapAfterResize();
-            }});
-            mainMapResizeObserver.observe(mapDiv);
-        }}
-        
         window.addEventListener('resize', function() {{
             refitMainMapAfterResize();
         }});
@@ -4594,8 +4574,6 @@ def render_html(
                 return;
             }}
 
-            suppressNextMainBackgroundClick = true;
-
             const placeKey = point.customdata[0];
             activatePlace(placeKey, {{ source: 'map' }});
         }});
@@ -4608,22 +4586,13 @@ def render_html(
             subplotMap.on('move', function() {{
                 positionSelectedPlaceLabel();
             }});
-
+        
             subplotMap.on('zoom', function() {{
                 positionSelectedPlaceLabel();
             }});
-
+        
             subplotMap.on('resize', function() {{
                 positionSelectedPlaceLabel();
-            }});
-
-            subplotMap.on('click', function() {{
-                if (suppressNextMainBackgroundClick) {{
-                    suppressNextMainBackgroundClick = false;
-                    return;
-                }}
-                clearSelectedPerson();
-                resetMainMapAndPanels();
             }});
         }}
     }});
@@ -4636,21 +4605,15 @@ def render_html(
         showAllTraditionsInCapeBreton();
     }});
 
-    showAllCbPaneBtn.addEventListener('click', function() {{
-        showAllTraditionsInCapeBreton();
-    }});
-
     clearAllTraditionsBtn.addEventListener('click', function() {{
         if (!currentOverlayTraditionKeys.length) return;
+        setAllVisibleInCurrentOverlayPane(false);
+        updateOverlayListActionButton();
+    }});
     
-        if (!overlayListCleared) {{
-            setAllVisibleInCurrentOverlayPane(false);
-            overlayListCleared = true;
-        }} else {{
-            setAllVisibleInCurrentOverlayPane(true);
-            overlayListCleared = false;
-        }}
-    
+    restoreAllTraditionsBtn.addEventListener('click', function() {{
+        if (!currentOverlayTraditionKeys.length) return;
+        setAllVisibleInCurrentOverlayPane(true);
         updateOverlayListActionButton();
     }});
 
@@ -4685,8 +4648,8 @@ def render_html(
         const clickedMapMarker = event.target.closest('#map, #selected-place-label');
         if (clickedMapMarker) return;
 
-        const clickedPlaceListControl = event.target.closest('#places-index-list, #traditions-index-list, .places-index-controls');
-        if (clickedPlaceListControl) return;
+        const clickedPanelControl = event.target.closest('#places-index-list, #traditions-index-list, #all-people-list, .index-controls-row, .filters-controls');
+        if (clickedPanelControl) return;
     
         clearSelectedPerson();
     }});
