@@ -1687,6 +1687,57 @@ def render_html(
         display: none !important;
     }}
 
+    .overlay-empty-default {{
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        align-items: stretch;
+    }}
+    
+    .overlay-empty-ghost {{
+        flex: 1 1 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 0;
+        border: 1px solid rgba(25, 41, 48, 0.08);
+        border-radius: 8px;
+        background: rgba(25, 41, 48, 0.035);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+        padding: 18px 14px;
+    }}
+    
+    .overlay-empty-ghost-inner {{
+        max-width: 220px;
+        text-align: center;
+    }}
+    
+    .overlay-empty-gaelic {{
+        color: {TITLE_COLOUR};
+        font-size: 12px;
+        line-height: 17px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }}
+    
+    .overlay-empty-english {{
+        color: {ACCENT};
+        font-size: 12px;
+        line-height: 17px;
+        font-weight: 700;
+    }}
+    
+    .overlay-controls-hidden {{
+        display: none !important;
+    }}
+    
+    .overlay-controls-visible {{
+        display: flex !important;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-height: 0;
+    }}
+    
     .floating-panel {{
         position: absolute;
         z-index: 1002;
@@ -1724,10 +1775,10 @@ def render_html(
 
     .floating-overlays {{
         right: 16px;
-        top: 48px;
-        bottom: 56px;
+        top: 20px;
+        bottom: 20px;
         height: auto;
-        width: min(22%, 320px);
+        width: min(24%, 360px);
     }}
 
     .floating-inset {{
@@ -1761,14 +1812,14 @@ def render_html(
     }}
 
     .floating-panel .section-title {{
-        font-size: 12px;
+        font-size: 13px;
         line-height: 16px;
         margin: 0 0 6px 0;
     }}
 
     .floating-panel .intro {{
-        font-size: 13px;
-        line-height: 18px;
+        font-size: 10px;
+        line-height: 14px;
         margin: 0 0 8px 0;
     }}
 
@@ -1985,11 +2036,11 @@ def render_html(
     }}
 
     .section-title {{
-        font-size: 13px;
+        font-size: 16px;
         font-weight: 700;
         color: {ACCENT};
         line-height: 18px;
-        text-transform: uppercase;
+        text-transform: none;
         margin: 0 0 6px 0;
     }}
 
@@ -2019,12 +2070,88 @@ def render_html(
         margin: 10px auto 0 auto;
     }}
 
+    .bilingual-intro-grid {{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        align-items: start;
+        margin: 4px 0 14px 0;
+        font-size: 10px;
+        line-height: 15px;
+    }}
+    
+    .bilingual-intro-grid > div {{
+        min-width: 0;
+    }}
+    
+    .bilingual-intro-grid .gaelic-dark,
+    .bilingual-intro-grid .english-accent {{
+        display: block;
+    }}
+    
+    .bilingual-intro-grid .gaelic-dark {{
+        text-align: left;
+    }}
+    
+    .bilingual-intro-grid .english-accent {{
+        text-align: left;
+    }}
+
+    .location-intro,
+    .people-intro {{
+        max-width: none;
+        margin: 4px 0 14px 0;
+        text-align: left;
+        font-size: 12px;
+        line-height: 17px;
+    }}
+    
+    .location-intro::after,
+    .people-intro::after {{
+        display: none;
+    }}
+    
+    .combined-controls-block .intro {{
+        margin: 0 0 12px 0;
+    }}
+    
+    @media (max-width: 900px) {{
+        .bilingual-intro-grid {{
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }}
+    }}
+
     .gaelic-dark {{
         color: {TITLE_COLOUR};
     }}
 
     .english-accent {{
         color: {ACCENT};
+    }}
+
+    .separator-accent {{
+        color: {ACCENT};
+    }}
+    
+    .btn-bilingual {{
+        display: inline-flex;
+        align-items: center;
+        gap: 0.22em;
+        white-space: nowrap;
+        text-transform: none;
+    }}
+    
+    .btn-bilingual .gaelic-dark,
+    .btn-bilingual .english-accent,
+    .btn-bilingual .separator-accent {{
+        font-weight: 700;
+        line-height: 1.2;
+    }}
+    
+    .map-reset-btn .btn-bilingual,
+    .tiny-btn .btn-bilingual {{
+        text-transform: none;
     }}
 
     .place-title {{
@@ -2672,9 +2799,16 @@ def render_html(
             <div id="location-panel-view" class="panel-view active">
                 <div class="places-index-wrap">
                     <div class="places-index-title">Cape Breton places</div>
-                    <div class="info-header">
-                        <p class="intro location-intro">Click a <strong>place</strong> on the map or list to show its people and traditions.</p>
-                    </div>
+                        <div class="info-header">
+                            <div class="intro location-intro bilingual-intro-grid">
+                                <div>
+                                    <span class="gaelic-dark">Briog air <strong>àite</strong> air a’ mhapa no air an liosta gus na daoine agus na dualchasan e ris a shealltainn.</span>
+                                </div>
+                                <div>
+                                    <span class="english-accent">Click a <strong>place</strong> on the map or list to show its people and traditions.</span>
+                                </div>
+                            </div>
+                        </div>
                     <div class="places-index-controls">
                         <span class="place-sort-label">⇅</span>
                         <button id="sort-gaelic-btn" class="place-sort-btn sort-gd active" type="button">GD</button>
@@ -2687,7 +2821,14 @@ def render_html(
 
             <div id="all-people-panel-view" class="panel-view">
                 <div class="info-header">
-                    <p class="intro people-intro">Click on a <strong>name</strong> to view the person details and their map location.</p>
+                    <div class="intro people-intro bilingual-intro-grid">
+                        <div>
+                            <span class="gaelic-dark">Briog air <strong>ainm</strong> gus fiosrachadh mun neach agus an t-àite aca air a’ mhapa fhaicinn.</span>
+                        </div>
+                        <div>
+                            <span class="english-accent">Click on a <strong>name</strong> to view the person details and their map location.</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="people-index-controls">
                     <span class="place-sort-label">⇅</span>
@@ -2705,29 +2846,74 @@ def render_html(
 
         <div class="map-panel">
             <div class="top-map-buttons">
-                <button id="reset-map-btn" class="map-reset-btn" type="button">Reset map</button>
-                <button id="show-all-cb-btn" class="map-reset-btn" type="button">Show all traditions</button>
+                <button id="reset-map-btn" class="map-reset-btn" type="button">
+                    <span class="btn-bilingual">
+                        <span class="gaelic-dark">Ùraich am Mapa</span>                       
+                        <span class="separator-accent">|</span>
+                        <span class="english-accent">Reset Map</span>
+                    </span>
+                </button>
+                <button id="show-all-cb-btn" class="map-reset-btn" type="button">
+                    <span class="btn-bilingual">
+                        <span class="gaelic-dark">Seall na Dualchasan</span>                        
+                        <span class="separator-accent">|</span>
+                        <span class="english-accent">Show all Traditions</span>
+                    </span>
+                </button>
             </div>
 
             <div id="floating-overlays" class="floating-panel floating-overlays combined-traditions-panel">
                 <div class="floating-panel-header">
-                    <div class="section-title">Associated traditions</div>
+                    <div class="section-title">
+                        <span class="gaelic-dark">Dualchasan Co-cheangailte</span>
+                        <span class="separator-accent"> | </span>
+                        <span class="english-accent">Associated Traditions</span>
+                    </div>
                 </div>
                 <div class="floating-panel-body combined-traditions-body">
                     <div class="combined-inset-block">
                         <div id="inset-selected-place-label" class="inset-selected-place-label"></div>
                         <div id="inset-map"></div>
                     </div>
-                    <div class="combined-controls-block">
-                        <div class="section-title">Fine control</div>
-                        <p class="intro">Select or deselect traditions to highlight linked Cape Breton communities.</p>
-                            <div class="filters-controls">
-                                <button id="clear-all-traditions" class="tiny-btn" type="button">Clear list</button>
-                                <button id="show-all-cb-pane-btn" class="tiny-btn" type="button">Show all traditions</button>
+                
+                    <div id="overlay-empty-default" class="overlay-empty-default">
+                        <div class="overlay-empty-ghost">
+                            <div class="overlay-empty-ghost-inner">
+                                <div class="overlay-empty-gaelic">Tagh àite no neach gus na dualchasan co-cheangailte ris a shealltainn.</div>
+                                <div class="overlay-empty-english">Select a place or person to load its associated traditions.</div>
                             </div>
-                        <div id="overlay-list" class="overlay-list">
-                            <div class="overlay-empty">Select a Cape Breton place to load its associated traditions.</div>
                         </div>
+                    </div>
+                
+                    <div id="combined-controls-block" class="combined-controls-block overlay-controls-hidden">
+                        <div class="intro bilingual-intro-grid">
+                            <div>
+                                <span class="gaelic-dark">Tagh no dì-thagh dualchasan gus na coimhearsnachdan co-cheangailte.</span>
+                            </div>
+                            <div>
+                                <span class="english-accent">Select or deselect traditions to highlight associated communities.</span>
+                            </div>
+                        </div>
+                
+                        <div class="filters-controls">
+                            <button id="clear-all-traditions" class="tiny-btn" type="button">
+                                <span class="btn-bilingual">
+                                    <span class="gaelic-dark">Glan an Liosta</span>
+                                    <span class="separator-accent">|</span>
+                                    <span class="english-accent">Clear List</span>
+                                </span>
+                            </button>
+                
+                            <button id="show-all-cb-pane-btn" class="tiny-btn" type="button">
+                                <span class="btn-bilingual">
+                                    <span class="gaelic-dark">Seall na Dualchasan</span>
+                                    <span class="separator-accent">|</span>
+                                    <span class="english-accent">Show all Traditions</span>
+                                </span>
+                            </button>
+                        </div>
+                
+                        <div id="overlay-list" class="overlay-list"></div>
                     </div>
                 </div>
             </div>
@@ -2767,6 +2953,7 @@ def render_html(
     const INITIAL_CENTER = {json.dumps(MAP_CENTER)};
     const INITIAL_ZOOM = {MAP_ZOOM};
     const allPlaceKeys = {json.dumps(place_keys_sorted, ensure_ascii=False)};
+
 
     function escapeHtml(value) {{
         return String(value)
@@ -3132,15 +3319,32 @@ def render_html(
         if (!clearAllTraditionsBtn) return;
     
         const hasList = currentOverlayTraditionKeys.length > 0;
+    
+        const clearListHtml = `
+            <span class="btn-bilingual">
+                <span class="gaelic-dark">Glan an Liosta</span>                
+                <span class="separator-accent">|</span>
+                <span class="english-accent">Clear List</span>
+            </span>
+        `;
+    
+        const restoreListHtml = `
+            <span class="btn-bilingual">
+                <span class="gaelic-dark">Aisig an liosta</span>                
+                <span class="separator-accent">|</span>
+                <span class="english-accent">Restore List</span>
+            </span>
+        `;
+    
         if (!hasList) {{
-            clearAllTraditionsBtn.textContent = 'Clear list';
+            clearAllTraditionsBtn.innerHTML = clearListHtml;
             clearAllTraditionsBtn.disabled = true;
             overlayListCleared = false;
             return;
         }}
     
         clearAllTraditionsBtn.disabled = false;
-        clearAllTraditionsBtn.textContent = overlayListCleared ? 'Restore list' : 'Clear list';
+        clearAllTraditionsBtn.innerHTML = overlayListCleared ? restoreListHtml : clearListHtml;
     }}
     
     function clearAllTraditionsAndControls() {{
@@ -3264,11 +3468,13 @@ def render_html(
         const items = overlayControlsAll.filter((item) => keySet.has(String(item.tradition_key)));
     
         if (!items.length) {{
-            overlayList.innerHTML = '<div class="overlay-empty">Select a Cape Breton place to load associated traditions.</div>';
+            overlayList.innerHTML = '';
+            showOverlayDefaultMessage();
             updateOverlayListActionButton();
             return;
         }}
     
+        showOverlayControls();
         overlayList.innerHTML = items.map((item) => buildOverlayRowHtml(item, checkedState)).join('');
         updateOverlayListActionButton();
     
@@ -3653,6 +3859,24 @@ def render_html(
     const sortEnglishBtn = document.getElementById('sort-english-btn');
     const peopleSortGaelicBtn = document.getElementById('people-sort-gaelic-btn');
     const peopleSortEnglishBtn = document.getElementById('people-sort-english-btn');
+    const overlayEmptyDefault = document.getElementById('overlay-empty-default');
+    const combinedControlsBlock = document.getElementById('combined-controls-block');
+
+    function showOverlayDefaultMessage() {{
+        if (overlayEmptyDefault) overlayEmptyDefault.style.display = 'flex';
+        if (combinedControlsBlock) {{
+            combinedControlsBlock.classList.remove('overlay-controls-visible');
+            combinedControlsBlock.classList.add('overlay-controls-hidden');
+        }}
+    }}
+    
+    function showOverlayControls() {{
+        if (overlayEmptyDefault) overlayEmptyDefault.style.display = 'none';
+        if (combinedControlsBlock) {{
+            combinedControlsBlock.classList.remove('overlay-controls-hidden');
+            combinedControlsBlock.classList.add('overlay-controls-visible');
+        }}
+    }}
 
     if (sortGaelicBtn) {{
         sortGaelicBtn.addEventListener('click', () => setPlaceSort('gaelic'));
@@ -3792,6 +4016,7 @@ def render_html(
             renderPlacesIndex(null);
             renderOverlayControls([]);
             updateOverlayListActionButton();
+            showOverlayDefaultMessage();
             setOverlayPanelVisibility(true);
             setInsetPanelVisibility(true);
             setSidePanelMode('location');
