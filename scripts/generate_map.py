@@ -426,11 +426,11 @@ TRADITIONS_CSV = "traditions.csv"
 OUTPUT_HTML = "cape_breton_people_map.html"
 BASE_URL = "13.62.226.132"
 
-MAP_CENTER = {"lat": 46.25, "lon": -60.65}
-MAP_ZOOM = 7.8
+MAP_CENTER = {"lat": 46.25577950313625, "lon": -60.3}
+MAP_ZOOM = 8.1
 
-SCOTLAND_CENTER = {"lat": 56.75, "lon": -4.6}
-SCOTLAND_ZOOM = 4.6
+SCOTLAND_CENTER = {"lat": 57.0, "lon": -5.2}
+SCOTLAND_ZOOM = 5.3
 
 ACCENT = "#8CC7EA"
 TITLE_COLOUR = "#1F5F99"
@@ -438,10 +438,6 @@ BODY_TEXT = "#192930"
 PANEL_BG = "#ffffff"
 CARD_BG = "#ffffff"
 BORDER = "#ffffff"
-BANNER_BG = "#2184c2"
-BANNER_GAELIC = "#ffffff"
-
-BANNER_HEIGHT = 170
 
 TRADITION_COLOURS = [
     "#C6283E",  # red
@@ -970,7 +966,7 @@ def make_main_figure(places_df: pd.DataFrame, tradition_specs: list[dict[str, An
     fig.update_layout(
         map={"style": "carto-positron", "center": MAP_CENTER, "zoom": MAP_ZOOM},
         margin={"l": 0, "r": 0, "t": 0, "b": 0},
-        height=760,
+        autosize=True,
         showlegend=False,
     )
     return fig
@@ -1030,7 +1026,7 @@ def make_inset_figure(tradition_specs: list[dict[str, Any]]) -> go.Figure:
 
     fig.update_layout(
         map={
-            "style": "carto-positron",
+            "style": "carto-positron-nolabels",
             "center": {"lat": SCOTLAND_CENTER["lat"], "lon": SCOTLAND_CENTER["lon"]},
             "zoom": float(SCOTLAND_ZOOM),
             "domain": {"x": [0.0, 1.0], "y": [0.0, 1.0]},
@@ -1069,6 +1065,31 @@ def render_html(
         for row in places_df.itertuples(index=False)
     }
 
+    traditions_lookup = {
+        str(spec["tradition_key"]): {
+            "tradition_key": str(spec["tradition_key"]),
+            "label_plain": spec["label_plain"],
+            "label_gaelic": spec["label_gaelic"],
+            "label_english": spec["label_english"],
+            "colour": spec["colour"],
+            "latitude": float(spec["scotland_point"]["latitude"]),
+            "longitude": float(spec["scotland_point"]["longitude"]),
+            "community_places": [
+                {
+                    "place_key": str(point["place_key"]),
+                    "place_name": point["place_name"],
+                    "place_name_gaelic": point["gaelic"],
+                    "place_name_english": point["english"],
+                    "latitude": float(point["latitude"]),
+                    "longitude": float(point["longitude"]),
+                    "people_count": int(point["people_count"]),
+                }
+                for point in spec["community_points"]
+            ],
+        }
+        for spec in tradition_specs
+    }
+
     overlay_controls_all = [
         {
             "main_trace_index": 3 + idx,
@@ -1093,6 +1114,14 @@ def render_html(
             by=["place_name", "place_name_gaelic", "place_name_english"],
             key=lambda s: s.fillna("").astype(str).str.casefold() if hasattr(s, 'fillna') else s,
         ).itertuples(index=False)
+    ]
+
+    tradition_keys_sorted = [
+        str(spec["tradition_key"])
+        for spec in sorted(
+            tradition_specs,
+            key=lambda spec: (spec["label_plain"] or "").casefold(),
+        )
     ]
 
     html = f"""<!DOCTYPE html>
@@ -1132,102 +1161,6 @@ def render_html(
         overflow: hidden;
     }}
     
-    /* ---------------------------
-       Banner / Header Layout
-    --------------------------- */
-    
-    .banner {{
-        flex: 0 0 {BANNER_HEIGHT}px;
-        box-sizing: border-box;
-        padding: 14px 28px 12px 28px;
-        background: {BANNER_BG};
-        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 6px;
-    }}
-    
-    .banner h1,
-    .banner .subheading {{
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        align-items: center;
-        margin: 0;
-        position: relative;
-    }}
-    
-    .banner {{
-        flex: 0 0 {BANNER_HEIGHT}px;
-        box-sizing: border-box;
-        padding: 14px 28px 12px 28px;
-        background: {BANNER_BG};
-        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 6px;
-        position: relative;
-    }}
-    
-    /* central vertical divider */
-    .banner::after {{
-        content: "";
-        position: absolute;
-        left: 50%;
-        top: 20%;
-        bottom: 20%;
-        width: 2px;
-        background: {ACCENT};
-        transform: translateX(-50%);
-        opacity: 0.95;
-    }}
-    
-    .banner h1 {{
-        font-size: 48px;
-        font-weight: 700;
-        color: {BANNER_GAELIC};
-        line-height: 48px;
-        text-transform: uppercase;
-    }}
-    
-    .banner .subheading {{
-        font-size: 25.2px;
-        font-weight: 700;
-        color: {BANNER_GAELIC};
-        line-height: 28.8px;
-        text-transform: uppercase;
-    }}
-    
-    .banner .gaelic-banner,
-    .banner .english-highlight-banner {{
-        display: block;
-        white-space: nowrap;
-    }}
-    
-    .banner .gaelic-banner {{
-        text-align: right;
-        padding-right: 18px;
-        color: {BANNER_GAELIC};
-    }}
-    
-    .banner .english-highlight-banner {{
-        text-align: left;
-        padding-left: 18px;
-        color: {ACCENT};
-    }}
-    
-    .banner h1 .english-highlight-banner {{
-        font-size: 33.6px;
-        line-height: 33.6px;
-    }}
-    
-    .banner .subheading .english-highlight-banner {{
-        font-size: 17.64px;
-        line-height: 20.16px;
-    }}
-    
-
     .content {{
         display: flex;
         flex: 1 1 auto;
@@ -1296,12 +1229,15 @@ def render_html(
     
     .side-panel-mode-toggle {{
         display: flex;
-        gap: 6px;
+        gap: 4px;
         margin-bottom: 0;
+        padding-top: 4px;
         flex-wrap: nowrap;
-        align-items: flex-end;
+        align-items: stretch;
+        justify-content: flex-start;
         position: relative;
         z-index: 3;
+        overflow: visible;
     }}
     
     details.person-card.selected {{
@@ -1329,22 +1265,28 @@ def render_html(
 
     .mode-btn {{
         position: relative;
-        flex: 1 1 50%;
-        width: 50%;
-        padding: 12px 14px 11px 14px;
+        flex: 0 1 auto;
+        width: auto;
+        min-width: 0;
+        max-width: 100%;
+        padding: 10px 7px 9px 7px;
         border: 1px solid rgba(25, 41, 48, 0.15);
         border-bottom: 1px solid rgba(25, 41, 48, 0.12);
         background: #f4f8fb;
         color: {BODY_TEXT};
-        font-size: 15px;
+        font-size: 13px;
         font-weight: 700;
         text-transform: none;
         text-align: center;
         cursor: pointer;
         border-radius: 8px 8px 0 0;
         box-shadow: none;
-        margin-bottom: -1px;
-        line-height: 1.2;
+        margin-bottom: 0;
+        line-height: 1.1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
     }}
     
     .mode-btn.active {{
@@ -1366,6 +1308,8 @@ def render_html(
     
     .mode-btn .separator-accent {{
         color: {ACCENT};
+        display: inline-block;
+        margin: 0 0.28em;
     }}
     
     .mode-btn.active .gaelic-dark {{
@@ -1385,8 +1329,8 @@ def render_html(
     .mode-btn .separator-accent {{
         font-weight: 700;
         white-space: nowrap;
-        font-size: 19px;
-        line-height: 1.2;
+        font-size: 15px;
+        line-height: 1.1;
     }}
 
     .panel-view {{
@@ -1507,6 +1451,53 @@ def render_html(
         gap: 6px;
         overflow-y: auto;
         padding-right: 2px;
+    }}
+
+    .traditions-index-list {{
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        overflow-y: auto;
+        padding-right: 2px;
+    }}
+
+    .tradition-community-list {{
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 0;
+    }}
+
+    .place-list-detail .tradition-community-pane {{
+        margin-top: 4px;
+    }}
+
+    .tradition-community-btn {{
+        width: 100%;
+        text-align: left;
+        padding: 8px 10px;
+        border: 1px solid rgba(25, 41, 48, 0.08);
+        border-left: 4px solid rgba(140, 199, 234, 0.55);
+        border-radius: 6px;
+        background: #ffffff;
+        cursor: pointer;
+        font: inherit;
+        line-height: 1.25;
+        color: {BODY_TEXT};
+        transition: border-color 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease, background-color 0.14s ease;
+    }}
+
+    .tradition-community-btn:hover {{
+        border-color: {ACCENT};
+    }}
+
+    .tradition-community-btn.active {{
+        border-left-color: {TITLE_COLOUR};
+        background: rgba(31, 95, 153, 0.06);
+        box-shadow: 0 2px 8px rgba(25, 41, 48, 0.08);
+        transform: translateY(-1px);
     }}
 
     .place-list-btn {{
@@ -1759,16 +1750,11 @@ def render_html(
         display: none;
     }}
 
-    .floating-panel-header {{
-        flex: 0 0 auto;
-        padding: 10px 12px 0 12px;
-    }}
-
     .floating-panel-body {{
         flex: 1 1 auto;
         min-height: 0;
         overflow: hidden;
-        padding: 8px 12px 10px 12px;
+        padding: 12px 12px 12px 12px;
         display: flex;
         flex-direction: column;
     }}
@@ -1778,7 +1764,7 @@ def render_html(
         top: 20px;
         bottom: 20px;
         height: auto;
-        width: min(24%, 360px);
+        width: min(22%, 340px);
     }}
 
     .floating-inset {{
@@ -1812,9 +1798,10 @@ def render_html(
     }}
 
     .floating-panel .section-title {{
-        font-size: 13px;
-        line-height: 16px;
+        font-size: 21px;
+        line-height: 22px;
         margin: 0 0 6px 0;
+        text-align: center;
     }}
 
     .floating-panel .intro {{
@@ -1868,8 +1855,7 @@ def render_html(
         margin: 0 0.15em;
     }}
 
-    .filters-controls,
-    .people-list-controls {{
+    .filters-controls {{
         display: flex;
         gap: 6px;
         margin-bottom: 8px;
@@ -1880,8 +1866,8 @@ def render_html(
         flex: 0 0 auto;
         display: flex;
         align-items: center;
-        justify-content: flex-start;
-        gap: 7px;
+        justify-content: space-between;
+        gap: 10px;
         margin: 0 0 10px 0;
         padding: 0 4px 0 2px;
         font-size: 12px;
@@ -1889,6 +1875,64 @@ def render_html(
         text-transform: uppercase;
         letter-spacing: 0.04em;
         color: rgba(25, 41, 48, 0.72);
+    }}
+
+    .people-index-controls-left {{
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        min-width: 0;
+        flex: 0 0 auto;
+    }}
+
+    .people-detail-controls {{
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+        margin-left: auto;
+        min-width: 0;
+        flex: 1 1 auto;
+        text-transform: none;
+        letter-spacing: 0;
+    }}
+
+    .people-detail-label {{
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: 700;
+        min-width: 0;
+    }}
+    
+    .people-detail-label .separator-accent {{
+        display: inline-block;
+        margin: 0 0.28em;
+    }}
+
+    .people-detail-btn {{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        padding: 0;
+        border: 1px solid rgba(25, 41, 48, 0.15);
+        background: #ffffff;
+        color: {BODY_TEXT};
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1;
+        cursor: pointer;
+        border-radius: 4px;
+        flex: 0 0 auto;
+    }}
+
+    .people-detail-btn:hover {{
+        border-color: {ACCENT};
+        color: {ACCENT};
     }}
 
     .tiny-btn {{
@@ -2653,40 +2697,6 @@ def render_html(
         overflow: visible;
     }}
 
-    .banner {{
-        flex: none;
-        height: auto;
-        padding: 18px 20px 14px 20px;
-    }}
-
-    .banner h1 {{
-        font-size: 34px;
-        line-height: 36px;
-    }}
-
-    .banner h1 .english-highlight-banner {{
-        font-size: 23.8px;
-        line-height: 23.8px;
-    }}
-
-    .banner .subheading {{
-        font-size: 22.68px;
-        line-height: 25.92px;
-    }}
-
-    .banner .subheading .english-highlight-banner {{
-        font-size: 15.876px;
-        line-height: 18.144px;
-    }}
-
-    .banner .gaelic-banner {{
-        padding-right: 12px;
-    }}
-
-    .banner .english-highlight-banner {{
-        padding-left: 12px;
-    }}
-
     .content {{
         flex-direction: column;
         height: auto;
@@ -2774,18 +2784,6 @@ def render_html(
 </head>
 <body>
 <div class="page">
-    <header class="banner">
-        <h1>
-            <span class="gaelic-banner">Cainnt is Ceathramhan</span>
-            <span class="english-highlight-banner">Language and Lyrics</span>
-        </h1>
-        
-        <div class="subheading">
-            <span class="gaelic-banner">Àiteachan, Daoine, Dualchasan</span>
-            <span class="english-highlight-banner">Places, People, Traditions</span>
-        </div>
-    </header>
-
     <div class="content">
         <aside class="side-panel">
             <div class="side-panel-mode-toggle">
@@ -2794,6 +2792,9 @@ def render_html(
                 </button>
                 <button id="mode-all-people-btn" class="mode-btn" type="button">
                     <span class="gaelic-dark">Daoine</span><span class="separator-accent"> | </span><span class="english-accent">People</span>
+                </button>
+                <button id="mode-traditions-btn" class="mode-btn" type="button">
+                    <span class="gaelic-dark">Dualchasan</span><span class="separator-accent"> | </span><span class="english-accent">Traditions</span>
                 </button>
             </div>
             <div id="location-panel-view" class="panel-view active">
@@ -2831,16 +2832,44 @@ def render_html(
                     </div>
                 </div>
                 <div class="people-index-controls">
-                    <span class="place-sort-label">⇅</span>
-                    <button id="people-sort-gaelic-btn" class="place-sort-btn sort-gd active" type="button">GD</button>
-                    <span class="place-sort-separator">|</span>
-                    <button id="people-sort-english-btn" class="place-sort-btn sort-en" type="button">EN</button>
-                </div>
-                <div class="people-list-controls">
-                    <button id="people-toggle-all-btn" class="tiny-btn" type="button">Collapse to letters</button>
-                    <button id="people-expand-visible-btn" class="tiny-btn" type="button">Expand visible records</button>
+                    <div class="people-index-controls-left">
+                        <span class="place-sort-label">⇅</span>
+                        <button id="people-sort-gaelic-btn" class="place-sort-btn sort-gd active" type="button">GD</button>
+                        <span class="place-sort-separator">|</span>
+                        <button id="people-sort-english-btn" class="place-sort-btn sort-en" type="button">EN</button>
+                    </div>
+                    <div class="people-detail-controls">
+                        <span class="people-detail-label">
+                            <span class="gaelic-dark">Mion-fhiosrachadh</span><span class="separator-accent"> | </span><span class="english-accent">Detail</span>
+                        </span>
+                        <button id="people-detail-less-btn" class="people-detail-btn" type="button" aria-label="Less detail">&lt;</button>
+                        <button id="people-detail-more-btn" class="people-detail-btn" type="button" aria-label="More detail">&gt;</button>
+                    </div>
                 </div>
                 <div id="all-people-list" class="people-list"></div>
+            </div>
+
+            <div id="traditions-panel-view" class="panel-view">
+                <div class="places-index-wrap">
+                    <div class="places-index-title">Traditions</div>
+                        <div class="info-header">
+                            <div class="intro location-intro bilingual-intro-grid">
+                                <div>
+                                    <span class="gaelic-dark">Briog air <strong>dualchas</strong> gus coimhearsnachdan Cheap Breatainn co-cheangailte ris a shealltainn.</span>
+                                </div>
+                                <div>
+                                    <span class="english-accent">Click on a <strong>tradition</strong> to show the associated Cape Breton communities.</span>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="places-index-controls">
+                        <span class="place-sort-label">⇅</span>
+                        <button id="tradition-sort-gaelic-btn" class="place-sort-btn sort-gd active" type="button">GD</button>
+                        <span class="place-sort-separator">|</span>
+                        <button id="tradition-sort-english-btn" class="place-sort-btn sort-en" type="button">EN</button>
+                    </div>
+                    <div id="traditions-index-list" class="traditions-index-list"></div>
+                </div>
             </div>
         </aside>
 
@@ -2863,13 +2892,6 @@ def render_html(
             </div>
 
             <div id="floating-overlays" class="floating-panel floating-overlays combined-traditions-panel">
-                <div class="floating-panel-header">
-                    <div class="section-title">
-                        <span class="gaelic-dark">Dualchasan Co-cheangailte</span>
-                        <span class="separator-accent"> | </span>
-                        <span class="english-accent">Associated Traditions</span>
-                    </div>
-                </div>
                 <div class="floating-panel-body combined-traditions-body">
                     <div class="combined-inset-block">
                         <div id="inset-selected-place-label" class="inset-selected-place-label"></div>
@@ -2950,9 +2972,17 @@ def render_html(
     const peopleByPlace = {json.dumps(people_lookup, ensure_ascii=False)};
     const allPeopleIndex = {json.dumps(all_people_index, ensure_ascii=False)};
     const overlayControlsAll = {json.dumps(overlay_controls_all, ensure_ascii=False)};
+    const traditionsLookup = {json.dumps(traditions_lookup, ensure_ascii=False)};
     const INITIAL_CENTER = {json.dumps(MAP_CENTER)};
     const INITIAL_ZOOM = {MAP_ZOOM};
+    const INITIAL_BOUNDS = {{
+        north: 47.05595763626309,
+        south: 45.45560137000942,
+        west: -61.61803600597501,
+        east: -59.64582664072555
+    }};
     const allPlaceKeys = {json.dumps(place_keys_sorted, ensure_ascii=False)};
+    const allTraditionKeys = {json.dumps(tradition_keys_sorted, ensure_ascii=False)};
 
 
     function escapeHtml(value) {{
@@ -3125,6 +3155,128 @@ def render_html(
         setActivePlaceInList(currentLocationPlaceKey);
     }}
 
+    let currentTraditionSort = 'gaelic';
+
+    function getTraditionSortLabel(traditionKey, mode = currentTraditionSort) {{
+        const tradition = traditionsLookup[String(traditionKey)] || {{}};
+        if (mode === 'english') {{
+            return (tradition.label_english || tradition.label_gaelic || tradition.label_plain || '').trim();
+        }}
+        return (tradition.label_gaelic || tradition.label_english || tradition.label_plain || '').trim();
+    }}
+
+    function getSortedTraditionKeys(mode = currentTraditionSort) {{
+        return allTraditionKeys.slice().sort((a, b) => {{
+            const aLabel = getTraditionSortLabel(a, mode).toLocaleLowerCase();
+            const bLabel = getTraditionSortLabel(b, mode).toLocaleLowerCase();
+            return aLabel.localeCompare(bLabel) || String(a).localeCompare(String(b));
+        }});
+    }}
+
+    function updateTraditionSortButtons() {{
+        if (traditionSortGaelicBtn) traditionSortGaelicBtn.classList.toggle('active', currentTraditionSort === 'gaelic');
+        if (traditionSortEnglishBtn) traditionSortEnglishBtn.classList.toggle('active', currentTraditionSort === 'english');
+    }}
+
+    function renderTraditionInlineDetail(traditionKey, activeCommunityKey = null) {{
+        const tradition = traditionsLookup[String(traditionKey)];
+        if (!tradition) {{
+            return '<div class="place-list-detail"><div class="empty">No data found for that tradition.</div></div>';
+        }}
+
+        const communities = (tradition.community_places || []).slice().sort((a, b) => {{
+            const aLabel = currentTraditionSort === 'english'
+                ? (a.place_name_english || a.place_name_gaelic || a.place_name || '').toLocaleLowerCase()
+                : (a.place_name_gaelic || a.place_name_english || a.place_name || '').toLocaleLowerCase();
+            const bLabel = currentTraditionSort === 'english'
+                ? (b.place_name_english || b.place_name_gaelic || b.place_name || '').toLocaleLowerCase()
+                : (b.place_name_gaelic || b.place_name_english || b.place_name || '').toLocaleLowerCase();
+            return aLabel.localeCompare(bLabel) || String(a.place_key).localeCompare(String(b.place_key));
+        }});
+
+        if (!communities.length) {{
+            return '<div class="place-list-detail"><div class="empty">No Cape Breton communities are linked to this tradition.</div></div>';
+        }}
+
+        const items = communities.map((community) => {{
+            const isActive = String(activeCommunityKey || '') === String(community.place_key);
+            const labelHtml = formatBilingualHtml(
+                community.place_name_gaelic || '',
+                community.place_name_english || '',
+                'english-highlight-place'
+            );
+            const peopleCount = Number(community.people_count || 0);
+            return `
+                <button class="tradition-community-btn${{isActive ? ' active' : ''}}" type="button" data-tradition-community-key="${{escapeHtml(String(community.place_key))}}">
+                    <span class="place-list-name">${{labelHtml}}</span>
+                    <span class="place-list-meta">Informants: ${{peopleCount}}</span>
+                </button>`;
+        }}).join('');
+
+        return `<div class="place-list-detail"><div class="informants-pane tradition-community-pane"><div class="tradition-community-list">${{items}}</div></div></div>`;
+    }}
+
+    function renderTraditionsIndex(activeTraditionKey = null, activeCommunityKey = null) {{
+        if (!traditionsIndexList) return;
+
+        updateTraditionSortButtons();
+
+        const html = getSortedTraditionKeys().map((traditionKey) => {{
+            const tradition = traditionsLookup[String(traditionKey)] || {{}};
+            const isActive = String(activeTraditionKey || '') === String(traditionKey);
+            const labelHtml = formatBilingualHtml(
+                tradition.label_gaelic || '',
+                tradition.label_english || '',
+                'english-highlight-place'
+            );
+            const communityCount = Array.isArray(tradition.community_places) ? tradition.community_places.length : 0;
+
+            return `
+                <div class="place-list-item${{isActive ? ' active' : ''}}" data-tradition-key="${{escapeHtml(String(traditionKey))}}">
+                    <button class="place-list-btn${{isActive ? ' active' : ''}}" type="button" data-tradition-key="${{escapeHtml(String(traditionKey))}}">
+                        <span class="place-list-name">${{labelHtml}}</span>
+                        <span class="place-list-meta">Communities: ${{communityCount}}</span>
+                    </button>
+                    ${{isActive ? renderTraditionInlineDetail(traditionKey, activeCommunityKey) : ''}}
+                </div>`;
+        }}).join('');
+
+        traditionsIndexList.innerHTML = html;
+
+        traditionsIndexList.querySelectorAll('button[data-tradition-key]').forEach((btn) => {{
+            btn.addEventListener('click', function() {{
+                const traditionKey = this.dataset.traditionKey;
+                const isAlreadyActive = String(currentTraditionPanelKey || '') === String(traditionKey);
+                if (isAlreadyActive) {{
+                    clearTraditionPanelSelection(true);
+                    return;
+                }}
+                activateTradition(traditionKey, {{ source: 'list' }});
+            }});
+        }});
+
+        traditionsIndexList.querySelectorAll('[data-tradition-community-key]').forEach((btn) => {{
+            btn.addEventListener('click', function(event) {{
+                event.stopPropagation();
+                const communityKey = this.dataset.traditionCommunityKey;
+                const isAlreadyActive = String(currentTraditionCommunityKey || '') === String(communityKey);
+                if (isAlreadyActive) {{
+                    currentTraditionCommunityKey = null;
+                    renderTraditionsIndex(currentTraditionPanelKey, null);
+                    clearSelectionRing();
+                    hideSelectedPlaceLabel();
+                    return;
+                }}
+                activateTraditionCommunityPlace(communityKey);
+            }});
+        }});
+    }}
+
+    function setTraditionSort(mode) {{
+        currentTraditionSort = mode === 'english' ? 'english' : 'gaelic';
+        renderTraditionsIndex(currentTraditionPanelKey, currentTraditionCommunityKey);
+    }}
+
     function renderPersonCard(person, options = {{}}) {{
     const placeKey = options.placeKey || person.place_key || '';
     const latitude = options.latitude || person.latitude || '';
@@ -3197,12 +3349,30 @@ def render_html(
 
     function resetInfoPanel() {{
         currentLocationPlaceKey = null;
+        currentTraditionPanelKey = null;
+        currentTraditionCommunityKey = null;
         renderPlacesIndex(null);
+        renderTraditionsIndex(null, null);
+    }}
+
+    function clearTraditionPanelSelection(preserveMode = false) {{
+        currentTraditionPanelKey = null;
+        currentTraditionCommunityKey = null;
+        renderTraditionsIndex(null, null);
+        clearSelectionRing();
+        hideSelectedPlaceLabel();
+        clearAllTraditionsAndControls();
+        if (preserveMode) {{
+            setSidePanelMode('traditions');
+        }}
     }}
 
     function clearActivePlaceSelection() {{
         currentLocationPlaceKey = null;
+        currentTraditionPanelKey = null;
+        currentTraditionCommunityKey = null;
         renderPlacesIndex(null);
+        renderTraditionsIndex(null, null);
         clearSelectedPerson({{ restoreActivePlace: false }});
         clearAllTraditionsAndControls();
     }}
@@ -3361,6 +3531,8 @@ def render_html(
 
     function showAllTraditionsInCapeBreton() {{
         currentLocationPlaceKey = null;
+        currentTraditionPanelKey = null;
+        currentTraditionCommunityKey = null;
         resetInfoPanel();
         clearSelectedPerson();
         clearSelectionRing();
@@ -3369,6 +3541,7 @@ def render_html(
         currentOverlayTraditionKeys = allKeys.slice();
         overlayListCleared = false;
         renderPlacesIndex(null);
+        renderTraditionsIndex(null, null);
         renderOverlayControls(currentOverlayTraditionKeys, true);
         setAllTraditionsVisibleByKeys(currentOverlayTraditionKeys, true);
         updateOverlayListActionButton();
@@ -3377,15 +3550,25 @@ def render_html(
         Plotly.redraw(mapDiv);
         Plotly.redraw(insetMapDiv);
     }}
-
+        
+    function fitMainMapToInitialBounds() {{
+        if (!subplotMap || typeof subplotMap.fitBounds !== 'function') return;
+    
+        subplotMap.fitBounds(
+            [
+                [INITIAL_BOUNDS.west, INITIAL_BOUNDS.south],
+                [INITIAL_BOUNDS.east, INITIAL_BOUNDS.north]
+            ],
+            {{
+                padding: 0,
+                duration: 0
+            }}
+        );
+    }}        
+        
     function resetMainMapAndPanels() {{
         clearActivePlaceSelection();
-
-        Plotly.relayout(mapDiv, {{
-            'map.center.lat': INITIAL_CENTER.lat,
-            'map.center.lon': INITIAL_CENTER.lon,
-            'map.zoom': INITIAL_ZOOM
-        }});
+        fitMainMapToInitialBounds();
     }}
     
     let currentOverlayTraditionKeys = [];
@@ -3393,6 +3576,10 @@ def render_html(
 
     function showLocationTraditionsSection(placeKey) {{
         const place = placesLookup[String(placeKey)];
+        currentTraditionPanelKey = null;
+        currentTraditionCommunityKey = null;
+        renderTraditionsIndex(null, null);
+
         if (!place) {{
             currentOverlayTraditionKeys = [];
             overlayListCleared = false;
@@ -3444,6 +3631,58 @@ def render_html(
         currentLocationPlaceKey = String(placeKey);
         setSidePanelMode('location');
         renderPlace(placeKey);
+        Plotly.restyle(
+            mapDiv,
+            {{ lat: [[place.latitude], [place.latitude]], lon: [[place.longitude], [place.longitude]] }},
+            [1, 2]
+        );
+        showSelectedPlaceLabel(place, place.latitude, place.longitude);
+    }}
+
+    function activateTradition(traditionKey, options = {{}}) {{
+        const tradition = traditionsLookup[String(traditionKey)];
+        if (!tradition) return;
+
+        clearSelectedPerson({{ restoreActivePlace: false }});
+        currentLocationPlaceKey = null;
+        currentTraditionPanelKey = String(traditionKey);
+        currentTraditionCommunityKey = null;
+        renderPlacesIndex(null);
+        renderTraditionsIndex(currentTraditionPanelKey, null);
+        setSidePanelMode('traditions');
+
+        currentOverlayTraditionKeys = [String(traditionKey)];
+        overlayListCleared = false;
+        renderOverlayControls(currentOverlayTraditionKeys, true);
+        setAllTraditionsVisibleByKeys(currentOverlayTraditionKeys, true);
+        updateOverlayListActionButton();
+
+        clearSelectionRing();
+        hideSelectedPlaceLabel();
+
+        Plotly.restyle(
+            insetMapDiv,
+            {{
+                lat: [[tradition.latitude], [tradition.latitude]],
+                lon: [[tradition.longitude], [tradition.longitude]]
+            }},
+            [0, 1]
+        );
+        showInsetSelectedPlaceLabel(tradition.label_plain, tradition.latitude, tradition.longitude);
+
+        Plotly.redraw(mapDiv);
+        Plotly.redraw(insetMapDiv);
+    }}
+
+    function activateTraditionCommunityPlace(placeKey) {{
+        const place = placesLookup[String(placeKey)];
+        if (!place || !currentTraditionPanelKey) return;
+
+        clearSelectedPerson({{ restoreActivePlace: false }});
+        currentLocationPlaceKey = null;
+        currentTraditionCommunityKey = String(placeKey);
+        renderTraditionsIndex(currentTraditionPanelKey, currentTraditionCommunityKey);
+
         Plotly.restyle(
             mapDiv,
             {{ lat: [[place.latitude], [place.latitude]], lon: [[place.longitude], [place.longitude]] }},
@@ -3534,10 +3773,16 @@ def render_html(
 
     function setSidePanelMode(mode) {{
         const showLocation = mode === 'location';
+        const showAllPeople = mode === 'all';
+        const showTraditions = mode === 'traditions';
+
         locationPanelView.classList.toggle('active', showLocation);
-        allPeoplePanelView.classList.toggle('active', !showLocation);
+        allPeoplePanelView.classList.toggle('active', showAllPeople);
+        traditionsPanelView.classList.toggle('active', showTraditions);
+
         modeLocationBtn.classList.toggle('active', showLocation);
-        modeAllPeopleBtn.classList.toggle('active', !showLocation);
+        modeAllPeopleBtn.classList.toggle('active', showAllPeople);
+        modeTraditionsBtn.classList.toggle('active', showTraditions);
 
         if (showLocation) {{
             clearSelectedPerson();
@@ -3745,86 +3990,97 @@ def render_html(
     function renderAllPeopleList() {{
         allPeopleList.innerHTML = buildAllPeopleListHtml();
         wirePersonSelectionBehaviour();
-        visibleRecordsExpanded = false;
-        previousVisibleRecordStates = new Map();
-        allPeopleShown = true;
-        if (peopleToggleAllBtn) {{
-            peopleToggleAllBtn.textContent = 'Collapse to letters';
-        }}
     }}
-    
-    function openAllLetterGroups() {{
-        document.querySelectorAll('#all-people-list details.people-letter-group').forEach((el) => {{
-            el.open = true;
+
+    function getAllPeopleLetterGroups() {{
+        return Array.from(document.querySelectorAll('#all-people-list details.people-letter-group'));
+    }}
+
+    function getOpenPeopleLetterGroups() {{
+        return getAllPeopleLetterGroups().filter((group) => group.open);
+    }}
+
+    function getAllPeopleCards() {{
+        return Array.from(document.querySelectorAll('#all-people-list details.person-card'));
+    }}
+
+    function getVisiblePeopleCards() {{
+        const cards = [];
+        getOpenPeopleLetterGroups().forEach((group) => {{
+            cards.push(...Array.from(group.querySelectorAll('details.person-card')));
         }});
-        visibleRecordsExpanded = false;
-        previousVisibleRecordStates = new Map();
-        allPeopleShown = true;
-        if (peopleToggleAllBtn) {{
-            peopleToggleAllBtn.textContent = 'Collapse to letters';
-        }}
+        return cards;
     }}
-    
+
+    function closeOpenPersonCards() {{
+        getAllPeopleCards().forEach((card) => {{
+            card.open = false;
+        }});
+    }}
+
+    function openVisiblePeopleCards() {{
+        getVisiblePeopleCards().forEach((card) => {{
+            card.open = true;
+        }});
+    }}
+
+    function openAllPeopleCards() {{
+        getAllPeopleCards().forEach((card) => {{
+            card.open = true;
+        }});
+    }}
+
+    function openAllLetterGroupsPreservingCards() {{
+        getAllPeopleLetterGroups().forEach((group) => {{
+            group.open = true;
+        }});
+    }}
+
     function collapseAllLetterGroups() {{
-        document.querySelectorAll('#all-people-list details.people-letter-group').forEach((el) => {{
-            el.open = false;
+        getAllPeopleLetterGroups().forEach((group) => {{
+            group.open = false;
         }});
-        document.querySelectorAll('#all-people-list details.person-card').forEach((el) => {{
-            el.open = false;
-        }});
-        visibleRecordsExpanded = false;
-        previousVisibleRecordStates = new Map();
-        allPeopleShown = false;
-        if (peopleToggleAllBtn) {{
-            peopleToggleAllBtn.textContent = 'Show all names';
+        closeOpenPersonCards();
+    }}
+
+    function increasePeopleDetail() {{
+        const allGroups = getAllPeopleLetterGroups();
+        const openGroups = getOpenPeopleLetterGroups();
+        const allCards = getAllPeopleCards();
+        const visibleCards = getVisiblePeopleCards();
+
+        const allGroupsOpen = allGroups.length > 0 && openGroups.length === allGroups.length;
+        const visibleCardsHaveClosed = visibleCards.some((card) => !card.open);
+        const allCardsOpen = allCards.length > 0 && allCards.every((card) => card.open);
+
+        if (!allGroupsOpen) {{
+            if (openGroups.length > 0 && visibleCardsHaveClosed) {{
+                openVisiblePeopleCards();
+                return;
+            }}
+            openAllLetterGroupsPreservingCards();
+            return;
+        }}
+
+        if (!allCardsOpen) {{
+            openAllPeopleCards();
         }}
     }}
-    
-    function toggleAllLetterGroups() {{
-        if (allPeopleShown) {{
+
+    function decreasePeopleDetail() {{
+        const allCards = getAllPeopleCards();
+        const hasAnyOpenCards = allCards.some((card) => card.open);
+        if (hasAnyOpenCards) {{
+            closeOpenPersonCards();
+            return;
+        }}
+
+        const openGroups = getOpenPeopleLetterGroups();
+        if (openGroups.length > 0) {{
             collapseAllLetterGroups();
-        }} else {{
-            openAllLetterGroups();
-            document.querySelectorAll('#all-people-list details.all-people-card').forEach((el) => {{
-                el.open = false;
-            }});
-            visibleRecordsExpanded = false;
-            previousVisibleRecordStates = new Map();
         }}
     }}
-    
-    function expandVisiblePeopleRecords() {{
-        const visibleCards = [];
-    
-        document.querySelectorAll('#all-people-list details.people-letter-group').forEach((group, groupIndex) => {{
-            if (!group.open) return;
-    
-            const cards = group.querySelectorAll('details.person-card');
-            cards.forEach((card, cardIndex) => {{
-                visibleCards.push({{
-                    key: `${{groupIndex}}-${{cardIndex}}`,
-                    card: card
-                }});
-            }});
-        }});
-    
-        if (!visibleRecordsExpanded) {{
-            previousVisibleRecordStates = new Map();
-            visibleCards.forEach(({{ key, card }}) => {{
-                previousVisibleRecordStates.set(key, card.open);
-                card.open = true;
-            }});
-            visibleRecordsExpanded = true;
-        }} else {{
-            visibleCards.forEach(({{key, card}}) => {{
-                card.open = previousVisibleRecordStates.has(key)
-                    ? previousVisibleRecordStates.get(key)
-                    : false;
-            }});
-            visibleRecordsExpanded = false;
-        }}
-    }}
-    
+
     function wireLocationPersonSelectionBehaviour() {{
         document.querySelectorAll('#places-index-list .place-list-detail details.person-card').forEach((card) => {{
             const summary = card.querySelector(':scope > summary');
@@ -3859,6 +4115,9 @@ def render_html(
     const sortEnglishBtn = document.getElementById('sort-english-btn');
     const peopleSortGaelicBtn = document.getElementById('people-sort-gaelic-btn');
     const peopleSortEnglishBtn = document.getElementById('people-sort-english-btn');
+    const traditionSortGaelicBtn = document.getElementById('tradition-sort-gaelic-btn');
+    const traditionSortEnglishBtn = document.getElementById('tradition-sort-english-btn');
+    const traditionsIndexList = document.getElementById('traditions-index-list');
     const overlayEmptyDefault = document.getElementById('overlay-empty-default');
     const combinedControlsBlock = document.getElementById('combined-controls-block');
 
@@ -3890,13 +4149,21 @@ def render_html(
     if (peopleSortEnglishBtn) {{
         peopleSortEnglishBtn.addEventListener('click', () => setPeopleSort('english'));
     }}
+    if (traditionSortGaelicBtn) {{
+        traditionSortGaelicBtn.addEventListener('click', () => setTraditionSort('gaelic'));
+    }}
+    if (traditionSortEnglishBtn) {{
+        traditionSortEnglishBtn.addEventListener('click', () => setTraditionSort('english'));
+    }}
     const modeLocationBtn = document.getElementById('mode-location-btn');
     const modeAllPeopleBtn = document.getElementById('mode-all-people-btn');
+    const modeTraditionsBtn = document.getElementById('mode-traditions-btn');
     const locationPanelView = document.getElementById('location-panel-view');
     const allPeoplePanelView = document.getElementById('all-people-panel-view');
+    const traditionsPanelView = document.getElementById('traditions-panel-view');
     const allPeopleList = document.getElementById('all-people-list');
-    const peopleToggleAllBtn = document.getElementById('people-toggle-all-btn');
-    const peopleExpandVisibleBtn = document.getElementById('people-expand-visible-btn');
+    const peopleDetailLessBtn = document.getElementById('people-detail-less-btn');
+    const peopleDetailMoreBtn = document.getElementById('people-detail-more-btn');
     const mapControlsBtn = document.getElementById('map-controls-btn');
     const mapControlsPopup = document.getElementById('map-controls-popup');
     const mapControlsPopupClose = document.getElementById('map-controls-popup-close');
@@ -3907,10 +4174,24 @@ def render_html(
     let insetSubplotMap = null;
     let suppressNextMainBackgroundClick = false;
     let suppressNextInsetBackgroundClick = false;
-    let visibleRecordsExpanded = false;
-    let previousVisibleRecordStates = new Map();
-    let allPeopleShown = true;
     let currentLocationPlaceKey = null;
+    let currentTraditionPanelKey = null;
+    let currentTraditionCommunityKey = null;
+    let mainMapResizeFrame = null;
+    let hasSeenInitialResizeObservation = false;
+
+    function refitMainMapAfterResize() {{
+        if (!subplotMap) return;
+    
+        if (mainMapResizeFrame) {{
+            cancelAnimationFrame(mainMapResizeFrame);
+        }}
+    
+        mainMapResizeFrame = requestAnimationFrame(function() {{
+            Plotly.Plots.resize(mapDiv);
+            fitMainMapToInitialBounds();
+        }});
+    }}
 
     function wireMainMapAttributionToggle() {{
         const attrib =
@@ -4001,6 +4282,7 @@ def render_html(
     ).then(function() {{
         wireMainMapAttributionToggle();
         wireMapControlsPopup();
+        Plotly.Plots.resize(mapDiv);
 
         Plotly.newPlot(
             insetMapDiv,
@@ -4014,6 +4296,7 @@ def render_html(
             }}
         ).then(function() {{
             renderPlacesIndex(null);
+            renderTraditionsIndex(null, null);
             renderOverlayControls([]);
             updateOverlayListActionButton();
             showOverlayDefaultMessage();
@@ -4084,6 +4367,21 @@ def render_html(
             mapDiv?._fullLayout?.mapbox?._subplot?.map ||
             null;
 
+        if (typeof ResizeObserver === 'function') {{
+            const mainMapResizeObserver = new ResizeObserver(function() {{
+                if (!hasSeenInitialResizeObservation) {{
+                    hasSeenInitialResizeObservation = true;
+                    return;
+                }}
+                refitMainMapAfterResize();
+            }});
+            mainMapResizeObserver.observe(mapDiv);
+        }}
+        
+        window.addEventListener('resize', function() {{
+            refitMainMapAfterResize();
+        }});
+    
         mapDiv.on('plotly_click', function(eventData) {{
             if (!eventData || !eventData.points || !eventData.points.length) {{
                 return;
@@ -4160,18 +4458,23 @@ def render_html(
 
     modeAllPeopleBtn.addEventListener('click', function() {{
         setSidePanelMode('all');
-        if (peopleToggleAllBtn) {{
-            peopleToggleAllBtn.textContent = allPeopleShown ? 'Collapse list to letters' : 'Show all names';
-        }}
     }});
 
-        peopleToggleAllBtn.addEventListener('click', function() {{
-        toggleAllLetterGroups();
+    modeTraditionsBtn.addEventListener('click', function() {{
+        setSidePanelMode('traditions');
     }});
-    
-    peopleExpandVisibleBtn.addEventListener('click', function() {{
-        expandVisiblePeopleRecords();
-    }});
+
+    if (peopleDetailLessBtn) {{
+        peopleDetailLessBtn.addEventListener('click', function() {{
+            decreasePeopleDetail();
+        }});
+    }}
+
+    if (peopleDetailMoreBtn) {{
+        peopleDetailMoreBtn.addEventListener('click', function() {{
+            increasePeopleDetail();
+        }});
+    }}
 
     document.addEventListener('click', function(event) {{
         const clickedPersonCard = event.target.closest('details.person-card');
@@ -4180,7 +4483,7 @@ def render_html(
         const clickedMapMarker = event.target.closest('#map, #selected-place-label');
         if (clickedMapMarker) return;
 
-        const clickedPlaceListControl = event.target.closest('#places-index-list, .places-index-controls');
+        const clickedPlaceListControl = event.target.closest('#places-index-list, #traditions-index-list, .places-index-controls');
         if (clickedPlaceListControl) return;
     
         clearSelectedPerson();
