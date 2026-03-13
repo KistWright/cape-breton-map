@@ -2815,8 +2815,8 @@ def render_html(
         right: calc(min(22%, 340px) + 28px);
         left: auto;
         bottom: auto;
-        width: 28px;
-        height: 28px;
+        width: 40px;
+        height: 40px;
         border: 1px solid rgba(25, 41, 48, 0.12);
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.96);
@@ -2835,8 +2835,8 @@ def render_html(
     }}
 
     .map-controls-btn svg {{
-        width: 18px;
-        height: 18px;
+        width: 40px;
+        height: 40px;
         display: block;
     }}
 
@@ -3189,18 +3189,29 @@ def render_html(
                 </span>
             </button>
                 
-            <button id="map-controls-btn" class="map-controls-btn" type="button" aria-label="Show map controls">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <rect x="5" y="2.5" width="8" height="13" rx="4" stroke-width="1.8"/>
-                    <line x1="9" y1="2.5" x2="9" y2="6.5" stroke-width="1.8" stroke-linecap="round"/>
-                    <line x1="15.5" y1="12" x2="21.5" y2="12" stroke-width="1.8" stroke-linecap="round"/>
-                    <polyline points="17.8,9.8 15.5,12 17.8,14.2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    <polyline points="19.2,9.8 21.5,12 19.2,14.2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    <line x1="18.5" y1="16" x2="18.5" y2="22" stroke-width="1.8" stroke-linecap="round"/>
-                    <polyline points="16.3,18.3 18.5,16 20.7,18.3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    <polyline points="16.3,19.7 18.5,22 20.7,19.7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
+<button id="map-controls-btn" class="map-controls-btn" type="button" aria-label="Show map controls">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g transform="translate(0 2.6)">
+            <!-- mouse -->
+            <rect x="4.5" y="2.5" width="8" height="13" rx="4" stroke-width="1.8"/>
+            <line x1="8.5" y1="2.5" x2="8.5" y2="6.5" stroke-width="1.8" stroke-linecap="round"/>
+        </g>
+
+        <g transform="translate(0 0.8)">
+            <!-- question mark -->
+            <path d="M15.4 8.2
+                     C15.4 6.9 16.3 6.1 17.6 6.1
+                     C18.8 6.1 19.7 6.9 19.7 8.0
+                     C19.7 8.8 19.3 9.4 18.4 10.0
+                     C17.6 10.5 17.2 11.0 17.2 11.8"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+            <circle cx="17.2" cy="14.8" r="0.9" fill="{TITLE_COLOUR}" stroke="none"/>
+        </g>
+    </svg>
+</button>
+
 
             <div id="map-controls-popup" class="map-controls-popup hidden" aria-hidden="true">
                 <button id="map-controls-popup-close" class="map-controls-popup-close" type="button" aria-label="Close map controls"></button>
