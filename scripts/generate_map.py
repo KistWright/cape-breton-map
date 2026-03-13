@@ -300,7 +300,7 @@ There are two parts to this:
 
 1. Data exported from Python into JS
    Examples:
-       const mainFigureSpec = ...
+       const capeBretonFigureSpec = ...
        const placesLookup = ...
        const peopleByPlace = ...
        const allPeopleIndex = ...
@@ -432,13 +432,6 @@ MAP_ZOOM = 8.1
 
 SCOTLAND_CENTER = {"lat": 57.0, "lon": -5.2}
 SCOTLAND_ZOOM = 5.3
-
-SCOTLAND_MAIN_BOUNDS = {
-    "north": 58.72183467850293,
-    "south": 55.240843103743444,
-    "west": -7.969807341730092,
-    "east": -1.6161098569124013,
-}
 
 ACCENT = "#8CC7EA"
 TITLE_COLOUR = "#1F5F99"
@@ -892,8 +885,7 @@ def build_tradition_overlay_specs(
     return specs
 
 
-
-def make_cape_breton_figure(places_df: pd.DataFrame, tradition_specs: list[dict[str, Any]]) -> go.Figure:
+def make_main_figure(places_df: pd.DataFrame, tradition_specs: list[dict[str, Any]]) -> go.Figure:
     counts = places_df["people_count"].fillna(0).astype(float)
     sizes = np.where(counts > 0, 10 + np.sqrt(counts) * 5, 8)
 
@@ -986,12 +978,11 @@ def make_cape_breton_figure(places_df: pd.DataFrame, tradition_specs: list[dict[
         margin={"l": 0, "r": 0, "t": 0, "b": 0},
         autosize=True,
         showlegend=False,
-        hoverlabel={"font": {"size": 10}},
     )
     return fig
 
 
-def make_scotland_figure(tradition_specs: list[dict[str, Any]]) -> go.Figure:
+def make_inset_figure(tradition_specs: list[dict[str, Any]]) -> go.Figure:
     fig = go.Figure()
 
     fig.add_trace(
@@ -1051,25 +1042,15 @@ def make_scotland_figure(tradition_specs: list[dict[str, Any]]) -> go.Figure:
             "domain": {"x": [0.0, 1.0], "y": [0.0, 1.0]},
         },
         margin={"l": 0, "r": 0, "t": 0, "b": 0},
-        autosize=True,
         showlegend=False,
         hoverlabel={"font": {"size": 10}},
     )
     return fig
 
 
-def make_main_figure(places_df: pd.DataFrame, tradition_specs: list[dict[str, Any]]) -> go.Figure:
-    return make_cape_breton_figure(places_df, tradition_specs)
-
-
-def make_inset_figure(tradition_specs: list[dict[str, Any]]) -> go.Figure:
-    return make_scotland_figure(tradition_specs)
-
 def render_html(
-        cape_breton_main_fig: go.Figure,
-        scotland_inset_fig: go.Figure,
-        scotland_main_fig: go.Figure,
-        cape_breton_inset_fig: go.Figure,
+        main_fig: go.Figure,
+        inset_fig: go.Figure,
         places_df: pd.DataFrame,
         people_lookup: dict[str, list[dict[str, str]]],
         all_people_index: list[dict[str, str]],
@@ -1077,10 +1058,8 @@ def render_html(
         tradition_specs: list[dict[str, Any]],
         output_path: Path,
 ) -> None:
-    cape_breton_main_fig_dict = cape_breton_main_fig.to_dict()
-    scotland_inset_fig_dict = scotland_inset_fig.to_dict()
-    scotland_main_fig_dict = scotland_main_fig.to_dict()
-    cape_breton_inset_fig_dict = cape_breton_inset_fig.to_dict()
+    main_fig_dict = main_fig.to_dict()
+    inset_fig_dict = inset_fig.to_dict()
     plotly_js = get_plotlyjs()
 
     places_lookup = {
@@ -1123,10 +1102,8 @@ def render_html(
 
     overlay_controls_all = [
         {
-            "cb_main_trace_index": 3 + idx,
-            "scotland_inset_trace_index": 2 + idx,
-            "scotland_main_trace_index": 2 + idx,
-            "cb_inset_trace_index": 3 + idx,
+            "main_trace_index": 3 + idx,
+            "inset_trace_index": 2 + idx,
             "tradition_key": spec["tradition_key"],
             "label_plain": spec["label_plain"],
             "label_gaelic": spec["label_gaelic"],
@@ -1667,6 +1644,21 @@ def render_html(
         overflow: hidden;
     }}
 
+    .main-map-slot {{
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: opacity 180ms ease;
+    }}
+
+    .main-map-slot.map-slot-swapping,
+    .combined-inset-block.map-slot-swapping {{
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        transition: none !important;
+    }}
+
     #map {{
         width: 100%;
         height: 100%;
@@ -1811,6 +1803,7 @@ def render_html(
         flex-direction: column;
         padding-bottom: 10px;
         border-bottom: 1px solid rgba(25, 41, 48, 0.08);
+        transition: opacity 180ms ease;
     }}
 
     .combined-controls-block {{
@@ -2625,20 +2618,21 @@ def render_html(
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
     }}
 
-    #inset-map .mapboxgl-ctrl-bottom-right,
-    #inset-map .maplibregl-ctrl-bottom-right {{
+    [data-slot-role="inset"] .mapboxgl-ctrl-bottom-right,
+    [data-slot-role="inset"] .maplibregl-ctrl-bottom-right {{
         display: none !important;
     }}
 
-    #map .mapboxgl-ctrl-bottom-right,
-    #map .maplibregl-ctrl-bottom-right {{
+    [data-slot-role="main"] .mapboxgl-ctrl-bottom-right,
+    [data-slot-role="main"] .maplibregl-ctrl-bottom-right {{
         left: auto !important;
         right: calc(min(22%, 340px) + 28px) !important;
         bottom: 18px !important;
+        display: block !important;
     }}
     
-    #map .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl,
-    #map .maplibregl-ctrl-bottom-right .maplibregl-ctrl {{
+    [data-slot-role="main"] .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl,
+    [data-slot-role="main"] .maplibregl-ctrl-bottom-right .maplibregl-ctrl {{
         margin: 0 !important;
         padding: 0 !important;
         background: transparent !important;
@@ -2646,8 +2640,8 @@ def render_html(
         box-shadow: none !important;
     }}
     
-    #map .mapboxgl-ctrl-attrib,
-    #map .maplibregl-ctrl-attrib {{
+    [data-slot-role="main"] .mapboxgl-ctrl-attrib,
+    [data-slot-role="main"] .maplibregl-ctrl-attrib {{
         position: relative;
         overflow: visible !important;
         margin: 0 !important;
@@ -2665,8 +2659,8 @@ def render_html(
         z-index: 1005;
     }}
 
-    #map .mapboxgl-ctrl-attrib-button,
-    #map .maplibregl-ctrl-attrib-button {{
+    [data-slot-role="main"] .mapboxgl-ctrl-attrib-button,
+    [data-slot-role="main"] .maplibregl-ctrl-attrib-button {{
         display: block !important;
         width: 22px !important;
         height: 22px !important;
@@ -2678,8 +2672,8 @@ def render_html(
         opacity: 1 !important;
     }}
     
-    #map .mapboxgl-ctrl-attrib.mapboxgl-compact-show,
-    #map .maplibregl-ctrl-attrib.maplibregl-compact-show {{
+    [data-slot-role="main"] .mapboxgl-ctrl-attrib.mapboxgl-compact-show,
+    [data-slot-role="main"] .maplibregl-ctrl-attrib.maplibregl-compact-show {{
         width: 22px !important;
         min-width: 22px !important;
         height: 22px !important;
@@ -2688,8 +2682,8 @@ def render_html(
         margin: 0 !important;
     }}
     
-    #map .mapboxgl-ctrl-attrib.attrib-open .mapboxgl-ctrl-attrib-inner,
-    #map .maplibregl-ctrl-attrib.attrib-open .maplibregl-ctrl-attrib-inner {{
+    [data-slot-role="main"] .mapboxgl-ctrl-attrib.attrib-open .mapboxgl-ctrl-attrib-inner,
+    [data-slot-role="main"] .maplibregl-ctrl-attrib.attrib-open .maplibregl-ctrl-attrib-inner {{
         position: absolute !important;
         right: 30px !important;
         left: auto !important;
@@ -2702,15 +2696,15 @@ def render_html(
         white-space: nowrap !important;
     }}
 
-    #map .mapboxgl-ctrl-attrib:not(.attrib-open) .mapboxgl-ctrl-attrib-inner,
-    #map .maplibregl-ctrl-attrib:not(.attrib-open) .maplibregl-ctrl-attrib-inner {{
+    [data-slot-role="main"] .mapboxgl-ctrl-attrib:not(.attrib-open) .mapboxgl-ctrl-attrib-inner,
+    [data-slot-role="main"] .maplibregl-ctrl-attrib:not(.attrib-open) .maplibregl-ctrl-attrib-inner {{
         visibility: hidden !important;
         opacity: 0 !important;
         pointer-events: none !important;
     }}
 
-    #map .mapboxgl-ctrl-attrib .mapboxgl-ctrl-attrib-inner,
-    #map .maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-inner {{
+    [data-slot-role="main"] .mapboxgl-ctrl-attrib .mapboxgl-ctrl-attrib-inner,
+    [data-slot-role="main"] .maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-inner {{
         position: absolute;
         right: 30px;
         left: auto;
@@ -2923,6 +2917,10 @@ def render_html(
 
     .map-panel {{
         min-height: 70vh;
+    }}
+
+    .main-map-slot {{
+        height: 70vh;
     }}
 
     #map {{
@@ -3138,7 +3136,7 @@ def render_html(
 
             <div id="floating-overlays" class="floating-panel floating-overlays combined-traditions-panel">
                 <div class="floating-panel-body combined-traditions-body">
-                    <div class="combined-inset-block">
+                    <div id="inset-map-slot" class="combined-inset-block" data-slot-role="inset" data-map-identity="scotland">
                         <div id="inset-selected-place-label" class="inset-selected-place-label"></div>
                         <div id="inset-map"></div>
                     </div>
@@ -3209,17 +3207,17 @@ def render_html(
                 {map_controls_svg}
             </div>
 
-            <div id="selected-place-label" class="selected-place-label"></div>
-            <div id="map"></div>
+            <div id="main-map-slot" class="main-map-slot" data-slot-role="main" data-map-identity="cape-breton">
+                <div id="selected-place-label" class="selected-place-label"></div>
+                <div id="map"></div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    const capeBretonMainFigureSpec = {json.dumps(cape_breton_main_fig_dict, ensure_ascii=False)};
-    const scotlandInsetFigureSpec = {json.dumps(scotland_inset_fig_dict, ensure_ascii=False)};
-    const scotlandMainFigureSpec = {json.dumps(scotland_main_fig_dict, ensure_ascii=False)};
-    const capeBretonInsetFigureSpec = {json.dumps(cape_breton_inset_fig_dict, ensure_ascii=False)};
+    const capeBretonFigureSpec = {json.dumps(main_fig_dict, ensure_ascii=False)};
+    const scotlandFigureSpec = {json.dumps(inset_fig_dict, ensure_ascii=False)};
     const placesLookup = {json.dumps(places_lookup, ensure_ascii=False)};
     const peopleByPlace = {json.dumps(people_lookup, ensure_ascii=False)};
     const allPeopleIndex = {json.dumps(all_people_index, ensure_ascii=False)};
@@ -3233,14 +3231,25 @@ def render_html(
         west: -61.61803600597501,
         east: -59.64582664072555
     }};
-    const INITIAL_SCOTLAND_MAIN_BOUNDS = {{
+    const SCOTLAND_DEFAULT_INSET_CENTER = {{lat: 57.0, lon: -5.2}};
+    const SCOTLAND_DEFAULT_INSET_ZOOM = 5.3;
+    const SCOTLAND_MAIN_BOUNDS = {{
         north: 58.72183467850293,
         south: 55.240843103743444,
-        west: -7.969807341730092,
-        east: -1.6161098569124013
+        east: -1.6161098569124013,
+        west: -7.969807341730092
     }};
+    const SCOTLAND_MAIN_CENTER = {{
+        lat: ((SCOTLAND_MAIN_BOUNDS.north + SCOTLAND_MAIN_BOUNDS.south) / 2) + 0.10,
+        lon: ((SCOTLAND_MAIN_BOUNDS.east + SCOTLAND_MAIN_BOUNDS.west) / 2) + 1.20
+    }};
+    const SCOTLAND_MAIN_ZOOM = 6.55;
+    const CAPE_BRETON_DEFAULT_INSET_CENTER = {{lat: 46.27, lon: -60.63}};
+    const CAPE_BRETON_DEFAULT_INSET_ZOOM = 6.70;
     const allPlaceKeys = {json.dumps(place_keys_sorted, ensure_ascii=False)};
     const allTraditionKeys = {json.dumps(tradition_keys_sorted, ensure_ascii=False)};
+    const MAP_VIEW_MODE_CAPE_BRETON_MAIN = 'cape-breton-main';
+    const MAP_VIEW_MODE_SCOTLAND_MAIN = 'scotland-main';
 
 
     function escapeHtml(value) {{
@@ -3276,7 +3285,7 @@ def render_html(
     }}
 
     function keepOnlySnapshotButton() {{
-        const buttons = mapDiv.querySelectorAll('.modebar-btn');
+        const buttons = capeBretonMapDiv.querySelectorAll('.modebar-btn');
         buttons.forEach((btn) => {{
             const title = btn.getAttribute('data-title') || '';
             if (!/download plot as a png/i.test(title)) {{
@@ -3284,7 +3293,7 @@ def render_html(
             }}
         }});
 
-        const groups = mapDiv.querySelectorAll('.modebar-group');
+        const groups = capeBretonMapDiv.querySelectorAll('.modebar-group');
         groups.forEach((group) => {{
             const visible = [...group.querySelectorAll('.modebar-btn')]
                 .some((btn) => btn.style.display !== 'none');
@@ -3636,65 +3645,63 @@ def render_html(
     }}
 
     function clearSelectionRing() {{
-        const traceIndexes = getMainHighlightTraceIndexes();
-        Plotly.restyle(mapDiv, {{lat: [[], []], lon: [[], []]}}, traceIndexes);
+        Plotly.restyle(capeBretonMapDiv, {{lat: [[], []], lon: [[], []]}}, [1, 2]);
     }}
 
     function clearInsetSelectionRing() {{
-        const traceIndexes = getInsetHighlightTraceIndexes();
-        Plotly.restyle(insetMapDiv, {{lat: [[], []], lon: [[], []]}}, traceIndexes);
+        Plotly.restyle(scotlandMapDiv, {{lat: [[], []], lon: [[], []]}}, [0, 1]);
     }}
 
     function hideSelectedPlaceLabel() {{
-        selectedPlaceState = null;
-        selectedPlaceLabel.style.display = 'none';
-        selectedPlaceLabel.innerHTML = '';
+        capeBretonSelectedPlaceState = null;
+        capeBretonSelectedPlaceLabel.style.display = 'none';
+        capeBretonSelectedPlaceLabel.innerHTML = '';
     }}
 
     function hideInsetSelectedPlaceLabel() {{
-        insetSelectedPlaceState = null;
-        insetSelectedPlaceLabel.style.display = 'none';
-        insetSelectedPlaceLabel.innerHTML = '';
+        scotlandSelectedPlaceState = null;
+        scotlandSelectedPlaceLabel.style.display = 'none';
+        scotlandSelectedPlaceLabel.innerHTML = '';
     }}
 
     function positionSelectedPlaceLabel() {{
-        if (!selectedPlaceState || !subplotMap || typeof subplotMap.project !== 'function') {{
+        if (!capeBretonSelectedPlaceState || !capeBretonSubplotMap || typeof capeBretonSubplotMap.project !== 'function') {{
             return;
         }}
 
-        const projected = subplotMap.project([selectedPlaceState.lon, selectedPlaceState.lat]);
+        const projected = capeBretonSubplotMap.project([capeBretonSelectedPlaceState.lon, capeBretonSelectedPlaceState.lat]);
         if (!projected) {{
             return;
         }}
 
-        selectedPlaceLabel.style.left = `${{projected.x}}px`;
-        selectedPlaceLabel.style.top = `${{projected.y}}px`;
-        selectedPlaceLabel.style.display = 'block';
+        capeBretonSelectedPlaceLabel.style.left = `${{projected.x}}px`;
+        capeBretonSelectedPlaceLabel.style.top = `${{projected.y}}px`;
+        capeBretonSelectedPlaceLabel.style.display = 'block';
     }}
 
     function positionInsetSelectedPlaceLabel() {{
-        if (!insetSelectedPlaceState || !insetSubplotMap || typeof insetSubplotMap.project !== 'function') {{
+        if (!scotlandSelectedPlaceState || !scotlandSubplotMap || typeof scotlandSubplotMap.project !== 'function') {{
             return;
         }}
 
-        const projected = insetSubplotMap.project([insetSelectedPlaceState.lon, insetSelectedPlaceState.lat]);
+        const projected = scotlandSubplotMap.project([scotlandSelectedPlaceState.lon, scotlandSelectedPlaceState.lat]);
         if (!projected) {{
             return;
         }}
 
-        insetSelectedPlaceLabel.style.left = `${{projected.x}}px`;
-        insetSelectedPlaceLabel.style.top = `${{projected.y}}px`;
-        insetSelectedPlaceLabel.style.display = 'block';
+        scotlandSelectedPlaceLabel.style.left = `${{projected.x}}px`;
+        scotlandSelectedPlaceLabel.style.top = `${{projected.y}}px`;
+        scotlandSelectedPlaceLabel.style.display = 'block';
     }}
 
     function showSelectedPlaceLabel(place, lat, lon) {{
-        selectedPlaceState = {{
+        capeBretonSelectedPlaceState = {{
             lat: lat,
             lon: lon,
             html: buildSelectedPlaceLabelHtml(place),
         }};
 
-        selectedPlaceLabel.innerHTML = selectedPlaceState.html;
+        capeBretonSelectedPlaceLabel.innerHTML = capeBretonSelectedPlaceState.html;
         positionSelectedPlaceLabel();
     }}
 
@@ -3712,53 +3719,14 @@ def render_html(
             html = `<span class="gaelic">${{escapeHtml(gaelic)}}</span>`;
         }}
 
-        insetSelectedPlaceState = {{
+        scotlandSelectedPlaceState = {{
             lat: lat,
             lon: lon,
             html: html,
         }};
 
-        insetSelectedPlaceLabel.innerHTML = html;
+        scotlandSelectedPlaceLabel.innerHTML = html;
         positionInsetSelectedPlaceLabel();
-    }}
-
-    function showCapeBretonSelection(place, lat, lon) {{
-        if (isCapeBretonMainView()) {{
-            setMainHighlightRing(lat, lon);
-            showSelectedPlaceLabel(place, lat, lon);
-        }} else {{
-            setInsetHighlightRing(lat, lon);
-            showInsetSelectedPlaceLabel(place.place_name || '', lat, lon);
-        }}
-    }}
-
-    function showScotlandSelection(tradition, lat, lon) {{
-        const traditionLabel = tradition.label_plain || `${{tradition.label_gaelic || ''}} | ${{tradition.label_english || ''}}`;
-        if (isCapeBretonMainView()) {{
-            setInsetHighlightRing(lat, lon);
-            showInsetSelectedPlaceLabel(traditionLabel, lat, lon);
-        }} else {{
-            setMainHighlightRing(lat, lon);
-            showSelectedPlaceLabel(
-                {{
-                    place_name_gaelic: tradition.label_gaelic || '',
-                    place_name_english: tradition.label_english || '',
-                    place_name: traditionLabel,
-                }},
-                lat,
-                lon
-            );
-        }}
-    }}
-
-    function clearCapeBretonSelectionVisuals() {{
-        if (isCapeBretonMainView()) {{
-            clearSelectionRing();
-            hideSelectedPlaceLabel();
-        }} else {{
-            clearInsetSelectionRing();
-            hideInsetSelectedPlaceLabel();
-        }}
     }}
 
     function setAllTraditionsVisibleByKeys(keys, checkedValue) {{
@@ -3770,18 +3738,17 @@ def render_html(
 
         for (const item of overlayControlsAll) {{
             const show = keySet.has(String(item.tradition_key)) && checkedValue;
-            const traceIndexes = getCurrentOverlayTraceIndexes(item);
-            mainTraceIndexes.push(traceIndexes.main);
+            mainTraceIndexes.push(item.main_trace_index);
             mainVisible.push(show);
-            insetTraceIndexes.push(traceIndexes.inset);
+            insetTraceIndexes.push(item.inset_trace_index);
             insetVisible.push(show);
         }}
 
         if (mainTraceIndexes.length) {{
-            Plotly.restyle(mapDiv, {{visible: mainVisible}}, mainTraceIndexes);
+            Plotly.restyle(capeBretonMapDiv, {{visible: mainVisible}}, mainTraceIndexes);
         }}
         if (insetTraceIndexes.length) {{
-            Plotly.restyle(insetMapDiv, {{visible: insetVisible}}, insetTraceIndexes);
+            Plotly.restyle(scotlandMapDiv, {{visible: insetVisible}}, insetTraceIndexes);
         }}
     }}
 
@@ -3827,13 +3794,83 @@ def render_html(
         hideInsetSelectedPlaceLabel();
     }}
         
-    function fitMainMapToInitialBounds() {{
-        fitBoundsForCurrentMainView();
-    }}        
+    let capeBretonViewportRequestId = 0;
 
+    function fitCapeBretonMapToInitialBounds() {{
+        const requestId = ++capeBretonViewportRequestId;
+        Plotly.relayout(capeBretonMapDiv, {{
+            'map.center': {{lat: INITIAL_CENTER.lat, lon: INITIAL_CENTER.lon}},
+            'map.zoom': INITIAL_ZOOM
+        }});
+
+        requestAnimationFrame(() => {{
+            if (requestId !== capeBretonViewportRequestId) return;
+            Plotly.relayout(capeBretonMapDiv, {{
+                'map.center': {{lat: INITIAL_CENTER.lat, lon: INITIAL_CENTER.lon}},
+                'map.zoom': INITIAL_ZOOM
+            }});
+        }});
+    }}
+
+    function fitCapeBretonMapToLegacyInitialBounds() {{
+        if (!capeBretonSubplotMap || typeof capeBretonSubplotMap.fitBounds !== 'function') return;
+    
+        capeBretonSubplotMap.fitBounds(
+            [
+                [INITIAL_BOUNDS.west, INITIAL_BOUNDS.south],
+                [INITIAL_BOUNDS.east, INITIAL_BOUNDS.north]
+            ],
+            {{
+                padding: 0,
+                duration: 0
+            }}
+        );
+    }}
+
+    function fitScotlandMapToMainBounds() {{
+        Plotly.relayout(scotlandMapDiv, {{
+            'map.center': {{lat: SCOTLAND_MAIN_CENTER.lat, lon: SCOTLAND_MAIN_CENTER.lon}},
+            'map.zoom': SCOTLAND_MAIN_ZOOM
+        }});
+    }}
+
+    function fitScotlandMapToInsetDefault() {{
+        Plotly.relayout(scotlandMapDiv, {{
+            'map.center': {{lat: SCOTLAND_DEFAULT_INSET_CENTER.lat, lon: SCOTLAND_DEFAULT_INSET_CENTER.lon}},
+            'map.zoom': SCOTLAND_DEFAULT_INSET_ZOOM
+        }});
+    }}
+
+    function fitCapeBretonMapToInsetDefault() {{
+        const requestId = ++capeBretonViewportRequestId;
+        Plotly.relayout(capeBretonMapDiv, {{
+            'map.center': {{lat: CAPE_BRETON_DEFAULT_INSET_CENTER.lat, lon: CAPE_BRETON_DEFAULT_INSET_CENTER.lon}},
+            'map.zoom': CAPE_BRETON_DEFAULT_INSET_ZOOM
+        }});
+
+        requestAnimationFrame(() => {{
+            if (requestId !== capeBretonViewportRequestId) return;
+            Plotly.relayout(capeBretonMapDiv, {{
+                'map.center': {{lat: CAPE_BRETON_DEFAULT_INSET_CENTER.lat, lon: CAPE_BRETON_DEFAULT_INSET_CENTER.lon}},
+                'map.zoom': CAPE_BRETON_DEFAULT_INSET_ZOOM
+            }});
+        }});
+    }}
+
+    function resetMapsForCurrentViewMode() {{
+        if (currentMapViewMode === MAP_VIEW_MODE_SCOTLAND_MAIN) {{
+            fitScotlandMapToMainBounds();
+            fitCapeBretonMapToInsetDefault();
+        }} else {{
+            fitCapeBretonMapToInitialBounds();
+            fitScotlandMapToInsetDefault();
+        }}
+    }}
+        
     function resetMainMapAndPanels() {{
         clearActivePlaceSelection();
-        fitMainMapToInitialBounds();
+        resetMapsForCurrentViewMode();
+        scheduleMapViewResize();
     }}
     
     let currentOverlayTraditionKeys = [];
@@ -3892,7 +3929,12 @@ def render_html(
         currentLocationPlaceKey = String(placeKey);
         setSidePanelMode('location');
         renderPlace(placeKey);
-        showCapeBretonSelection(place, place.latitude, place.longitude);
+        Plotly.restyle(
+            capeBretonMapDiv,
+            {{ lat: [[place.latitude], [place.latitude]], lon: [[place.longitude], [place.longitude]] }},
+            [1, 2]
+        );
+        showSelectedPlaceLabel(place, place.latitude, place.longitude);
     }}
 
     function activateTradition(traditionKey, options = {{}}) {{
@@ -3913,8 +3955,18 @@ def render_html(
         setAllTraditionsVisibleByKeys(currentOverlayTraditionKeys, true);
         updateOverlayListActionButton();
 
-        clearCapeBretonSelectionVisuals();
-        showScotlandSelection(tradition, tradition.latitude, tradition.longitude);
+        clearSelectionRing();
+        hideSelectedPlaceLabel();
+
+        Plotly.restyle(
+            scotlandMapDiv,
+            {{
+                lat: [[tradition.latitude], [tradition.latitude]],
+                lon: [[tradition.longitude], [tradition.longitude]]
+            }},
+            [0, 1]
+        );
+        showInsetSelectedPlaceLabel(tradition.label_plain, tradition.latitude, tradition.longitude);
 
     }}
 
@@ -3927,7 +3979,12 @@ def render_html(
         currentTraditionCommunityKey = String(placeKey);
         renderTraditionsIndex(currentTraditionPanelKey, currentTraditionCommunityKey);
 
-        showCapeBretonSelection(place, place.latitude, place.longitude);
+        Plotly.restyle(
+            capeBretonMapDiv,
+            {{ lat: [[place.latitude], [place.latitude]], lon: [[place.longitude], [place.longitude]] }},
+            [1, 2]
+        );
+        showSelectedPlaceLabel(place, place.latitude, place.longitude);
     }}
 
     function buildOverlayRowHtml(item, checked) {{
@@ -3935,7 +3992,7 @@ def render_html(
 
         return `
             <label class="overlay-row">
-                <input type="checkbox" class="tradition-toggle" data-tradition-key="${{item.tradition_key}}" ${{checked ? 'checked' : ''}}>
+                <input type="checkbox" class="tradition-toggle" data-tradition-key="${{item.tradition_key}}" data-main-trace-index="${{item.main_trace_index}}" data-inset-trace-index="${{item.inset_trace_index}}" ${{checked ? 'checked' : ''}}>
                 <span class="colour-chip" style="background:${{item.colour}};"></span>
                 <span class="overlay-label">${{labelHtml}}</span>
             </label>`;
@@ -3944,29 +4001,27 @@ def render_html(
     function renderOverlayControls(activeTraditionKeys, checkedState = true) {{
         const keySet = new Set((activeTraditionKeys || []).map(String));
         const items = overlayControlsAll.filter((item) => keySet.has(String(item.tradition_key)));
-
+    
         if (!items.length) {{
             overlayList.innerHTML = '';
             showOverlayDefaultMessage();
             updateOverlayListActionButton();
             return;
         }}
-
+    
         showOverlayControls();
         overlayList.innerHTML = items.map((item) => buildOverlayRowHtml(item, checkedState)).join('');
         updateOverlayListActionButton();
-
+    
         document.querySelectorAll('.tradition-toggle').forEach((checkbox) => {{
             checkbox.addEventListener('change', function() {{
-                const item = overlayControlsAll.find((overlayItem) => String(overlayItem.tradition_key) === String(this.dataset.traditionKey));
-                if (!item) return;
-
-                const traceIndexes = getCurrentOverlayTraceIndexes(item);
+                const mainTraceIndex = Number(this.dataset.mainTraceIndex);
+                const insetTraceIndex = Number(this.dataset.insetTraceIndex);
                 const visibleValue = this.checked;
-
-                Plotly.restyle(mapDiv, {{visible: visibleValue}}, [traceIndexes.main]);
-                Plotly.restyle(insetMapDiv, {{visible: visibleValue}}, [traceIndexes.inset]);
-
+        
+                Plotly.restyle(capeBretonMapDiv, {{visible: visibleValue}}, [mainTraceIndex]);
+                Plotly.restyle(scotlandMapDiv, {{visible: visibleValue}}, [insetTraceIndex]);
+        
                 clearInsetSelectionRing();
                 hideInsetSelectedPlaceLabel();
                 updateOverlayListActionButton();
@@ -3983,22 +4038,15 @@ def render_html(
         const visibleValues = [];
 
         checkboxes.forEach((checkbox) => {{
-            const item = overlayControlsAll.find((overlayItem) => String(overlayItem.tradition_key) === String(checkbox.dataset.traditionKey));
-            if (!item) return;
-            const traceIndexes = getCurrentOverlayTraceIndexes(item);
             checkbox.checked = isVisible;
-            mainTraceIndexes.push(traceIndexes.main);
-            insetTraceIndexes.push(traceIndexes.inset);
+            mainTraceIndexes.push(Number(checkbox.dataset.mainTraceIndex));
+            insetTraceIndexes.push(Number(checkbox.dataset.insetTraceIndex));
             visibleValues.push(isVisible);
         }});
 
-        if (mainTraceIndexes.length) {{
-            Plotly.restyle(mapDiv, {{visible: visibleValues}}, mainTraceIndexes);
-        }}
-        if (insetTraceIndexes.length) {{
-            Plotly.restyle(insetMapDiv, {{visible: visibleValues}}, insetTraceIndexes);
-        }}
-
+        Plotly.restyle(capeBretonMapDiv, {{visible: visibleValues}}, mainTraceIndexes);
+        Plotly.restyle(scotlandMapDiv, {{visible: visibleValues}}, insetTraceIndexes);
+        
         clearInsetSelectionRing();
         hideInsetSelectedPlaceLabel();
     }}
@@ -4012,7 +4060,7 @@ def render_html(
             floatingInset.classList.remove('hidden');
         }}
         setTimeout(() => {{
-            Plotly.Plots.resize(insetMapDiv);
+            Plotly.Plots.resize(scotlandMapDiv);
         }}, 0);
     }}
 
@@ -4127,11 +4175,19 @@ def render_html(
     function highlightPlaceFromPersonCard(placeKey, lat, lon) {{
             const place = placesLookup[String(placeKey)];
             if (!place) return;
-
-            showCapeBretonSelection(place, lat, lon);
+    
+            Plotly.restyle(
+                capeBretonMapDiv,
+                {{
+                    lat: [[lat], [lat]],
+                    lon: [[lon], [lon]]
+                }},
+                [1, 2]
+            );
+    
+            showSelectedPlaceLabel(place, lat, lon);
         }}
 
-    let selectedPersonCard = null;
     let selectedPersonCard = null;
 
     function clearSelectedPerson(options = {{}}) {{
@@ -4140,21 +4196,29 @@ def render_html(
         document.querySelectorAll('details.person-card.selected').forEach((card) => {{
             card.classList.remove('selected');
         }});
-
+    
         selectedPersonCard = null;
 
         if (restoreActivePlace && currentLocationPlaceKey) {{
             const activePlace = placesLookup[String(currentLocationPlaceKey)];
             if (activePlace) {{
-                showCapeBretonSelection(activePlace, activePlace.latitude, activePlace.longitude);
+                Plotly.restyle(
+                    capeBretonMapDiv,
+                    {{
+                        lat: [[activePlace.latitude], [activePlace.latitude]],
+                        lon: [[activePlace.longitude], [activePlace.longitude]]
+                    }},
+                    [1, 2]
+                );
+                showSelectedPlaceLabel(activePlace, activePlace.latitude, activePlace.longitude);
                 return;
             }}
         }}
 
-        clearCapeBretonSelectionVisuals();
+        clearSelectionRing();
+        hideSelectedPlaceLabel();
     }}
-
-    function selectPersonCard(card) {{
+    
     function selectPersonCard(card) {{
         if (!card) return;
     
@@ -4184,7 +4248,7 @@ def render_html(
         showLocationTraditionsSection(currentLocationPlaceKey);
     
         Plotly.restyle(
-            mapDiv,
+            capeBretonMapDiv,
             {{
                 lat: [[lat], [lat]],
                 lon: [[lon], [lon]]
@@ -4328,12 +4392,12 @@ def render_html(
         }});
     }}
     
-    const mapDiv = document.getElementById('map');
-    const insetMapDiv = document.getElementById('inset-map');
+    const capeBretonMapDiv = document.getElementById('map');
+    const scotlandMapDiv = document.getElementById('inset-map');
     const resetBtn = document.getElementById('reset-map-btn');
     const showAllCbBtn = document.getElementById('show-all-cb-btn');
-    const selectedPlaceLabel = document.getElementById('selected-place-label');
-    const insetSelectedPlaceLabel = document.getElementById('inset-selected-place-label');
+    const capeBretonSelectedPlaceLabel = document.getElementById('selected-place-label');
+    const scotlandSelectedPlaceLabel = document.getElementById('inset-selected-place-label');
     const overlayList = document.getElementById('overlay-list');
     const clearAllTraditionsBtn = document.getElementById('clear-all-traditions');
     const restoreAllTraditionsBtn = document.getElementById('restore-all-traditions');
@@ -4349,6 +4413,186 @@ def render_html(
     const traditionsIndexList = document.getElementById('traditions-index-list');
     const overlayEmptyDefault = document.getElementById('overlay-empty-default');
     const combinedControlsBlock = document.getElementById('combined-controls-block');
+    const mainMapSlot = document.getElementById('main-map-slot');
+    const insetMapSlot = document.getElementById('inset-map-slot');
+    const mapViewCapeBretonBtn = document.getElementById('map-view-cb-btn');
+    const mapViewScotlandBtn = document.getElementById('map-view-scotland-btn');
+
+    let currentMapViewMode = MAP_VIEW_MODE_CAPE_BRETON_MAIN;
+
+    function getCurrentMainMapIdentity() {{
+        return currentMapViewMode === MAP_VIEW_MODE_SCOTLAND_MAIN ? 'scotland' : 'cape-breton';
+    }}
+
+    function getCurrentInsetMapIdentity() {{
+        return currentMapViewMode === MAP_VIEW_MODE_SCOTLAND_MAIN ? 'cape-breton' : 'scotland';
+    }}
+
+    function syncMapSlotMetadata() {{
+        if (mainMapSlot) {{
+            mainMapSlot.dataset.slotRole = 'main';
+            mainMapSlot.dataset.mapIdentity = getCurrentMainMapIdentity();
+        }}
+        if (insetMapSlot) {{
+            insetMapSlot.dataset.slotRole = 'inset';
+            insetMapSlot.dataset.mapIdentity = getCurrentInsetMapIdentity();
+        }}
+    }}
+
+    function syncMapViewToggleUi() {{
+        const isCapeBretonMain = currentMapViewMode === MAP_VIEW_MODE_CAPE_BRETON_MAIN;
+        if (mapViewCapeBretonBtn) {{
+            mapViewCapeBretonBtn.classList.toggle('is-active', isCapeBretonMain);
+            mapViewCapeBretonBtn.setAttribute('aria-pressed', isCapeBretonMain ? 'true' : 'false');
+        }}
+        if (mapViewScotlandBtn) {{
+            mapViewScotlandBtn.classList.toggle('is-active', !isCapeBretonMain);
+            mapViewScotlandBtn.setAttribute('aria-pressed', !isCapeBretonMain ? 'true' : 'false');
+        }}
+    }}
+
+    function setMapSlotSwapMask(isActive) {{
+        if (mainMapSlot) {{
+            mainMapSlot.classList.toggle('map-slot-swapping', !!isActive);
+        }}
+        if (insetMapSlot) {{
+            insetMapSlot.classList.toggle('map-slot-swapping', !!isActive);
+        }}
+    }}
+
+    function scheduleMapViewResize(afterResizeCallback = null) {{
+        requestAnimationFrame(() => {{
+            requestAnimationFrame(() => {{
+                Plotly.Plots.resize(capeBretonMapDiv);
+                Plotly.Plots.resize(scotlandMapDiv);
+                if (capeBretonSubplotMap && typeof capeBretonSubplotMap.resize === 'function') {{
+                    capeBretonSubplotMap.resize();
+                }}
+                if (scotlandSubplotMap && typeof scotlandSubplotMap.resize === 'function') {{
+                    scotlandSubplotMap.resize();
+                }}
+                positionSelectedPlaceLabel();
+                positionInsetSelectedPlaceLabel();
+                wireMainMapAttributionToggle();
+                if (typeof afterResizeCallback === 'function') {{
+                    afterResizeCallback();
+                }}
+            }});
+        }});
+    }}
+
+    function settleMapsAfterSwap(releaseMask = false) {{
+        scheduleMapViewResize(() => {{
+            resetMapsForCurrentViewMode();
+            requestAnimationFrame(() => {{
+                scheduleMapViewResize(() => {{
+                    resetMapsForCurrentViewMode();
+                    requestAnimationFrame(() => {{
+                        positionSelectedPlaceLabel();
+                        positionInsetSelectedPlaceLabel();
+                        wireMainMapAttributionToggle();
+                        if (releaseMask) {{
+                            window.setTimeout(() => {{
+                                setMapSlotSwapMask(false);
+                            }}, 120);
+                        }}
+                    }});
+                }});
+            }});
+        }});
+    }}
+
+    function applyMapViewMode(options = {{}}) {{
+        const {{
+            resetInsetAfterSwap = false,
+            useTransitionMask = false
+        }} = options;
+
+        const mainIdentity = getCurrentMainMapIdentity();
+        const insetIdentity = getCurrentInsetMapIdentity();
+
+        const performSwap = () => {{
+            if (mainMapSlot) {{
+                if (mainIdentity === 'scotland') {{
+                    mainMapSlot.appendChild(scotlandSelectedPlaceLabel);
+                    mainMapSlot.appendChild(scotlandMapDiv);
+                }} else {{
+                    mainMapSlot.appendChild(capeBretonSelectedPlaceLabel);
+                    mainMapSlot.appendChild(capeBretonMapDiv);
+                }}
+            }}
+
+            if (insetMapSlot) {{
+                if (insetIdentity === 'cape-breton') {{
+                    insetMapSlot.appendChild(capeBretonSelectedPlaceLabel);
+                    insetMapSlot.appendChild(capeBretonMapDiv);
+                }} else {{
+                    insetMapSlot.appendChild(scotlandSelectedPlaceLabel);
+                    insetMapSlot.appendChild(scotlandMapDiv);
+                }}
+            }}
+
+            syncMapSlotMetadata();
+            syncMapViewToggleUi();
+            if (resetInsetAfterSwap) {{
+                settleMapsAfterSwap(useTransitionMask);
+            }} else {{
+                scheduleMapViewResize(() => {{
+                    positionSelectedPlaceLabel();
+                    positionInsetSelectedPlaceLabel();
+                    wireMainMapAttributionToggle();
+                    if (useTransitionMask) {{
+                        window.setTimeout(() => {{
+                            setMapSlotSwapMask(false);
+                        }}, 120);
+                    }}
+                }});
+            }}
+        }};
+
+        if (useTransitionMask) {{
+            setMapSlotSwapMask(true);
+            requestAnimationFrame(() => {{
+                requestAnimationFrame(() => {{
+                    performSwap();
+                }});
+            }});
+            return;
+        }}
+
+        performSwap();
+    }}
+
+    function setCurrentMapViewMode(nextMode) {{
+        const normalizedMode = nextMode === MAP_VIEW_MODE_SCOTLAND_MAIN
+            ? MAP_VIEW_MODE_SCOTLAND_MAIN
+            : MAP_VIEW_MODE_CAPE_BRETON_MAIN;
+
+        if (currentMapViewMode === normalizedMode) {{
+            applyMapViewMode();
+            return;
+        }}
+
+        currentMapViewMode = normalizedMode;
+        applyMapViewMode({{ resetInsetAfterSwap: true, useTransitionMask: true }});
+    }}
+
+    function wireMapViewToggleButtons() {{
+        if (mapViewCapeBretonBtn) {{
+            mapViewCapeBretonBtn.addEventListener('click', () => {{
+                setCurrentMapViewMode(MAP_VIEW_MODE_CAPE_BRETON_MAIN);
+            }});
+        }}
+
+        if (mapViewScotlandBtn) {{
+            mapViewScotlandBtn.addEventListener('click', () => {{
+                setCurrentMapViewMode(MAP_VIEW_MODE_SCOTLAND_MAIN);
+            }});
+        }}
+    }}
+
+    applyMapViewMode();
+    wireMapViewToggleButtons();
 
     function showOverlayDefaultMessage() {{
         if (overlayEmptyDefault) overlayEmptyDefault.style.display = 'flex';
@@ -4396,278 +4640,42 @@ def render_html(
     const mapControlsBtn = document.getElementById('map-controls-btn');
     const mapControlsPopup = document.getElementById('map-controls-popup');
     const mapControlsPopupClose = document.getElementById('map-controls-popup-close');
-    const mapViewCbBtn = document.getElementById('map-view-cb-btn');
-    const mapViewScotlandBtn = document.getElementById('map-view-scotland-btn');
 
-    let selectedPlaceState = null;
-    let insetSelectedPlaceState = null;
-    let subplotMap = null;
-    let insetSubplotMap = null;
+    let capeBretonSelectedPlaceState = null;
+    let scotlandSelectedPlaceState = null;
+    let capeBretonSubplotMap = null;
+    let scotlandSubplotMap = null;
     let suppressNextInsetBackgroundClick = false;
     let currentLocationPlaceKey = null;
     let currentTraditionPanelKey = null;
     let currentTraditionCommunityKey = null;
-    let mainMapResizeFrame = null;
+    let capeBretonMapResizeFrame = null;
     let hasSeenInitialResizeObservation = false;
-    let currentMapView = 'cape-breton-main';
 
-    function isCapeBretonMainView() {{
-        return currentMapView === 'cape-breton-main';
-    }}
-
-    function getCurrentMainFigureSpec() {{
-        return isCapeBretonMainView() ? capeBretonMainFigureSpec : scotlandMainFigureSpec;
-    }}
-
-    function getCurrentInsetFigureSpec() {{
-        return isCapeBretonMainView() ? scotlandInsetFigureSpec : capeBretonInsetFigureSpec;
-    }}
-
-    function getCurrentOverlayTraceIndexes(item) {{
-        if (isCapeBretonMainView()) {{
-            return {{
-                main: Number(item.cb_main_trace_index),
-                inset: Number(item.scotland_inset_trace_index),
-            }};
+    function refitMapsAfterResize() {{
+        if (capeBretonMapResizeFrame) {{
+            cancelAnimationFrame(capeBretonMapResizeFrame);
         }}
-        return {{
-            main: Number(item.scotland_main_trace_index),
-            inset: Number(item.cb_inset_trace_index),
-        }};
-    }}
-
-    function getCurrentOverlayVisibilityState() {{
-        const state = {{}};
-        overlayControlsAll.forEach((item) => {{
-            state[String(item.tradition_key)] = false;
-        }});
-        document.querySelectorAll('.tradition-toggle').forEach((checkbox) => {{
-            state[String(checkbox.dataset.traditionKey)] = !!checkbox.checked;
-        }});
-        return state;
-    }}
-
-    function applyOverlayVisibilityStateToCurrentPlots(state) {{
-        const mainTraceIndexes = [];
-        const insetTraceIndexes = [];
-        const mainVisibleValues = [];
-        const insetVisibleValues = [];
-
-        overlayControlsAll.forEach((item) => {{
-            const traceIndexes = getCurrentOverlayTraceIndexes(item);
-            const visible = !!state[String(item.tradition_key)];
-            mainTraceIndexes.push(traceIndexes.main);
-            insetTraceIndexes.push(traceIndexes.inset);
-            mainVisibleValues.push(visible);
-            insetVisibleValues.push(visible);
-        }});
-
-        if (mainTraceIndexes.length) {{
-            Plotly.restyle(mapDiv, {{visible: mainVisibleValues}}, mainTraceIndexes);
-        }}
-        if (insetTraceIndexes.length) {{
-            Plotly.restyle(insetMapDiv, {{visible: insetVisibleValues}}, insetTraceIndexes);
-        }}
-    }}
-
-    function getMainHighlightTraceIndexes() {{
-        return isCapeBretonMainView() ? [1, 2] : [0, 1];
-    }}
-
-    function getInsetHighlightTraceIndexes() {{
-        return isCapeBretonMainView() ? [0, 1] : [1, 2];
-    }}
-
-    function setMainHighlightRing(lat, lon) {{
-        const traceIndexes = getMainHighlightTraceIndexes();
-        Plotly.restyle(mapDiv, {{ lat: [[lat], [lat]], lon: [[lon], [lon]] }}, traceIndexes);
-    }}
-
-    function setInsetHighlightRing(lat, lon) {{
-        const traceIndexes = getInsetHighlightTraceIndexes();
-        Plotly.restyle(insetMapDiv, {{ lat: [[lat], [lat]], lon: [[lon], [lon]] }}, traceIndexes);
-    }}
-
-    function updateMapViewButtons() {{
-        if (mapViewCbBtn) {{
-            const isActive = isCapeBretonMainView();
-            mapViewCbBtn.classList.toggle('is-active', isActive);
-            mapViewCbBtn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-        }}
-        if (mapViewScotlandBtn) {{
-            const isActive = !isCapeBretonMainView();
-            mapViewScotlandBtn.classList.toggle('is-active', isActive);
-            mapViewScotlandBtn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-        }}
-    }}
-
-    function fitBoundsForCurrentMainView() {{
-        if (!subplotMap || typeof subplotMap.fitBounds !== 'function') return;
-
-        const bounds = isCapeBretonMainView() ? INITIAL_BOUNDS : INITIAL_SCOTLAND_MAIN_BOUNDS;
-        subplotMap.fitBounds(
-            [
-                [bounds.west, bounds.south],
-                [bounds.east, bounds.north]
-            ],
-            {{
-                padding: 0,
-                duration: 0
-            }}
-        );
-    }}
-
-    function wireMainPlotInteractions() {{
-        mapDiv.on('plotly_click', function(eventData) {{
-            if (!eventData || !eventData.points || !eventData.points.length) {{
-                return;
-            }}
-
-            if (!isCapeBretonMainView()) {{
-                return;
-            }}
-
-            const point = eventData.points[0];
-            if (!point.customdata || !point.customdata.length) {{
-                return;
-            }}
-
-            const placeKey = point.customdata[0];
-            activatePlace(placeKey, {{ source: 'map' }});
-        }});
-
-        mapDiv.on('plotly_relayout', function() {{
+    
+        capeBretonMapResizeFrame = requestAnimationFrame(function() {{
+            Plotly.Plots.resize(capeBretonMapDiv);
+            Plotly.Plots.resize(scotlandMapDiv);
+            resetMapsForCurrentViewMode();
             positionSelectedPlaceLabel();
-        }});
-    }}
-
-    function wireInsetPlotInteractions() {{
-        if (insetSubplotMap && typeof insetSubplotMap.on === 'function') {{
-            insetSubplotMap.on('move', function() {{
-                positionInsetSelectedPlaceLabel();
-            }});
-
-            insetSubplotMap.on('zoom', function() {{
-                positionInsetSelectedPlaceLabel();
-            }});
-
-            insetSubplotMap.on('resize', function() {{
-                positionInsetSelectedPlaceLabel();
-            }});
-
-            insetSubplotMap.on('click', function() {{
-                if (suppressNextInsetBackgroundClick) {{
-                    suppressNextInsetBackgroundClick = false;
-                    return;
-                }}
-                clearInsetSelectionRing();
-                hideInsetSelectedPlaceLabel();
-            }});
-        }}
-
-        insetMapDiv.on('plotly_click', function(eventData) {{
-            if (!eventData || !eventData.points || !eventData.points.length) return;
-            if (!isCapeBretonMainView()) return;
-
-            const point = eventData.points[0];
-            if (!point.customdata || !point.customdata.length) return;
-            if (point.curveNumber < 2) return;
-
-            suppressNextInsetBackgroundClick = true;
-
-            const placeName = point.customdata[1];
-            setInsetHighlightRing(point.lat, point.lon);
-            showInsetSelectedPlaceLabel(placeName, point.lat, point.lon);
-        }});
-
-        insetMapDiv.on('plotly_relayout', function() {{
             positionInsetSelectedPlaceLabel();
         }});
     }}
 
-    function renderMapsForCurrentView(options = {{}}) {{
-        const overlayVisibilityState = options.overlayVisibilityState || getCurrentOverlayVisibilityState();
-
-        hideSelectedPlaceLabel();
-        hideInsetSelectedPlaceLabel();
-
-        Plotly.newPlot(
-            mapDiv,
-            getCurrentMainFigureSpec().data,
-            getCurrentMainFigureSpec().layout,
-            {{
-                responsive: true,
-                displaylogo: false,
-                displayModeBar: false
-            }}
-        ).then(function() {{
-            subplotMap =
-                mapDiv?._fullLayout?.map?._subplot?.map ||
-                mapDiv?._fullLayout?.mapbox?._subplot?.map ||
-                null;
-
-            wireMainMapAttributionToggle();
-            wireMainPlotInteractions();
-
-            if (subplotMap && typeof subplotMap.on === 'function') {{
-                subplotMap.on('move', function() {{
-                    positionSelectedPlaceLabel();
-                }});
-
-                subplotMap.on('zoom', function() {{
-                    positionSelectedPlaceLabel();
-                }});
-
-                subplotMap.on('resize', function() {{
-                    positionSelectedPlaceLabel();
-                }});
-            }}
-
-            fitBoundsForCurrentMainView();
-            Plotly.Plots.resize(mapDiv);
-
-            Plotly.newPlot(
-                insetMapDiv,
-                getCurrentInsetFigureSpec().data,
-                getCurrentInsetFigureSpec().layout,
-                {{
-                    responsive: true,
-                    displaylogo: false,
-                    displayModeBar: false,
-                    staticPlot: false
-                }}
-            ).then(function() {{
-                insetSubplotMap =
-                    insetMapDiv?._fullLayout?.map?._subplot?.map ||
-                    insetMapDiv?._fullLayout?.mapbox?._subplot?.map ||
-                    null;
-
-                wireInsetPlotInteractions();
-                Plotly.Plots.resize(insetMapDiv);
-                applyOverlayVisibilityStateToCurrentPlots(overlayVisibilityState);
-                setOverlayPanelVisibility(true);
-                setInsetPanelVisibility(true);
-                updateMapViewButtons();
-            }});
-        }});
-    }}
-
-    function refitMainMapAfterResize() {{
-        if (!subplotMap) return;
-    
-        if (mainMapResizeFrame) {{
-            cancelAnimationFrame(mainMapResizeFrame);
-        }}
-    
-        mainMapResizeFrame = requestAnimationFrame(function() {{
-            Plotly.Plots.resize(mapDiv);
-            fitMainMapToInitialBounds();
-        }});
+    function getCurrentMainMapDiv() {{
+        return getCurrentMainMapIdentity() === 'scotland' ? scotlandMapDiv : capeBretonMapDiv;
     }}
 
     function wireMainMapAttributionToggle() {{
+        const currentMainMapDiv = getCurrentMainMapDiv();
+        if (!currentMainMapDiv) return;
+
         const attrib =
-            mapDiv.querySelector('.mapboxgl-ctrl-attrib, .maplibregl-ctrl-attrib');
+            currentMainMapDiv.querySelector('.mapboxgl-ctrl-attrib, .maplibregl-ctrl-attrib');
     
         if (!attrib) return;
     
@@ -4742,41 +4750,139 @@ def render_html(
         }});
     }}
 
-    wireMapControlsPopup();
+    Plotly.newPlot(
+        capeBretonMapDiv,
+        capeBretonFigureSpec.data,
+        capeBretonFigureSpec.layout,
+        {{
+            responsive: true,
+            displaylogo: false,
+            displayModeBar: false
+        }}
+    ).then(function() {{
+        wireMainMapAttributionToggle();
+        wireMapControlsPopup();
+        Plotly.Plots.resize(capeBretonMapDiv);
 
-    renderPlacesIndex(null);
-    renderTraditionsIndex(null, null);
-    renderOverlayControls([]);
-    updateOverlayListActionButton();
-    showOverlayDefaultMessage();
-    setOverlayPanelVisibility(true);
-    setInsetPanelVisibility(true);
-    setSidePanelMode('location');
-    resetInfoPanel();
+        Plotly.newPlot(
+            scotlandMapDiv,
+            scotlandFigureSpec.data,
+            scotlandFigureSpec.layout,
+            {{
+                responsive: true,
+                displaylogo: false,
+                displayModeBar: false,
+                staticPlot: false
+            }}
+        ).then(function() {{
+            renderPlacesIndex(null);
+            renderTraditionsIndex(null, null);
+            renderOverlayControls([]);
+            updateOverlayListActionButton();
+            showOverlayDefaultMessage();
+            setOverlayPanelVisibility(true);
+            setInsetPanelVisibility(true);
+            setSidePanelMode('location');
+            resetInfoPanel();
 
-    setTimeout(() => {{
-        renderAllPeopleList();
-    }}, 0);
+            setTimeout(() => {{
+                renderAllPeopleList();
+            }}, 0);
 
-    renderMapsForCurrentView({{
-        overlayVisibilityState: getCurrentOverlayVisibilityState(),
+            scotlandSubplotMap =
+                scotlandMapDiv?._fullLayout?.map?._subplot?.map ||
+                scotlandMapDiv?._fullLayout?.mapbox?._subplot?.map ||
+                null;
+
+            if (scotlandSubplotMap && typeof scotlandSubplotMap.on === 'function') {{
+                scotlandSubplotMap.on('move', function() {{
+                    positionInsetSelectedPlaceLabel();
+                }});
+
+                scotlandSubplotMap.on('zoom', function() {{
+                    positionInsetSelectedPlaceLabel();
+                }});
+
+                scotlandSubplotMap.on('resize', function() {{
+                    positionInsetSelectedPlaceLabel();
+                }});
+
+                scotlandSubplotMap.on('click', function() {{
+                    if (suppressNextInsetBackgroundClick) {{
+                        suppressNextInsetBackgroundClick = false;
+                        return;
+                    }}
+                    clearInsetSelectionRing();
+                    hideInsetSelectedPlaceLabel();
+                }});
+            }}
+
+            scotlandMapDiv.on('plotly_click', function(eventData) {{
+                if (!eventData || !eventData.points || !eventData.points.length) return;
+                const point = eventData.points[0];
+                if (!point.customdata || !point.customdata.length) return;
+                if (point.curveNumber < 2) return;
+
+                suppressNextInsetBackgroundClick = true;
+
+                const placeName = point.customdata[1];
+                Plotly.restyle(
+                    scotlandMapDiv,
+                    {{
+                        lat: [[point.lat], [point.lat]],
+                        lon: [[point.lon], [point.lon]]
+                    }},
+                    [0, 1]
+                );
+                showInsetSelectedPlaceLabel(placeName, point.lat, point.lon);
+            }});
+
+            scotlandMapDiv.on('plotly_relayout', function() {{
+                positionInsetSelectedPlaceLabel();
+            }});
+        }});
+
+        capeBretonSubplotMap =
+            capeBretonMapDiv?._fullLayout?.map?._subplot?.map ||
+            capeBretonMapDiv?._fullLayout?.mapbox?._subplot?.map ||
+            null;
+
+        window.addEventListener('resize', function() {{
+            refitMapsAfterResize();
+        }});
+    
+        capeBretonMapDiv.on('plotly_click', function(eventData) {{
+            if (!eventData || !eventData.points || !eventData.points.length) {{
+                return;
+            }}
+
+            const point = eventData.points[0];
+            if (!point.customdata || !point.customdata.length) {{
+                return;
+            }}
+
+            const placeKey = point.customdata[0];
+            activatePlace(placeKey, {{ source: 'map' }});
+        }});
+
+        capeBretonMapDiv.on('plotly_relayout', function() {{
+            positionSelectedPlaceLabel();
+        }});
+
+        if (capeBretonSubplotMap && typeof capeBretonSubplotMap.on === 'function') {{
+            capeBretonSubplotMap.on('move', function() {{
+                positionSelectedPlaceLabel();
+            }});
+        
+            capeBretonSubplotMap.on('zoom', function() {{
+                positionSelectedPlaceLabel();
+            }});
+        
+            capeBretonSubplotMap.on('resize', function() {{
+                positionSelectedPlaceLabel();
+            }});
+        }}
     }});
-
-    if (mapViewCbBtn) {{
-        mapViewCbBtn.addEventListener('click', function() {{
-            if (isCapeBretonMainView()) return;
-            currentMapView = 'cape-breton-main';
-            renderMapsForCurrentView();
-        }});
-    }}
-
-    if (mapViewScotlandBtn) {{
-        mapViewScotlandBtn.addEventListener('click', function() {{
-            if (!isCapeBretonMainView()) return;
-            currentMapView = 'scotland-main';
-            renderMapsForCurrentView();
-        }});
-    }}
 
     resetBtn.addEventListener('click', function() {{
         resetMainMapAndPanels();
@@ -4900,16 +5006,12 @@ def main() -> None:
         people_counts_lookup,
     )
 
-    cape_breton_main_fig = make_cape_breton_figure(cape_breton_places_df, tradition_specs)
-    scotland_inset_fig = make_scotland_figure(tradition_specs)
-    scotland_main_fig = make_scotland_figure(tradition_specs)
-    cape_breton_inset_fig = make_cape_breton_figure(cape_breton_places_df, tradition_specs)
+    main_fig = make_main_figure(cape_breton_places_df, tradition_specs)
+    inset_fig = make_inset_figure(tradition_specs)
 
     render_html(
-        cape_breton_main_fig,
-        scotland_inset_fig,
-        scotland_main_fig,
-        cape_breton_inset_fig,
+        main_fig,
+        inset_fig,
         cape_breton_places_df,
         people_lookup,
         all_people_index,
