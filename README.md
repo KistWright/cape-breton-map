@@ -1,5 +1,4 @@
 # Cainnt is Ceathramhan
-## Practical developer handover
 
 This repository generates a standalone bilingual map application showing:
 
