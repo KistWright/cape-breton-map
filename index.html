@@ -3974,6 +3974,13 @@ return Plotly;
         font-weight: 700;
         line-height: 1.2;
         white-space: nowrap;
+        box-sizing: border-box;
+    }
+
+    .meta-top-item-button .person-page-link-btn {
+        width: 132px;
+        max-width: 132px;
+        box-sizing: border-box;
     }
     
     .person-page-link-btn:hover,
@@ -4573,13 +4580,8 @@ return Plotly;
         min-height: 0;
     }
 
-    .inset-selected-place-label {
-        --label-font-size: 11px;
-        --label-line-height: 14px;
-        --label-padding-y: 4px;
-        --label-padding-x: 8px;
-        --label-offset-x: 10px;
-        --label-max-width: 240px;
+    .scot-main-selected-place-label,
+    .scot-inset-selected-place-label {
         position: absolute;
         z-index: 1004;
         display: none;
@@ -4598,21 +4600,42 @@ return Plotly;
         line-height: var(--label-line-height);
     }
 
-    .inset-selected-place-label .gaelic {
+    .scot-main-selected-place-label {
+        --label-font-size: 14.3px;
+        --label-line-height: 18.2px;
+        --label-padding-y: 5.2px;
+        --label-padding-x: 10.4px;
+        --label-offset-x: 13px;
+        --label-max-width: 312px;
+    }
+
+    .scot-inset-selected-place-label {
+        --label-font-size: 11px;
+        --label-line-height: 14px;
+        --label-padding-y: 4px;
+        --label-padding-x: 8px;
+        --label-offset-x: 10px;
+        --label-max-width: 240px;
+    }
+
+    .scot-main-selected-place-label .gaelic,
+    .scot-inset-selected-place-label .gaelic {
         color: #1F5F99;
         font-size: var(--label-font-size);
         font-weight: 700;
         line-height: var(--label-line-height);
     }
 
-    .inset-selected-place-label .english {
+    .scot-main-selected-place-label .english,
+    .scot-inset-selected-place-label .english {
         color: #8CC7EA;
         font-size: var(--label-font-size);
         font-weight: 700;
         line-height: var(--label-line-height);
     }
 
-    .inset-selected-place-label .separator {
+    .scot-main-selected-place-label .separator,
+    .scot-inset-selected-place-label .separator {
         color: #8CC7EA;
         font-size: var(--label-font-size);
         font-weight: 700;
@@ -4891,13 +4914,8 @@ return Plotly;
         opacity: 0.75;
     }
 
-    .selected-place-label {
-        --label-font-size: 16px;
-        --label-line-height: 18px;
-        --label-padding-y: 3px;
-        --label-padding-x: 10px;
-        --label-offset-x: 16px;
-        --label-max-width: 380px;
+    .cb-main-selected-place-label,
+    .cb-inset-selected-place-label {
         position: absolute;
         z-index: 1002;
         display: none;
@@ -4912,23 +4930,46 @@ return Plotly;
         width: max-content;
         max-width: var(--label-max-width);
         box-sizing: border-box;
+        font-size: var(--label-font-size);
+        line-height: var(--label-line-height);
     }
 
-    .selected-place-label .gaelic {
+    .cb-main-selected-place-label {
+        --label-font-size: 16px;
+        --label-line-height: 18px;
+        --label-padding-y: 3px;
+        --label-padding-x: 10px;
+        --label-offset-x: 16px;
+        --label-max-width: 380px;
+    }
+
+    .cb-inset-selected-place-label {
+        --label-font-size: 12px;
+        --label-line-height: 12px;
+        --label-padding-y: 0px;
+        --label-padding-x: 8px;
+        --label-offset-x: 12px;
+        --label-max-width: 260px;
+    }
+
+    .cb-main-selected-place-label .gaelic,
+    .cb-inset-selected-place-label .gaelic {
         color: #1F5F99;
         font-size: var(--label-font-size);
         font-weight: 700;
         line-height: var(--label-line-height);
     }
 
-    .selected-place-label .english {
+    .cb-main-selected-place-label .english,
+    .cb-inset-selected-place-label .english {
         color: #8CC7EA;
         font-size: var(--label-font-size);
         font-weight: 700;
         line-height: var(--label-line-height);
     }
 
-    .selected-place-label .separator {
+    .cb-main-selected-place-label .separator,
+    .cb-inset-selected-place-label .separator {
         color: #8CC7EA;
         font-size: var(--label-font-size);
         font-weight: 700;
@@ -5207,26 +5248,37 @@ return Plotly;
     }
     
     .meta-top-row {
-        display: flex;
-        align-items: flex-start;
-        gap: 16px;
+        display: grid;
+        grid-template-columns: 92px 104px 1fr;
+        column-gap: 10px;
+        align-items: start;
         margin-bottom: 10px;
         width: 100%;
+        box-sizing: border-box;
     }
+
     
     .meta-top-item {
         min-width: 0;
-        flex: 0 0 110px;
+        width: 100%;
     }
     
     .meta-top-item-button {
-        margin-left: auto;
-        flex: 0 0 auto;
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        min-width: 0;
     }
     
     .person-page-link-btn,
     .recordings-link-btn {
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 132px;
+        min-width: 132px;
+        max-width: 132px;
+        box-sizing: border-box;
         padding: 8px 12px;
         border: 1px solid rgba(25, 41, 48, 0.15);
         border-radius: 999px;
@@ -5699,16 +5751,22 @@ return Plotly;
     }
 
     .meta-top-row {
-        flex-direction: column;
-        align-items: stretch;
+        display: grid;
+        grid-template-columns: 92px 104px 1fr;
+        column-gap: 10px;
+        align-items: start;
+        width: 100%;
     }
     
     .meta-top-item {
         flex: 0 0 auto;
+        width: 100%;
     }
     
     .meta-top-item-button {
-        margin-left: 0;
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
     }
 
     :root {
@@ -5889,7 +5947,7 @@ return Plotly;
             <div id="floating-overlays" class="floating-panel floating-overlays combined-traditions-panel">
                 <div class="floating-panel-body combined-traditions-body">
                     <div id="inset-map-slot" class="combined-inset-block" data-slot-role="inset" data-map-identity="scotland">
-                        <div id="inset-selected-place-label" class="inset-selected-place-label"></div>
+                        <div id="scot-inset-selected-place-label" class="scot-inset-selected-place-label"></div>
                         <div id="inset-map"></div>
                     </div>
                 
@@ -6073,7 +6131,9 @@ return Plotly;
             </div>
 
             <div id="main-map-slot" class="main-map-slot" data-slot-role="main" data-map-identity="cape-breton">
-                <div id="selected-place-label" class="selected-place-label"></div>
+                <div id="cb-main-selected-place-label" class="cb-main-selected-place-label"></div>
+                <div id="cb-inset-selected-place-label" class="cb-inset-selected-place-label"></div>
+                <div id="scot-main-selected-place-label" class="scot-main-selected-place-label"></div>
                 <div id="map"></div>
             </div>
         </div>
@@ -6143,8 +6203,8 @@ return Plotly;
                 labelBoxScale: 1
             },
             inset: {
-                labelScale: 0.7,
-                labelBoxScale: 0.7
+                labelScale: 1,
+                labelBoxScale: 1
             }
         },
         scotland: {
@@ -6162,19 +6222,35 @@ return Plotly;
             }
         }
     };
-    const CAPE_BRETON_LABEL_BASE_STYLE = {
-        fontSize: 16,
-        lineHeight: 22,
+    const CAPE_BRETON_MAIN_LABEL_STYLE = {
+        fontSize: 14,
+        lineHeight: 14,
         paddingY: 6,
-        paddingX: 10,
-        offsetX: 16,
+        paddingX: 6,
+        offsetX: 13,
         maxWidth: 380
     };
-    const SCOTLAND_LABEL_BASE_STYLE = {
-        fontSize: 11,
-        lineHeight: 14,
+    const CAPE_BRETON_INSET_LABEL_STYLE = {
+        fontSize: 12,
+        lineHeight: 12,
         paddingY: 4,
-        paddingX: 8,
+        paddingX: 4,
+        offsetX: 10,
+        maxWidth: 260
+    };
+    const SCOTLAND_MAIN_LABEL_STYLE = {
+        fontSize: 14,
+        lineHeight: 14,
+        paddingY: 6,
+        paddingX: 6,
+        offsetX: 13,
+        maxWidth: 312
+    };
+    const SCOTLAND_INSET_LABEL_STYLE = {
+        fontSize: 12,
+        lineHeight: 12,
+        paddingY: 4,
+        paddingX: 4,
         offsetX: 10,
         maxWidth: 240
     };
@@ -6628,18 +6704,54 @@ return Plotly;
         return scotlandHoveredPlaceState || scotlandSelectedPlaceState;
     }
 
+    function getActiveScotlandLabelElement() {
+        return getSlotRoleForMapIdentity('scotland') === MAP_SLOT_INSET
+            ? scotlandInsetSelectedPlaceLabel
+            : scotlandMainSelectedPlaceLabel;
+    }
+
+    function hideInactiveScotlandLabelElements() {
+        const activeLabelElement = getActiveScotlandLabelElement();
+        [scotlandMainSelectedPlaceLabel, scotlandInsetSelectedPlaceLabel].forEach((labelElement) => {
+            if (!labelElement || labelElement === activeLabelElement) return;
+            labelElement.style.display = 'none';
+            labelElement.innerHTML = '';
+        });
+    }
+
+    function getActiveCapeBretonLabelElement() {
+        return getSlotRoleForMapIdentity('cape-breton') === MAP_SLOT_INSET
+            ? capeBretonInsetSelectedPlaceLabel
+            : capeBretonMainSelectedPlaceLabel;
+    }
+
+    function hideInactiveCapeBretonLabelElements() {
+        const activeLabelElement = getActiveCapeBretonLabelElement();
+        [capeBretonMainSelectedPlaceLabel, capeBretonInsetSelectedPlaceLabel].forEach((labelElement) => {
+            if (!labelElement || labelElement === activeLabelElement) return;
+            labelElement.style.display = 'none';
+            labelElement.innerHTML = '';
+        });
+    }
+
     function hideSelectedPlaceLabel() {
         capeBretonSelectedPlaceState = null;
         capeBretonHoveredPlaceState = null;
-        capeBretonSelectedPlaceLabel.style.display = 'none';
-        capeBretonSelectedPlaceLabel.innerHTML = '';
+        [capeBretonMainSelectedPlaceLabel, capeBretonInsetSelectedPlaceLabel].forEach((labelElement) => {
+            if (!labelElement) return;
+            labelElement.style.display = 'none';
+            labelElement.innerHTML = '';
+        });
     }
 
     function hideInsetSelectedPlaceLabel() {
         scotlandSelectedPlaceState = null;
         scotlandHoveredPlaceState = null;
-        scotlandSelectedPlaceLabel.style.display = 'none';
-        scotlandSelectedPlaceLabel.innerHTML = '';
+        [scotlandMainSelectedPlaceLabel, scotlandInsetSelectedPlaceLabel].forEach((labelElement) => {
+            if (!labelElement) return;
+            labelElement.style.display = 'none';
+            labelElement.innerHTML = '';
+        });
     }
 
     function clearCapeBretonHoverPlaceLabel() {
@@ -6654,8 +6766,10 @@ return Plotly;
 
     function positionSelectedPlaceLabel() {
         const activeState = getActiveCapeBretonPlaceLabelState();
+        const activeLabelElement = getActiveCapeBretonLabelElement();
+        hideInactiveCapeBretonLabelElements();
         if (!activeState || !capeBretonSubplotMap || typeof capeBretonSubplotMap.project !== 'function') {
-            capeBretonSelectedPlaceLabel.style.display = 'none';
+            if (activeLabelElement) activeLabelElement.style.display = 'none';
             return;
         }
 
@@ -6664,16 +6778,19 @@ return Plotly;
             return;
         }
 
-        capeBretonSelectedPlaceLabel.innerHTML = activeState.html;
-        capeBretonSelectedPlaceLabel.style.left = `${projected.x}px`;
-        capeBretonSelectedPlaceLabel.style.top = `${projected.y}px`;
-        capeBretonSelectedPlaceLabel.style.display = 'block';
+        if (!activeLabelElement) return;
+        activeLabelElement.innerHTML = activeState.html;
+        activeLabelElement.style.left = `${projected.x}px`;
+        activeLabelElement.style.top = `${projected.y}px`;
+        activeLabelElement.style.display = 'block';
     }
 
     function positionInsetSelectedPlaceLabel() {
         const activeState = getActiveInsetPlaceLabelState();
+        const activeLabelElement = getActiveScotlandLabelElement();
+        hideInactiveScotlandLabelElements();
         if (!activeState || !scotlandSubplotMap || typeof scotlandSubplotMap.project !== 'function') {
-            scotlandSelectedPlaceLabel.style.display = 'none';
+            if (activeLabelElement) activeLabelElement.style.display = 'none';
             return;
         }
 
@@ -6682,10 +6799,11 @@ return Plotly;
             return;
         }
 
-        scotlandSelectedPlaceLabel.innerHTML = activeState.html;
-        scotlandSelectedPlaceLabel.style.left = `${projected.x}px`;
-        scotlandSelectedPlaceLabel.style.top = `${projected.y}px`;
-        scotlandSelectedPlaceLabel.style.display = 'block';
+        if (!activeLabelElement) return;
+        activeLabelElement.innerHTML = activeState.html;
+        activeLabelElement.style.left = `${projected.x}px`;
+        activeLabelElement.style.top = `${projected.y}px`;
+        activeLabelElement.style.display = 'block';
     }
 
     function showSelectedPlaceLabel(place, lat, lon) {
@@ -7458,8 +7576,10 @@ return Plotly;
     const scotlandMapDiv = document.getElementById('inset-map');
     const resetBtn = document.getElementById('reset-map-btn');
     const showAllCbBtn = document.getElementById('show-all-cb-btn');
-    const capeBretonSelectedPlaceLabel = document.getElementById('selected-place-label');
-    const scotlandSelectedPlaceLabel = document.getElementById('inset-selected-place-label');
+    const capeBretonMainSelectedPlaceLabel = document.getElementById('cb-main-selected-place-label');
+    const capeBretonInsetSelectedPlaceLabel = document.getElementById('cb-inset-selected-place-label');
+    const scotlandMainSelectedPlaceLabel = document.getElementById('scot-main-selected-place-label');
+    const scotlandInsetSelectedPlaceLabel = document.getElementById('scot-inset-selected-place-label');
     const overlayList = document.getElementById('overlay-list');
     const clearAllTraditionsBtn = document.getElementById('clear-all-traditions');
     const restoreAllTraditionsBtn = document.getElementById('restore-all-traditions');
@@ -7762,8 +7882,15 @@ return Plotly;
         applyScaledMarkerPresetForTraceIndexes(scotlandMapDiv, SCOTLAND_BASE_TRACE_MARKER_SIZES, SCOTLAND_HIGHLIGHT_TRACE_INDEXES, scotlandPreset.highlightMarkerScale ?? 1);
         applyScaledMarkerPresetForTraceIndexes(scotlandMapDiv, SCOTLAND_BASE_TRACE_MARKER_SIZES, SCOTLAND_TRADITION_TRACE_INDEXES, scotlandPreset.traditionMarkerScale ?? 1);
 
-        applyScaledLabelPreset(capeBretonSelectedPlaceLabel, CAPE_BRETON_LABEL_BASE_STYLE, capeBretonPreset.labelScale ?? 1, capeBretonPreset.labelBoxScale ?? capeBretonPreset.labelScale ?? 1);
-        applyScaledLabelPreset(scotlandSelectedPlaceLabel, SCOTLAND_LABEL_BASE_STYLE, scotlandPreset.labelScale ?? 1, scotlandPreset.labelBoxScale ?? scotlandPreset.labelScale ?? 1);
+        const capeBretonLabelBaseStyle = (
+            capeBretonSlotRole === MAP_SLOT_MAIN
+                ? CAPE_BRETON_MAIN_LABEL_STYLE
+                : CAPE_BRETON_INSET_LABEL_STYLE
+        );
+        applyScaledLabelPreset(capeBretonMainSelectedPlaceLabel, CAPE_BRETON_MAIN_LABEL_STYLE, 1, 1);
+        applyScaledLabelPreset(capeBretonInsetSelectedPlaceLabel, CAPE_BRETON_INSET_LABEL_STYLE, 1, 1);
+        applyScaledLabelPreset(scotlandMainSelectedPlaceLabel, SCOTLAND_MAIN_LABEL_STYLE, 1, 1);
+        applyScaledLabelPreset(scotlandInsetSelectedPlaceLabel, SCOTLAND_INSET_LABEL_STYLE, 1, 1);
     }
 
     function setMapSlotSwapMask(isActive) {
@@ -7829,20 +7956,20 @@ return Plotly;
         const performSwap = () => {
             if (mainMapSlot) {
                 if (mainIdentity === 'scotland') {
-                    mainMapSlot.appendChild(scotlandSelectedPlaceLabel);
+                    mainMapSlot.appendChild(scotlandMainSelectedPlaceLabel);
                     mainMapSlot.appendChild(scotlandMapDiv);
                 } else {
-                    mainMapSlot.appendChild(capeBretonSelectedPlaceLabel);
+                    mainMapSlot.appendChild(capeBretonMainSelectedPlaceLabel);
                     mainMapSlot.appendChild(capeBretonMapDiv);
                 }
             }
 
             if (insetMapSlot) {
                 if (insetIdentity === 'cape-breton') {
-                    insetMapSlot.appendChild(capeBretonSelectedPlaceLabel);
+                    insetMapSlot.appendChild(capeBretonInsetSelectedPlaceLabel);
                     insetMapSlot.appendChild(capeBretonMapDiv);
                 } else {
-                    insetMapSlot.appendChild(scotlandSelectedPlaceLabel);
+                    insetMapSlot.appendChild(scotlandInsetSelectedPlaceLabel);
                     insetMapSlot.appendChild(scotlandMapDiv);
                 }
             }
@@ -8297,7 +8424,7 @@ return Plotly;
         const clickedPersonCard = event.target.closest('details.person-card');
         if (clickedPersonCard) return;
     
-        const clickedMapMarker = event.target.closest('#map, #selected-place-label');
+        const clickedMapMarker = event.target.closest('#map, #cb-main-selected-place-label, #cb-inset-selected-place-label');
         if (clickedMapMarker) return;
 
         const clickedPanelControl = event.target.closest('#places-index-list, #traditions-index-list, #all-people-list, .index-controls-row, .filters-controls');
