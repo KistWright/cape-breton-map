@@ -1,4 +1,4 @@
-# Data structure handover
+# Data structure
 
 This note describes the source files the current build expects and the main
 structures derived from them.
