@@ -1,4 +1,4 @@
-# Functional overview handover
+# Functional overview
 
 This is the practical walk-through of what the current script does and where a
 maintainer should look first.
