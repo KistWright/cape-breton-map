@@ -1,412 +1,160 @@
 """
 Cape Breton People and Traditions Map
 =====================================
+------------------------
 
-Developer overview
-------------------
+What this script is
+~~~~~~~~~~~~~~~~~~~
+This file is the build step for the map application. It reads the CSV source
+files, turns them into cleaned lookup structures and Plotly figure specs, and
+writes one standalone HTML file containing:
 
-This script builds a complete standalone interactive HTML map application from
-four CSV files:
+    - page markup
+    - CSS
+    - JavaScript
+    - embedded Plotly library
+    - embedded data exported from Python
+
+There is no backend. After build, all interaction happens in the browser.
+
+Current working inputs
+~~~~~~~~~~~~~~~~~~~~~~
+The script currently expects these files to sit beside it:
 
     - places.csv
     - people.csv
     - communities.csv
     - traditions.csv
+    - CBscot.svg
+    - SCOTcb.svg
+    - map_controls.svg
 
-The output is:
+Current default output
+~~~~~~~~~~~~~~~~~~~~~~
+The script currently writes:
 
     - cape_breton_people_map.html
 
-The generated HTML file is self-contained. It includes:
-    - the full page HTML structure
-    - embedded CSS styling
-    - embedded Plotly JavaScript library
-    - embedded JavaScript logic for interactivity
-    - embedded map data and lookup data exported from Python as JSON
+If deployment expects index.html, either rename the file after build or change
+OUTPUT_HTML near the top of this script.
 
-In other words, this Python script is both:
-    1. a data-processing script
-    2. a static web-app generator
+What the generated HTML currently does
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The current build supports:
 
+    - a Cape Breton main map
+    - a Scotland map
+    - a separate Cape Breton inset figure used when Cape Breton moves into the
+      inset slot
+    - map-view swap buttons to switch which geography is in the main slot
+    - three side-panel modes: Places, People, Traditions
+    - bilingual Gaelic / English labels throughout the UI
+    - sortable lists with GD / EN sort controls
+    - expandable person cards and People-tab detail controls
+    - a floating traditions / inset block on the map side
+    - selectable tradition overlays linking Scotland origin points to Cape
+      Breton communities
+    - Clear List, Restore List, Show All Traditions, and Reset Map controls
+    - a popup map-controls panel loaded from map_controls.svg
+    - outbound links to person pages and anchored recordings sections
 
-High-level pipeline
--------------------
+How the script is organised
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Execution order is easiest to understand from main(). The broad pipeline is:
 
-The script runs in five broad stages:
+    CSVs + SVG assets
+        -> cleaning / normalisation
+        -> lookup building
+        -> Plotly figure construction
+        -> HTML/CSS/JS assembly in render_html()
+        -> finished standalone HTML file
 
-1. Read and clean CSV data
-2. Build structured lookups for places, people, and traditions
-3. Build Plotly map figures in Python
-4. Inject those figures and lookups into HTML/JS/CSS template text
-5. Write the finished standalone HTML file to disk
-
-
-Input files and their roles
----------------------------
-
-places.csv
-    Master place list. Supplies place keys, place names, and coordinates.
-    Also provides bilingual place-name splitting where names are stored in a
-    single "Gaelic | English" field.
-
-people.csv
-    Supplies informant/person records linked to places by "Place number".
-    This drives:
-        - the "Location details" list of people
-        - the "List All People" alphabetical index
-
-communities.csv
-    Links Cape Breton community keys to associated tradition keys.
-
-traditions.csv
-    Links tradition keys to the Cape Breton communities associated with them,
-    and supports the Scotland inset map and tradition overlays.
-
-
-Main data flow
---------------
-
-The cleaned data moves through the script in this order:
-
-    raw CSVs
-        -> cleaned DataFrames
-        -> Python lookup structures
-        -> Plotly figure specs
-        -> JSON embedded in HTML/JS
-        -> finished browser application
-
-
-Function-by-function guide
---------------------------
-
+Key functions
+~~~~~~~~~~~~~
 Utility helpers
-~~~~~~~~~~~~~~~
-
-cleaned_text(value)
-    Normalises text values from CSV input.
-    Converts None / NaN / "nan" into empty string and trims whitespace.
-
-first_present_value(row, column_names)
-    Searches across several possible column names and returns the first
-    non-empty value. Used mainly for dates, where source columns may vary.
-
-parse_number_list(value)
-    Converts comma-separated numeric strings into Python integer lists.
-    Used for parsing community/tradition relationship fields.
-
-split_bilingual_name(value)
-    Splits a place label of the form:
-        "Gaelic name | English name"
-    into:
-        (gaelic_name, english_name)
-
-format_bilingual_plain(gaelic, english)
-    Returns a plain bilingual label for hover text or simple display.
-
-
-Cleaning functions
-~~~~~~~~~~~~~~~~~~
-
-clean_places(df)
-    Cleans places.csv by:
-        - removing unnamed columns
-        - normalising column names
-        - validating required columns
-        - coercing coordinates and keys to numeric types
-        - removing incomplete rows
-        - splitting bilingual place names into separate Gaelic/English fields
-
-    Output:
-        cleaned places dataframe with:
-            place_key
-            place_name
-            place_name_gaelic
-            place_name_english
-            latitude
-            longitude
-
-clean_people(df)
-    Cleans people.csv by:
-        - validating "Place number"
-        - converting place keys to integers
-        - normalising all text fields
-        - constructing:
-            gaelic_name
-            english_name
-            display_name
-            sort_name
-
-    This cleaned dataframe is the main source for all person/informant display.
-
-clean_communities(df)
-    Cleans communities.csv by:
-        - validating columns
-        - coercing Community to integer
-        - parsing linked tradition IDs into Tradition_keys list
-
-clean_traditions(df)
-    Cleans traditions.csv by:
-        - validating columns
-        - coercing Tradition to integer
-        - parsing linked community IDs into Community_keys list
-
-
-Lookup-building functions
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-build_people_lookup(people_df)
-    Creates a dictionary keyed by place number.
-    Each value is a list of people attached to that place.
-
-    This powers the "Location details" panel when a map marker is clicked.
-
-build_all_people_index(people_df, places_df)
-    Creates a flat list of all people, including:
-        - names
-        - ID
-        - dates
-        - place of origin
-        - coordinates
-        - sort letter and sort key
-
-    This powers the "List All People" tab.
-
-build_community_tradition_lookup(communities_df, traditions_df, all_places_df)
-    Creates a lookup from Cape Breton community/place key to the traditions
-    associated with that place.
-
-    This powers:
-        - "Associated traditions" in the side panel
-        - overlay controls shown for the selected place
-
-build_tradition_overlay_specs(...)
-    Creates a structured list describing each tradition overlay, including:
-        - tradition key
-        - label text
-        - assigned colour
-        - linked Cape Breton points
-        - linked Scotland point
-        - hover content
-
-    This is the bridge between relationship data and actual map traces.
-
-
-Map-building functions
-~~~~~~~~~~~~~~~~~~~~~~
-
-make_main_figure(places_df, tradition_specs)
-    Builds the main Cape Breton Plotly map.
-
-    It adds:
-        1. base place markers
-        2. two empty highlight traces used for the selected-place ring
-        3. one hidden trace per tradition overlay
-
-    Important:
-        The overlay traces already exist in the figure at generation time.
-        JavaScript later only toggles their visibility.
-
-make_inset_figure(tradition_specs)
-    Builds the Scotland inset Plotly map.
-
-    It adds:
-        1. two empty highlight traces for inset selection
-        2. one hidden Scotland marker trace per tradition
-
-    Again, Python creates all layers in advance; browser-side JavaScript
-    switches them on and off.
-
-
-HTML / CSS / JavaScript generation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-render_html(...)
-    This is the core page-generation function.
-
-    It does all of the following:
-
-    1. Converts Plotly figures into serialisable dictionaries
-       using:
-           main_fig.to_dict()
-           inset_fig.to_dict()
-
-    2. Embeds the Plotly JavaScript library directly into the page using:
-           get_plotlyjs()
-
-       This makes the output HTML self-contained.
-
-    3. Builds browser-side lookup objects in Python, including:
-           places_lookup
-           overlay_controls_all
-
-    4. Injects Python data structures into JavaScript using json.dumps(...)
-
-       Example:
-           const placesLookup = {json.dumps(places_lookup, ensure_ascii=False)};
-
-       This is the main bridge from Python data to browser logic.
-
-    5. Writes the full page as a single large f-string containing:
-           - <style> ... </style>
-           - page HTML markup
-           - <script> ... </script>
-
-    6. Saves the completed HTML file to disk.
-
-    In practical terms:
-        render_html() is the function that generates the web app.
-
-
-What in this script generates the HTML?
----------------------------------------
-
-The HTML markup is generated directly inside the large f-string in render_html().
-
-That includes visible page structure such as:
-    - banner/header
-    - side-panel tabs
-    - location details panel
-    - all-people panel
-    - map container
-    - inset panel
-    - overlay panel
-    - buttons, wrappers, and labels
-
-So if a visible page element exists in the final HTML file, it is most likely
-written as literal markup inside render_html().
-
-
-What in this script generates the CSS?
---------------------------------------
-
-The CSS is also generated inside render_html(), in the embedded <style> block.
-
-Python constants such as:
-    ACCENT
-    BODY_TEXT
-    BANNER_BG
-    TITLE_COLOUR
-are interpolated directly into that CSS.
-
-There is no separate stylesheet. The final HTML contains all styles inline.
-
-
-What in this script generates the JavaScript?
----------------------------------------------
-
-The JavaScript is generated inside render_html(), in the embedded <script> block.
-
-There are two parts to this:
-
-1. Data exported from Python into JS
-   Examples:
-       const capeBretonFigureSpec = ...
-       const placesLookup = ...
-       const peopleByPlace = ...
-       const allPeopleIndex = ...
-       const overlayControlsAll = ...
-
-   These are produced by json.dumps(...) on Python objects.
-
-2. Handwritten browser logic embedded in the HTML template
-   This includes functions for:
-       - rendering place details
-       - rendering the all-people list
-       - selecting people
-       - toggling traditions
-       - managing overlay visibility
-       - showing/hiding inset and overlay panels
-       - wiring up click handlers
-       - initialising Plotly maps
-
-So:
-    Python prepares the data
-    JavaScript handles interactivity in the browser
-
-
-Key browser-side responsibilities
----------------------------------
-
-Once the HTML file is opened, the embedded JavaScript takes over and handles:
-
-    - creating the Plotly maps from embedded figure specs
-    - reacting to map marker clicks
-    - filling the "Location details" panel
-    - filling the "List All People" panel
-    - selecting a person and highlighting their place
-    - showing/hiding associated traditions
-    - showing/hiding overlay and inset panels
-    - updating selected-place labels
-    - redrawing traces when overlays are toggled
-
-
-Why Plotly is created in Python first
--------------------------------------
-
-The figures are built in Python so that:
-    - all traces are prepared from cleaned data
-    - trace ordering is known and stable
-    - colours and hover data are assigned centrally
-    - the browser only has to render and toggle visibility
-
-In short:
-    Python constructs the map specification
-    JavaScript uses that specification interactively
-
-
-Main entry point
-----------------
-
-main()
-    This is the orchestration function.
-
-    It:
-        - resolves file paths
-        - reads each CSV
-        - cleans all input data
-        - derives the Cape Breton place subset
-        - calculates people counts
-        - builds all lookup structures
-        - builds the main and inset Plotly figures
-        - calls render_html(...)
-        - writes the final HTML file
-
-    If you need to understand the execution order of the whole script,
-    start with main().
-
-
-Practical editing guide
------------------------
-
-If you want to change data logic:
-    edit the cleaning functions or lookup-building functions
-
-If you want to change what appears on the maps:
-    edit:
-        make_main_figure()
-        make_inset_figure()
-        build_tradition_overlay_specs()
-
-If you want to change layout, styling, or browser behaviour:
-    edit render_html(), specifically:
-        - the <style> block for CSS
-        - the HTML markup for structure
-        - the <script> block for JavaScript logic
-
-If you want to change colours, banner sizes, or defaults:
+    cleaned_text()
+    first_present_value()
+    parse_number_list()
+    split_bilingual_name()
+    format_bilingual_plain()
+    svg_path_to_data_uri()
+
+Cleaning stage
+    clean_places()
+    clean_people()
+    clean_communities()
+    clean_traditions()
+
+Lookup / relationship stage
+    build_people_lookup()
+    build_all_people_index()
+    build_community_tradition_lookup()
+    build_tradition_overlay_specs()
+
+Map-building stage
+    make_main_figure()
+    make_cape_breton_inset_figure()
+    make_inset_figure()
+
+HTML app generation
+    render_html()
+
+Where to edit things safely
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If you need to change source-data handling:
+    edit the clean_* functions and the lookup builders
+
+If you need to change marker sizing, default centres, colours, or output file
+name:
     edit the constants near the top of the file
 
+If you need to change which traces exist or how overlays are drawn:
+    edit the figure builders and build_tradition_overlay_specs()
 
-Mental model
-------------
+If you need to change layout, text, CSS, or browser behaviour:
+    edit render_html()
 
-Think of this script as a build system for a small standalone web app:
+Important current implementation detail
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The browser does not create overlay traces from scratch. Python prebuilds the
+traces and JavaScript mainly switches visibility, updates highlights, swaps map
+slots, and re-renders list content.
 
-    CSV data
-        -> cleaned Python structures
-        -> Plotly figures + JSON lookups
-        -> single generated HTML file
-        -> interactive browser application
+Things most likely to break after edits
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    - changing CSV headers without updating the cleaning functions
+    - changing key names used both in Python and embedded JavaScript lookups
+    - changing Plotly trace order without updating browser-side assumptions
+    - changing element ids / class names in the HTML without updating the JS
+    - removing the separate Cape Breton inset figure and expecting swap logic to
+      continue to size markers correctly
+
+Practical smoke test after changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+After rebuilding the HTML, check all of the following in a browser:
+
+    1. Both map-view buttons load and swap correctly.
+    2. Places, People, and Traditions tabs all open.
+    3. Clicking a place shows linked people and linked traditions.
+    4. Clicking a person highlights the correct Cape Breton location.
+    5. Tradition overlays can be turned on and off.
+    6. Clear List / Restore List / Show All Traditions work.
+    7. Reset Map restores the default UI state.
+    8. The map-controls popup opens and closes.
+    9. Person page and recordings links resolve correctly.
+
+Mental model for future maintenance
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Treat this script as a static-app compiler:
+
+    source tables -> cleaned data -> embedded app state -> standalone HTML app
+
+If you are trying to find where something visible comes from, the answer is
+usually one of these:
+
+    - constants near the top of the file
+    - a clean_* or build_* function
+    - the HTML / CSS / JS inside render_html()
 
 """
 
