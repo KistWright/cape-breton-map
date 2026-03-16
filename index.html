@@ -5415,7 +5415,7 @@ return Plotly;
 
     .english-highlight-person {
         color: #8CC7EA;
-        font-style: italic;
+        font-style: normal;
     }
 
     .person-summary-name {
@@ -6833,7 +6833,7 @@ return Plotly;
 
     let summaryName = '';
     if (gaelicName && englishName) {
-        summaryName = `${escapeHtml(gaelicName)}<span class="separator-accent"> / </span><span class="english-highlight-person">${escapeHtml(englishName)}</span>`;
+        summaryName = `${escapeHtml(gaelicName)}<span class="separator-accent"> | </span><span class="english-highlight-person">${escapeHtml(englishName)}</span>`;
     } else if (englishName) {
         summaryName = `<span class="english-highlight-person">${escapeHtml(englishName)}</span>`;
     } else {
