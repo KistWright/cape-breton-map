@@ -1755,15 +1755,15 @@ def render_html(
 
     .filters-controls {{
         display: flex;
-        gap: 6px;
-        margin-bottom: 8px;
+        gap: 9px;
+        margin-bottom: 5px;
         flex-wrap: nowrap;
     }}
     
         .filters-controls .tiny-btn {{
-        flex: 1 1 0;
-        min-width: 0;
-        padding: 4px 6px;
+        flex: 1 1 1;
+        min-width: auto;
+        padding: 4px 4px;
     }}
     
     .filters-controls .btn-bilingual {{
