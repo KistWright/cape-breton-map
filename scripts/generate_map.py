@@ -1361,10 +1361,10 @@ def render_html(
         width: 100%;
         text-align: left;
         padding: 8px 10px;
-        border: 1px solid rgba(25, 41, 48, 0.10);
-        border-left: 4px solid rgba(31, 95, 153, 0.18);
+        border: 1px solid rgba(25, 41, 48, 0.08);
+        border-left: 4px solid rgba(140, 199, 234, 0.55);
         border-radius: 6px;
-        background: #fff;
+        background: #ffffff;
         cursor: pointer;
         font: inherit;
         line-height: 1.25;
@@ -1372,7 +1372,33 @@ def render_html(
         transition: border-color 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease, background-color 0.14s ease;
     }}
 
-    .place-list-btn:hover {{
+    .place-entry-card > summary.place-list-btn {{
+        display: block;
+        list-style: none;
+        position: relative;
+        padding-right: 28px;
+    }}
+
+    .place-entry-card > summary.place-list-btn::-webkit-details-marker {{
+        display: none;
+    }}
+
+    .place-entry-card > summary.place-list-btn::after {{
+        content: '▸';
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #8CC7EA;
+        font-size: 0.95rem;
+        font-weight: 700;
+    }}
+
+    .place-entry-card[open] > summary.place-list-btn::after {{
+        content: '▾';
+    }}
+
+.place-list-btn:hover {{
         border-color: {ACCENT};
     }}
 
@@ -1448,12 +1474,13 @@ def render_html(
     }}
 
     .place-list-item {{
-        padding-bottom: 6px;
-        border-bottom: 1px solid rgba(25, 41, 48, 0.06);
+        margin-bottom: 6px;
+        padding-bottom: 0;
+        border-bottom: none;
     }}
 
     .place-list-item:last-child {{
-        border-bottom: none;
+        margin-bottom: 0;
     }}
 
     .associated-pane .overlay-empty {{
@@ -1756,7 +1783,7 @@ def render_html(
     .filters-controls {{
         display: flex;
         gap: 9px;
-        margin-bottom: 5px;
+        margin-bottom: 9px;
         flex-wrap: nowrap;
     }}
     
@@ -1953,13 +1980,15 @@ def render_html(
         line-height: 1.25;
     }}
         
-    .people-letter-group {{
+    .people-letter-group,
+    .place-letter-group {{
         border-top: 1px solid rgba(25, 41, 48, 0.08);
         margin-top: 6px;
         padding-top: 4px;
     }}
     
-    .people-letter-group summary {{
+    .people-letter-group > summary,
+    .place-letter-group > summary {{
         cursor: pointer;
         list-style: none;
         font-size: 14px;
@@ -1970,11 +1999,13 @@ def render_html(
         padding: 2px 0 6px 0;
     }}
     
-    .people-letter-group summary::-webkit-details-marker {{
+    .people-letter-group > summary::-webkit-details-marker,
+    .place-letter-group > summary::-webkit-details-marker {{
         display: none;
     }}
     
-    .people-letter-group > summary::after {{
+    .people-letter-group > summary::after,
+    .place-letter-group > summary::after {{
         content: '+';
         float: right;
         color: #8CC7EA;
@@ -1982,13 +2013,41 @@ def render_html(
         font-weight: 700;
     }}
     
-    .people-letter-group[open] > summary::after {{
+    .people-letter-group[open] > summary::after,
+    .place-letter-group[open] > summary::after {{
         content: '–';
     }}
     
-    .people-letter-group-body {{
+    .people-letter-group-body,
+    .place-letter-group-body {{
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
         padding-top: 2px;
     }}
+
+    #places-index-list .place-list-item {{
+        padding-bottom: 0;
+        border-bottom: none;
+    }}
+
+    #places-index-list .place-list-btn {{
+        border: 1px solid rgba(25, 41, 48, 0.08);
+        border-left: 4px solid rgba(140, 199, 234, 0.55);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }}
+
+    #places-index-list .place-list-btn:hover {{
+        border-color: {ACCENT};
+        box-shadow: 0 2px 6px rgba(25, 41, 48, 0.06);
+    }}
+
+    #places-index-list .place-list-btn.active {{
+        border-left-color: {TITLE_COLOUR};
+        background: rgba(31, 95, 153, 0.06);
+        box-shadow: 0 2px 8px rgba(25, 41, 48, 0.08);
+    }}
+
     .overlay-row {{
         display: flex;
         align-items: flex-start;
@@ -2972,7 +3031,13 @@ def render_html(
                                 <span class="place-sort-separator">|</span>
                                 <button id="sort-english-btn" class="place-sort-btn sort-en" type="button">EN</button>
                             </div>
-                            <div class="index-controls-right"></div>
+                            <div class="index-controls-right people-detail-controls">
+                                <span class="people-detail-label">
+                                    <span class="gaelic-dark">Mion-fhiosrachadh</span><span class="separator-accent"> | </span><span class="english-accent">Detail</span>
+                                </span>
+                                <button id="place-detail-less-btn" class="people-detail-btn" type="button" aria-label="Less detail">&lt;</button>
+                                <button id="place-detail-more-btn" class="people-detail-btn" type="button" aria-label="More detail">&gt;</button>
+                            </div>
                         </div>
                     <div id="places-index-list" class="places-index-list"></div>
                 </div>
@@ -3367,6 +3432,10 @@ def render_html(
     }}
 
     let currentPlaceSort = 'gaelic';
+    let openPlaceLetters = new Set();
+    let manualOpenPlaceKeys = new Set();
+    let activePlaceDetailCollapsed = false;
+    let placeLetterGroupsInitialised = false;
 
     function getPlaceSortLabel(placeKey, mode = currentPlaceSort) {{
         const place = placesLookup[String(placeKey)] || {{}};
@@ -3374,6 +3443,12 @@ def render_html(
             return (place.place_name_english || place.place_name_gaelic || place.place_name || '').trim();
         }}
         return (place.place_name_gaelic || place.place_name_english || place.place_name || '').trim();
+    }}
+
+    function getPlaceLetter(placeKey, mode = currentPlaceSort) {{
+        const source = getPlaceSortLabel(placeKey, mode) || '#';
+        const initial = (source.trim().charAt(0) || '#').toUpperCase();
+        return /[A-Za-zÀ-ÖØ-öø-ÿ]/.test(initial) ? initial : '#';
     }}
 
     function getSortedPlaceKeys(mode = currentPlaceSort) {{
@@ -3384,9 +3459,92 @@ def render_html(
         }});
     }}
 
+    function getGroupedPlaceKeys(mode = currentPlaceSort) {{
+        const grouped = {{}};
+        for (const placeKey of getSortedPlaceKeys(mode)) {{
+            const letter = getPlaceLetter(placeKey, mode);
+            if (!grouped[letter]) grouped[letter] = [];
+            grouped[letter].push(placeKey);
+        }}
+        return grouped;
+    }}
+
+    function isPlaceCardOpen(placeKey) {{
+        const key = String(placeKey);
+        return manualOpenPlaceKeys.has(key) || (String(currentLocationPlaceKey || '') === key && !activePlaceDetailCollapsed);
+    }}
+
     function updatePlaceSortButtons() {{
         if (sortGaelicBtn) sortGaelicBtn.classList.toggle('active', currentPlaceSort === 'gaelic');
         if (sortEnglishBtn) sortEnglishBtn.classList.toggle('active', currentPlaceSort === 'english');
+    }}
+
+    function initialisePlaceLetterGroups(letters) {{
+        if (!placeLetterGroupsInitialised) {{
+            openPlaceLetters = new Set(letters);
+            placeLetterGroupsInitialised = true;
+        }}
+    }}
+
+    function renderPlaceCard(placeKey, activePlaceKey = null) {{
+        const place = placesLookup[String(placeKey)] || {{}};
+        const isActive = String(activePlaceKey || '') === String(placeKey);
+        const isOpen = isPlaceCardOpen(placeKey);
+        const labelHtml = formatBilingualHtml(place.place_name_gaelic || '', place.place_name_english || '', 'english-highlight-place');
+        const peopleCount = Number(place.people_count || 0);
+
+        return `
+            <details class="place-list-item place-entry-card${{isActive ? ' active' : ''}}" data-place-key="${{escapeHtml(String(placeKey))}}" ${{isOpen ? 'open' : ''}}>
+                <summary class="place-list-btn${{isActive ? ' active' : ''}}" data-place-key="${{escapeHtml(String(placeKey))}}">
+                    <span class="place-list-name">${{labelHtml}}</span>
+                    <span class="place-list-meta">Informants: ${{peopleCount}}</span>
+                </summary>
+                ${{isOpen ? renderPlaceInlineDetail(placeKey) : ''}}
+            </details>`;
+    }}
+
+    function wirePlaceIndexBehaviour() {{
+        placesIndexList.querySelectorAll('details.place-letter-group').forEach((group) => {{
+            group.addEventListener('toggle', function() {{
+                const letter = String(this.dataset.placeLetter || '');
+                if (!letter) return;
+                if (this.open) {{
+                    openPlaceLetters.add(letter);
+                }} else {{
+                    openPlaceLetters.delete(letter);
+                }}
+            }});
+        }});
+
+        placesIndexList.querySelectorAll('details.place-entry-card > summary.place-list-btn').forEach((summary) => {{
+            summary.addEventListener('click', function() {{
+                const card = this.parentElement;
+                if (!card) return;
+
+                const placeKey = String(card.dataset.placeKey || '');
+                const wasOpen = card.open;
+                const willOpen = !wasOpen;
+                const wasActive = String(currentLocationPlaceKey || '') === placeKey;
+
+                window.setTimeout(() => {{
+                    if (willOpen) {{
+                        manualOpenPlaceKeys.add(placeKey);
+                        activePlaceDetailCollapsed = false;
+                        activatePlace(placeKey, {{ source: 'list' }});
+                        return;
+                    }}
+
+                    manualOpenPlaceKeys.delete(placeKey);
+
+                    if (wasActive) {{
+                        clearActivePlaceSelection();
+                        return;
+                    }}
+
+                    renderPlacesIndex(currentLocationPlaceKey);
+                }}, 0);
+            }});
+        }});
     }}
 
     function renderPlacesIndex(activePlaceKey = null) {{
@@ -3394,35 +3552,27 @@ def render_html(
 
         updatePlaceSortButtons();
 
-        const html = getSortedPlaceKeys().map((placeKey) => {{
-            const place = placesLookup[String(placeKey)] || {{}};
-            const isActive = String(activePlaceKey || '') === String(placeKey);
-            const labelHtml = formatBilingualHtml(place.place_name_gaelic || '', place.place_name_english || '', 'english-highlight-place');
-            const peopleCount = Number(place.people_count || 0);
+        const grouped = getGroupedPlaceKeys();
+        const letters = Object.keys(grouped).sort((a, b) => a.localeCompare(b));
+        initialisePlaceLetterGroups(letters);
+
+        const html = letters.map((letter) => {{
+            const keys = grouped[letter] || [];
+            const forceOpen = keys.some((placeKey) => isPlaceCardOpen(placeKey));
+            const groupOpen = openPlaceLetters.has(letter) || forceOpen;
+            const itemsHtml = keys.map((placeKey) => renderPlaceCard(placeKey, activePlaceKey)).join('');
+
             return `
-                <div class="place-list-item${{isActive ? ' active' : ''}}" data-place-key="${{escapeHtml(String(placeKey))}}">
-                    <button class="place-list-btn${{isActive ? ' active' : ''}}" type="button" data-place-key="${{escapeHtml(String(placeKey))}}">
-                        <span class="place-list-name">${{labelHtml}}</span>
-                        <span class="place-list-meta">Informants: ${{peopleCount}}</span>
-                    </button>
-                    ${{isActive ? renderPlaceInlineDetail(placeKey) : ''}}
-                </div>`;
+                <details class="place-letter-group" data-place-letter="${{escapeHtml(letter)}}" ${{groupOpen ? 'open' : ''}}>
+                    <summary>${{escapeHtml(letter)}}</summary>
+                    <div class="place-letter-group-body">${{itemsHtml}}</div>
+                </details>`;
         }}).join('');
 
         placesIndexList.innerHTML = html;
-        placesIndexList.querySelectorAll('.place-list-btn').forEach((btn) => {{
-            btn.addEventListener('click', function() {{
-                const placeKey = this.dataset.placeKey;
-                const isAlreadyActive = String(currentLocationPlaceKey || '') === String(placeKey);
-                if (isAlreadyActive) {{
-                    clearActivePlaceSelection();
-                    return;
-                }}
-                activatePlace(placeKey, {{ source: 'list' }});
-            }});
-        }});
+        wirePlaceIndexBehaviour();
+        wireLocationPersonSelectionBehaviour();
     }}
-
     function scrollItemToTopWithinPane(item, pane) {{
         if (!item || !pane) return;
         const paneRect = pane.getBoundingClientRect();
@@ -3457,7 +3607,105 @@ def render_html(
 
     function setPlaceSort(mode) {{
         currentPlaceSort = mode === 'english' ? 'english' : 'gaelic';
+        openPlaceLetters = new Set();
+        placeLetterGroupsInitialised = false;
         setActivePlaceInList(currentLocationPlaceKey);
+    }}
+
+    function getAllPlaceLetterGroups() {{
+        return Array.from(document.querySelectorAll('#places-index-list details.place-letter-group'));
+    }}
+
+    function getOpenPlaceLetterGroups() {{
+        return getAllPlaceLetterGroups().filter((group) => group.open);
+    }}
+
+    function getAllPlaceCards() {{
+        return Array.from(document.querySelectorAll('#places-index-list details.place-entry-card'));
+    }}
+
+    function getVisiblePlaceCards() {{
+        const cards = [];
+        getOpenPlaceLetterGroups().forEach((group) => {{
+            cards.push(...Array.from(group.querySelectorAll('details.place-entry-card')));
+        }});
+        return cards;
+    }}
+
+    function closeOpenPlaceCards() {{
+        manualOpenPlaceKeys.clear();
+        activePlaceDetailCollapsed = true;
+        renderPlacesIndex(currentLocationPlaceKey);
+    }}
+
+    function openVisiblePlaceCards() {{
+        getVisiblePlaceCards().forEach((card) => {{
+            const key = String(card.dataset.placeKey || '');
+            if (key) manualOpenPlaceKeys.add(key);
+        }});
+        activePlaceDetailCollapsed = false;
+        renderPlacesIndex(currentLocationPlaceKey);
+    }}
+
+    function openAllPlaceCards() {{
+        getSortedPlaceKeys().forEach((placeKey) => {{
+            manualOpenPlaceKeys.add(String(placeKey));
+        }});
+        activePlaceDetailCollapsed = false;
+        renderPlacesIndex(currentLocationPlaceKey);
+    }}
+
+    function openAllPlaceLetterGroupsPreservingCards() {{
+        getAllPlaceLetterGroups().forEach((group) => {{
+            const letter = String(group.dataset.placeLetter || '');
+            if (letter) openPlaceLetters.add(letter);
+        }});
+        placeLetterGroupsInitialised = true;
+        renderPlacesIndex(currentLocationPlaceKey);
+    }}
+
+    function collapseAllPlaceLetterGroups() {{
+        openPlaceLetters.clear();
+        placeLetterGroupsInitialised = true;
+        renderPlacesIndex(currentLocationPlaceKey);
+    }}
+
+    function increasePlaceDetail() {{
+        const allGroups = getAllPlaceLetterGroups();
+        const openGroups = getOpenPlaceLetterGroups();
+        const allCards = getAllPlaceCards();
+        const visibleCards = getVisiblePlaceCards();
+
+        const allGroupsOpen = allGroups.length > 0 && openGroups.length === allGroups.length;
+        const visibleCardsHaveClosed = visibleCards.some((card) => !isPlaceCardOpen(card.dataset.placeKey));
+        const allCardsOpen = allCards.length > 0 && allCards.every((card) => isPlaceCardOpen(card.dataset.placeKey));
+
+        if (!allGroupsOpen) {{
+            if (openGroups.length > 0 && visibleCardsHaveClosed) {{
+                openVisiblePlaceCards();
+                return;
+            }}
+            openAllPlaceLetterGroupsPreservingCards();
+            return;
+        }}
+
+        if (!allCardsOpen) {{
+            openAllPlaceCards();
+        }}
+    }}
+
+    function decreasePlaceDetail() {{
+        const allCards = getAllPlaceCards();
+        const hasAnyOpenCards = allCards.some((card) => isPlaceCardOpen(card.dataset.placeKey));
+        if (hasAnyOpenCards) {{
+            closeOpenPlaceCards();
+            return;
+        }}
+
+        const openGroups = getOpenPlaceLetterGroups();
+        if (openGroups.length > 0) {{
+            collapseAllPlaceLetterGroups();
+        }}
     }}
 
     let currentTraditionSort = 'gaelic';
@@ -3674,6 +3922,7 @@ def render_html(
 
     function clearActivePlaceSelection() {{
         currentLocationPlaceKey = null;
+        activePlaceDetailCollapsed = false;
         currentTraditionPanelKey = null;
         currentTraditionCommunityKey = null;
         renderPlacesIndex(null);
@@ -3905,6 +4154,7 @@ def render_html(
 
     function showAllTraditionsInCapeBreton() {{
         currentLocationPlaceKey = null;
+        activePlaceDetailCollapsed = false;
         currentTraditionPanelKey = null;
         currentTraditionCommunityKey = null;
         resetInfoPanel();
@@ -4097,6 +4347,7 @@ def render_html(
 
         clearSelectedPerson({{ restoreActivePlace: false }});
         currentLocationPlaceKey = String(placeKey);
+        activePlaceDetailCollapsed = false;
         setSidePanelMode('location');
         renderPlace(placeKey);
         Plotly.restyle(
@@ -4113,6 +4364,7 @@ def render_html(
 
         clearSelectedPerson({{ restoreActivePlace: false }});
         currentLocationPlaceKey = null;
+        activePlaceDetailCollapsed = false;
         currentTraditionPanelKey = String(traditionKey);
         currentTraditionCommunityKey = null;
         renderPlacesIndex(null);
@@ -4147,6 +4399,7 @@ def render_html(
 
         clearSelectedPerson({{ restoreActivePlace: false }});
         currentLocationPlaceKey = null;
+        activePlaceDetailCollapsed = false;
         currentTraditionCommunityKey = String(placeKey);
         renderTraditionsIndex(currentTraditionPanelKey, currentTraditionCommunityKey);
 
@@ -5093,12 +5346,21 @@ def render_html(
     const allPeoplePanelView = document.getElementById('all-people-panel-view');
     const traditionsPanelView = document.getElementById('traditions-panel-view');
     const allPeopleList = document.getElementById('all-people-list');
+    const placeDetailLessBtn = document.getElementById('place-detail-less-btn');
+    const placeDetailMoreBtn = document.getElementById('place-detail-more-btn');
     const peopleDetailLessBtn = document.getElementById('people-detail-less-btn');
     const peopleDetailMoreBtn = document.getElementById('people-detail-more-btn');
     const mapControlsBtn = document.getElementById('map-controls-btn');
     const mapControlsPopup = document.getElementById('map-controls-popup');
     const mapControlsPopupClose = document.getElementById('map-controls-popup-close');
 
+
+    if (placeDetailLessBtn) {{
+        placeDetailLessBtn.addEventListener('click', () => decreasePlaceDetail());
+    }}
+    if (placeDetailMoreBtn) {{
+        placeDetailMoreBtn.addEventListener('click', () => increasePlaceDetail());
+    }}
     let capeBretonSelectedPlaceState = null;
     let capeBretonHoveredPlaceState = null;
     let scotlandSelectedPlaceState = null;
