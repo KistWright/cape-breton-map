@@ -714,7 +714,7 @@ def make_main_figure(places_df: pd.DataFrame, tradition_specs: list[dict[str, An
                 lat=[p["latitude"] for p in points],
                 lon=[p["longitude"] for p in points],
                 mode="markers",
-                visible=False,
+                visible=True,
                 marker={"size": 16, "opacity": 1, "color": spec["colour"]},
                 customdata=[
                     [p["place_key"], p["place_name"], p["people_count"], spec["label_plain"]]
@@ -809,7 +809,7 @@ def make_cape_breton_inset_figure(places_df: pd.DataFrame, tradition_specs: list
                 lat=[p["latitude"] for p in points],
                 lon=[p["longitude"] for p in points],
                 mode="markers",
-                visible=False,
+                visible=True,
                 marker={"size": CAPE_BRETON_INSET_TRADITION_MARKER_SIZE, "opacity": 1, "color": spec["colour"]},
                 customdata=[
                     [p["place_key"], p["place_name"], p["people_count"], spec["label_plain"]]
@@ -860,7 +860,7 @@ def make_inset_figure(tradition_specs: list[dict[str, Any]]) -> go.Figure:
                 lat=[point["latitude"]],
                 lon=[point["longitude"]],
                 mode="markers",
-                visible=False,
+                visible=True,
                 marker={
                     "size": 16,
                     "opacity": 1,
@@ -1002,7 +1002,29 @@ def render_html(
     html, body {{
         margin: 0;
         padding: 0;
-        height: 100%;
+        min-height: 100%;
+    }}
+
+    :root {{
+        --app-viewport-height: 100vh;
+        --app-min-height: 520px;
+        --floating-panel-width: min(22%, 340px);
+        --floating-panel-min-width: 280px;
+        --floating-panel-height: 42%;
+        --floating-panel-top-gap: 20px;
+        --floating-panel-bottom-gap: 20px;
+        --map-control-top-gap: 22px;
+        --map-reset-bottom-gap: 18px;
+    }}
+
+    .page {{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: var(--app-viewport-height);
+        min-height: min(var(--app-min-height), var(--app-viewport-height));
+        max-height: var(--app-viewport-height);
+        margin: 0;
         overflow: hidden;
         font-family: "Cooper Hewitt", "Helvetica Neue", Helvetica, Arial, sans-serif;
         font-style: normal;
@@ -1012,23 +1034,12 @@ def render_html(
         color: {BODY_TEXT};
         background: {PANEL_BG};
     }}
-
-    :root {{
-        --floating-panel-width: min(19%, 280px);
-        --floating-panel-min-width: 220px;
-        --floating-panel-height: 42%;
-    }}
-
-    .page {{
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        overflow: hidden;
-    }}
     
     .content {{
         display: flex;
         flex: 1 1 auto;
+        width: 100%;
+        height: 100%;
         min-height: 0;
         overflow: hidden;
     }}
@@ -1037,6 +1048,8 @@ def render_html(
         flex: 0 0 clamp(500px, 26vw, 560px);
         max-width: clamp(500px, 26vw, 560px);
         min-width: 500px;
+        height: 100%;
+        min-height: 0;
         box-sizing: border-box;
         padding: 18px;
         overflow: hidden;
@@ -1542,6 +1555,8 @@ def render_html(
         position: relative;
         flex: 1 1 auto;
         min-width: 0;
+        height: 100%;
+        min-height: 0;
         background: #fff;
         overflow: hidden;
     }}
@@ -1587,7 +1602,7 @@ def render_html(
 
     .top-map-buttons {{
         position: absolute;
-        top: 22px;
+        top: var(--map-control-top-gap);
         left: 18px;
         z-index: 1006;
         display: flex;
@@ -1683,10 +1698,11 @@ def render_html(
 
     .floating-overlays {{
         right: 16px;
-        top: 20px;
-        bottom: 20px;
+        top: var(--floating-panel-top-gap);
+        bottom: var(--floating-panel-bottom-gap);
         height: auto;
-        width: min(22%, 340px);
+        width: var(--floating-panel-width);
+        min-width: var(--floating-panel-min-width);
     }}
 
     .floating-inset {{
@@ -1816,7 +1832,7 @@ def render_html(
     }}
     
     .filters-controls .btn-bilingual {{
-        white-space: normal;
+        white-space: nowrap;
         justify-content: center;
         text-align: center;
     }}
@@ -2806,8 +2822,8 @@ def render_html(
 
     .map-controls-btn {{
         position: absolute;
-        top: 22px;
-        right: calc(min(22%, 340px) + 28px);
+        top: var(--map-control-top-gap);
+        right: calc(var(--floating-panel-width) + 28px);
         left: auto;
         bottom: auto;
         width: 40px;
@@ -2841,13 +2857,13 @@ def render_html(
 
     .map-controls-popup {{
         position: absolute;
-        top: 12px;
-        right: calc(min(22%, 340px) + 62px);
+        top: max(12px, calc(var(--map-control-top-gap) - 10px));
+        right: calc(var(--floating-panel-width) + 62px);
         left: auto;
         bottom: auto;
         z-index: 1007;
         width: 300px;
-        max-width: calc(100% - (min(22%, 340px) + 96px));
+        max-width: calc(100% - (var(--floating-panel-width) + 96px));
     }}
 
     .map-controls-popup.hidden {{
@@ -2878,7 +2894,7 @@ def render_html(
         position: absolute;
         left: 18px;
         right: auto;
-        bottom: 18px;
+        bottom: var(--map-reset-bottom-gap);
         z-index: 1006;
     }}
 
@@ -2887,39 +2903,39 @@ def render_html(
 
 @media (max-width: 900px) {{
 
-    html, body {{
-        overflow: auto;
-    }}
-
     .page {{
         height: auto;
+        min-height: var(--app-viewport-height);
+        max-height: none;
         overflow: visible;
     }}
 
     .content {{
         flex-direction: column;
         height: auto;
+        min-height: var(--app-viewport-height);
         overflow: visible;
     }}
 
     .side-panel {{
         max-width: none;
         min-width: 0;
-        min-height: 60vh;
+        min-height: min(60vh, calc(var(--app-viewport-height) * 0.58));
         border-right: none;
         border-bottom: 1px solid rgba(25, 41, 48, 0.08);
     }}
 
     .map-panel {{
-        min-height: 70vh;
+        height: clamp(360px, calc(var(--app-viewport-height) * 0.56), 640px);
+        min-height: clamp(360px, calc(var(--app-viewport-height) * 0.56), 640px);
     }}
 
     .main-map-slot {{
-        height: 70vh;
+        height: 100%;
     }}
 
     #map {{
-        height: 70vh;
+        height: 100%;
     }}
 
     .meta-line {{
@@ -2961,9 +2977,17 @@ def render_html(
     }}
 
     :root {{
-        --floating-panel-width: min(74vw, 300px);
+        --floating-panel-width: min(74vw, 320px);
         --floating-panel-min-width: 0px;
         --floating-panel-height: 42%;
+        --floating-panel-top-gap: 12px;
+        --floating-panel-bottom-gap: 12px;
+        --map-control-top-gap: 14px;
+        --map-reset-bottom-gap: 12px;
+    }}
+
+    .filters-controls .btn-bilingual {{
+        white-space: normal;
     }}
 
     .map-view-toggle {{
@@ -3463,7 +3487,8 @@ def render_html(
                     placeOriginHtml: formatBilingualHtml(
                         place.place_name_gaelic || '',
                         place.place_name_english || ''
-                    )
+                    ),
+                    forceOpen: expandAllPlacePersonCards
                 }});
             }}
             html += `<div class="informants-pane">${{peopleHtml}}</div>`;
@@ -3478,6 +3503,7 @@ def render_html(
     let manualOpenPlaceKeys = new Set();
     let activePlaceDetailCollapsed = false;
     let placeLetterGroupsInitialised = false;
+    let expandAllPlacePersonCards = false;
 
     function getPlaceSortLabel(placeKey, mode = currentPlaceSort) {{
         const place = placesLookup[String(placeKey)] || {{}};
@@ -3674,24 +3700,19 @@ def render_html(
         return cards;
     }}
 
-    function closeOpenPlaceCards() {{
-        manualOpenPlaceKeys.clear();
+    function closeVisiblePlaceCards() {{
+        getVisiblePlaceCards().forEach((card) => {{
+            const key = String(card.dataset.placeKey || '');
+            if (key) manualOpenPlaceKeys.delete(key);
+        }});
         activePlaceDetailCollapsed = true;
         renderPlacesIndex(currentLocationPlaceKey);
     }}
-
+    
     function openVisiblePlaceCards() {{
         getVisiblePlaceCards().forEach((card) => {{
             const key = String(card.dataset.placeKey || '');
             if (key) manualOpenPlaceKeys.add(key);
-        }});
-        activePlaceDetailCollapsed = false;
-        renderPlacesIndex(currentLocationPlaceKey);
-    }}
-
-    function openAllPlaceCards() {{
-        getSortedPlaceKeys().forEach((placeKey) => {{
-            manualOpenPlaceKeys.add(String(placeKey));
         }});
         activePlaceDetailCollapsed = false;
         renderPlacesIndex(currentLocationPlaceKey);
@@ -3713,37 +3734,40 @@ def render_html(
     }}
 
     function increasePlaceDetail() {{
-        const allGroups = getAllPlaceLetterGroups();
         const openGroups = getOpenPlaceLetterGroups();
-        const allCards = getAllPlaceCards();
         const visibleCards = getVisiblePlaceCards();
-
-        const allGroupsOpen = allGroups.length > 0 && openGroups.length === allGroups.length;
         const visibleCardsHaveClosed = visibleCards.some((card) => !isPlaceCardOpen(card.dataset.placeKey));
-        const allCardsOpen = allCards.length > 0 && allCards.every((card) => isPlaceCardOpen(card.dataset.placeKey));
-
-        if (!allGroupsOpen) {{
-            if (openGroups.length > 0 && visibleCardsHaveClosed) {{
-                openVisiblePlaceCards();
-                return;
-            }}
+    
+        if (openGroups.length === 0) {{
             openAllPlaceLetterGroupsPreservingCards();
             return;
         }}
-
-        if (!allCardsOpen) {{
-            openAllPlaceCards();
-        }}
-    }}
-
-    function decreasePlaceDetail() {{
-        const allCards = getAllPlaceCards();
-        const hasAnyOpenCards = allCards.some((card) => isPlaceCardOpen(card.dataset.placeKey));
-        if (hasAnyOpenCards) {{
-            closeOpenPlaceCards();
+    
+        if (visibleCardsHaveClosed) {{
+            openVisiblePlaceCards();
             return;
         }}
-
+    
+        if (visibleCards.length > 0 && !expandAllPlacePersonCards) {{
+            expandAllPlacePersonCards = true;
+            renderPlacesIndex(currentLocationPlaceKey);
+        }}
+    }}
+    
+    function decreasePlaceDetail() {{
+        if (expandAllPlacePersonCards) {{
+            expandAllPlacePersonCards = false;
+            renderPlacesIndex(currentLocationPlaceKey);
+            return;
+        }}
+    
+        const visibleCards = getVisiblePlaceCards();
+        const hasAnyVisibleOpenCards = visibleCards.some((card) => isPlaceCardOpen(card.dataset.placeKey));
+        if (hasAnyVisibleOpenCards) {{
+            closeVisiblePlaceCards();
+            return;
+        }}
+    
         const openGroups = getOpenPlaceLetterGroups();
         if (openGroups.length > 0) {{
             collapseAllPlaceLetterGroups();
@@ -3872,11 +3896,12 @@ def render_html(
         renderTraditionsIndex(currentTraditionPanelKey, currentTraditionCommunityKey);
     }}
 
-    function renderPersonCard(person, options = {{}}) {{
+function renderPersonCard(person, options = {{}}) {{
     const placeKey = options.placeKey || person.place_key || '';
     const latitude = options.latitude || person.latitude || '';
     const longitude = options.longitude || person.longitude || '';
     const placeOriginHtml = options.placeOriginHtml || '—';
+    const forceOpen = options.forceOpen === true;
 
     const gaelicName = person.gaelic_name || '';
     const englishName = person.english_name || '';
@@ -3894,7 +3919,8 @@ def render_html(
         <details class="person-card"
             data-place-key="${{escapeHtml(String(placeKey))}}"
             data-lat="${{escapeHtml(String(latitude))}}"
-            data-lon="${{escapeHtml(String(longitude))}}">
+            data-lon="${{escapeHtml(String(longitude))}}"
+            ${{forceOpen ? 'open' : ''}}>
             <summary><span class="person-summary-name">${{summaryName}}</span></summary>
             <div class="metadata">
                 <div class="meta-top-row">
@@ -3909,7 +3935,7 @@ def render_html(
                     <div class="meta-top-item meta-top-item-button">
                         ${{
                             person.person_page_url
-                                ? `<a class="person-page-link-btn" href="${{escapeHtml(person.person_page_url)}}" target="_blank" rel="noopener noreferrer">View person page</a>`
+                                ? `<a class="person-page-link-btn" href="${{escapeHtml(person.person_page_url)}}" target="_blank" rel="noopener noreferrer" title="Full biographical information and recordings">View person page</a>`
                                 : ''
                         }}
                     </div>
@@ -3931,11 +3957,6 @@ def render_html(
                             <div class="meta-label">Number of recordings</div>
                             <div class="meta-value">${{formatRecordingCount(person.number_of_recordings)}}</div>
                         </div>
-                        ${{
-                            person.recordings_url
-                                ? `<a class="recordings-link-btn" href="${{escapeHtml(person.recordings_url)}}" target="_blank" rel="noopener noreferrer">View all recordings</a>`
-                                : ''
-                        }}
                     </div>
                 </div>
             </div>
@@ -4241,7 +4262,7 @@ def render_html(
     }}
 
     function forceResetMapViewport(mapDiv, center, zoom, getSubplotMap = null, requestTracker = null) {{
-        if (!mapDiv) return;
+        if (!mapDiv || !isPlotlyMapReady(mapDiv)) return;
 
         const requestId = requestTracker ? ++requestTracker.value : null;
         const isStale = () => requestTracker && requestId !== requestTracker.value;
@@ -4896,6 +4917,46 @@ def render_html(
     const mapViewCapeBretonBtn = document.getElementById('map-view-cb-btn');
     const mapViewScotlandBtn = document.getElementById('map-view-scotland-btn');
 
+    const pageShell = document.querySelector('.page');
+
+    function getAvailableAppViewportHeight() {{
+        const viewportHeight = (window.visualViewport && Number.isFinite(window.visualViewport.height))
+            ? window.visualViewport.height
+            : window.innerHeight;
+        const pageTop = pageShell ? Math.max(pageShell.getBoundingClientRect().top, 0) : 0;
+        return Math.max(360, Math.round(viewportHeight - pageTop));
+    }}
+
+    function syncAppViewportHeight() {{
+        const availableHeight = getAvailableAppViewportHeight();
+        const rootStyle = document.documentElement.style;
+        rootStyle.setProperty('--app-viewport-height', `${{availableHeight}}px`);
+
+        const compactHeight = availableHeight < 760;
+        rootStyle.setProperty('--floating-panel-top-gap', compactHeight ? '12px' : '20px');
+        rootStyle.setProperty('--floating-panel-bottom-gap', compactHeight ? '12px' : '20px');
+        rootStyle.setProperty('--map-control-top-gap', compactHeight ? '14px' : '22px');
+        rootStyle.setProperty('--map-reset-bottom-gap', compactHeight ? '12px' : '18px');
+    }}
+
+    let appViewportSyncFrame = null;
+
+    function scheduleAppViewportSync() {{
+        if (appViewportSyncFrame) {{
+            cancelAnimationFrame(appViewportSyncFrame);
+        }}
+
+        appViewportSyncFrame = requestAnimationFrame(() => {{
+            appViewportSyncFrame = null;
+            syncAppViewportHeight();
+            if (mapsAreReady) {{
+                refitMapsAfterResize();
+            }}
+        }});
+    }}
+
+    syncAppViewportHeight();
+
     let currentMapViewMode = MAP_VIEW_MODE_CAPE_BRETON_MAIN;
     let currentCapeBretonFigureVariant = CAPE_BRETON_FIGURE_VARIANT_MAIN;
 
@@ -5475,17 +5536,36 @@ def render_html(
     let currentTraditionPanelKey = null;
     let currentTraditionCommunityKey = null;
     let capeBretonMapResizeFrame = null;
-    let hasSeenInitialResizeObservation = false;
+    let mapsAreReady = false;
+
+    function isPlotlyMapReady(mapDiv) {{
+        return !!(
+            mapDiv &&
+            mapDiv._fullLayout &&
+            (mapDiv._fullLayout.map || mapDiv._fullLayout.mapbox)
+        );
+    }}
 
     function refitMapsAfterResize() {{
+        if (!mapsAreReady) return;
+
         if (capeBretonMapResizeFrame) {{
             cancelAnimationFrame(capeBretonMapResizeFrame);
         }}
     
         capeBretonMapResizeFrame = requestAnimationFrame(function() {{
-            Plotly.Plots.resize(capeBretonMapDiv);
-            Plotly.Plots.resize(scotlandMapDiv);
-            resetMapsForCurrentViewMode();
+            const capeBretonReady = isPlotlyMapReady(capeBretonMapDiv);
+            const scotlandReady = isPlotlyMapReady(scotlandMapDiv);
+
+            if (capeBretonReady) {{
+                Plotly.Plots.resize(capeBretonMapDiv);
+            }}
+            if (scotlandReady) {{
+                Plotly.Plots.resize(scotlandMapDiv);
+            }}
+            if (capeBretonReady && scotlandReady) {{
+                resetMapsForCurrentViewMode();
+            }}
             positionSelectedPlaceLabel();
             positionInsetSelectedPlaceLabel();
         }});
@@ -5596,15 +5676,24 @@ def render_html(
             currentCapeBretonFigureVariant = CAPE_BRETON_FIGURE_VARIANT_MAIN;
             ensureBaseTraceMarkerSizesCaptured();
             applyMapSlotStylePresets();
+            mapsAreReady = true;
             renderPlacesIndex(null);
             renderTraditionsIndex(null, null);
-            renderOverlayControls([]);
+            
+            const initialTraditionKeys = overlayControlsAll.map((item) => String(item.tradition_key));
+            currentOverlayTraditionKeys = initialTraditionKeys.slice();
+            overlayListCleared = false;
+            
+            renderOverlayControls(currentOverlayTraditionKeys, true);
             updateOverlayListActionButton();
-            showOverlayDefaultMessage();
+            
             setOverlayPanelVisibility(true);
             setInsetPanelVisibility(true);
             setSidePanelMode('location');
             resetInfoPanel();
+            syncCapeBretonBaseMarkerVisualPriority(true);
+            clearInsetSelectionRing();
+            hideInsetSelectedPlaceLabel();
 
             setTimeout(() => {{
                 renderAllPeopleList();
@@ -5682,6 +5771,10 @@ def render_html(
             scotlandMapDiv.on('plotly_relayout', function() {{
                 positionInsetSelectedPlaceLabel();
             }});
+
+            scheduleAppViewportSync();
+        }}).catch(function(error) {{
+            console.error('Scotland map initialisation failed.', error);
         }});
 
         capeBretonSubplotMap =
@@ -5690,7 +5783,7 @@ def render_html(
             null;
 
         window.addEventListener('resize', function() {{
-            refitMapsAfterResize();
+            scheduleAppViewportSync();
         }});
     
         capeBretonMapDiv.on('plotly_click', function(eventData) {{
@@ -5762,6 +5855,8 @@ def render_html(
                 positionSelectedPlaceLabel();
             }});
         }}
+    }}).catch(function(error) {{
+        console.error('Cape Breton map initialisation failed.', error);
     }});
 
     resetBtn.addEventListener('click', function() {{
@@ -5807,6 +5902,20 @@ def render_html(
             increasePeopleDetail();
         }});
     }}
+
+    window.addEventListener('scroll', scheduleAppViewportSync, true);
+    if (window.visualViewport) {{
+        window.visualViewport.addEventListener('resize', scheduleAppViewportSync);
+        window.visualViewport.addEventListener('scroll', scheduleAppViewportSync);
+    }}
+    if (typeof ResizeObserver === 'function' && pageShell) {{
+        const appViewportObserver = new ResizeObserver(() => scheduleAppViewportSync());
+        appViewportObserver.observe(pageShell);
+        if (pageShell.parentElement) {{
+            appViewportObserver.observe(pageShell.parentElement);
+        }}
+    }}
+    scheduleAppViewportSync();
 
     document.addEventListener('click', function(event) {{
         const clickedPersonCard = event.target.closest('details.person-card');
