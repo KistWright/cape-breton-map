@@ -4350,8 +4350,7 @@ function renderPersonCard(person, options = {{}}) {{
     }}
         
     function resetMainMapAndPanels() {{
-        clearActivePlaceSelection();
-        syncCapeBretonBaseMarkerVisualPriority(false);
+        showAllTraditionsInCapeBreton();
         resetMapsForCurrentViewMode();
         scheduleMapViewResize();
     }}
