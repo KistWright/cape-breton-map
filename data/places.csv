@@ -1,128 +1,132 @@
 ﻿Place Number,Community of Origin (Canada),Latitiude,Longitude
-1,Gleann nam Màgan | Ainslie Glen,46.02822,-61.13253
-2,An Gleann Mhór | Barra Glen,45.96824,-60.84736
-3,Beinn Eòin | Ben Eoin,45.97243,-60.43482
-4,Pon na Maiseadh | Benacadie,45.92240,-60.73150
-5,Pon na Maiseadh | Benacadie Pond,45.91746,-60.71667
-6,Pon na Maiseadh An Iar | Benacadie West,45.93343,-60.73566
-7,Badaig Mhór | Big Baddeck,46.14184,-60.80107
-8,An t-Allt Mór | Big Brook,45.80036,-61.23613
-9,Am Pon Mór | Big Pond,45.90744,-60.54000
-10,An Abhainn Dubh | Black River,46.12732,-61.33798
-11,A' Chreag Dhubh | Blackstone,46.13209,-61.30157
-12,Muilnean Clann ’ic Ghilleghuirme | Blues Mills,45.93086,-61.18201
-13,Baghasdal | Boisdale,46.09699,-60.50702
-14,Breton Cove,46.45557,-60.46573
-15,An Camus Leathann | Broad Cove,46.26175,-61.27185
-16,Bucklaw,46.01250,-60.98410
-17,Bàgh A’ Chaisteil | Castle Bay,45.90900,-60.68380
-18,Baile Beag an Uillt | Centreville,46.06529,-61.23590
-19,Eilean na Nollaig | Christmas Island,46.00397,-60.58007
-20,Creiginnis | Creignish,45.73020,-61.45941
-21,Deepdale,46.23322,-61.26749
-22,Bràigh na h-Aibhneadh | Dennistown,45.84530,-61.38813
-23,Dùn-bheagan | Dunvegan,46.29710,-61.23380
-24,Bàgh Na h-Àird’ An Ear | East Bay,46.01227,-60.38454
-25,An t-Eilean Mór An Ear | East Boularderie,46.25061,-60.44974
-26,Flambus | Framboise,45.71795,-60.36403
-27,Flambus | Framboise Interval ,45.68390,-60.43342
-28,Léig Gabarus | Gabarus Lake,45.81132,-60.21698
-29,Baile nan Giolasach | Gillisdale,46.23234,-61.13483
-30,Gleann Comhainn | Glencoe,45.95075,-61.33392
-31,Gleann Comhann | Glencoe Mills,45.96708,-61.31671
-32,Bràigh na h-Aibhneadh | Glendale,45.81629,-61.30046
-33,An Gleann Dubh | Glenville,46.14880,-61.31836
-34,A’ Mhira Mhór a Deas | Grand Mira South,45.87956,-60.29092
-35,An Abhainn Mhór | Grand River,45.64836,-60.66247
-36,An Abhainn Mhór | Grand River Falls,45.69872,-60.63235
-37,Cùl Shiùdaig | Gussieville,45.90849,-61.46958
-38,Cùl Rathad Shiùdaig | Hawthorne,45.96571,-61.46985
-39,Còbh An Fheòir | Hay Cove,45.73818,-60.72483
-40,Stràid an Tàilleir | Highland Hill,45.96566,-60.86761
-41,Hillsdale,45.93300,-61.41819
-42,Abhainn a’ Chùbair | Indian Brook,46.38316,-60.53493
-43,Sanndraigh | Iona,45.96023,-60.80694
-44,Camus nan Éireannach | Irish Cove,45.82120,-60.67450
-45,Baile nan Éireannach| Irish Vale,45.84748,-60.64746
-46,Baile Iarainn | Ironville,46.13449,-60.46079
-47,Baile Sheumais | Jamesville,45.94896,-60.85217
-48,An Caolas Beag | Jubilee,45.98707,-60.93270
-49,Siudaig | Judique,45.87366,-61.49004
-50,Ceann 'a Léic | Kenloch (Head Lake Ainslie),46.18659,-61.27352
-51,Bràigh na h-Aibhneadh | Kingsville,45.78254,-61.32363
-52,"Siudaig Bheag | Little Judique
-",45.93962,-61.48570
-53,Loch Laomainn | Loch Lomond,45.76579,-60.56583
-54,An Drochaid | Mabou,46.07140,-61.39320
-55,An Acarsaid Mhàbu | Mabou Harbour,46.08177,-61.42020
-56,Loch ’ic Eamoinn | MacAdam's Lake,46.02672,-60.43265
-57,Brìagh na h-Aibhneadh | Maple Brook,45.81697,-61.28347
-58,Beinn a Tuath | Marble Mountain,45.81836,-61.04522
-59,Eilean Mhàrgaraidh | Margaree Island,46.35944,-61.26220
-60,Drochaid Mhira | Marion Bridge,45.98039,-60.21394
-61,Crìochan Bràigh na h-Aibhneadh | Melford,45.87328,-61.26046
-62,An Ceap Leathach | Middle Cape,45.86774,-60.61903
-63,An Abhainn Mheadhanach | Middle River,46.15320,-60.92140
-64,Rubha 'ic an Rothaich | Munroe's Point,46.26940,-60.60084
-65,Acarsaid Nìll | Neils Harbour,46.81140,-60.32320
-66,Boston Ùr | New Boston,45.97482,-60.07136
-67,Màbu an Ear-thuath | North East Mabou,46.09999,-61.40043
-68,North River Bridge | ?,46.30523,-60.62111
-69,Taobh Tuath Bàgh an Ear | Northside East Bay,45.99971,-60.43467
-70,Abhainn Ottawa | Ottawa Brook,45.93313,-60.93333
-71,Còbh Nam Pìobairean | Piper's Cove,45.93867,-60.75304
-72,Piper's Glen,46.19839,-61.11841
-73,Port Bàn | Port Ban,46.19971,-61.38519
-74,Cùl An Tràigh Mhòr | Rear Big Beach,45.97968,-60.69827
-75,Cùl a' Chnuic Mhòir | Rear Big Hill ,46.17148,-60.67844
-76,Cùl Eilean an Nollaig | Rear Christmas Island,45.96467,-60.71914
-77,Cùl Shiudaig | Rear Judique Chapel,45.86696,-61.46662
-78,Cùl Abhainn Ottawa | Rear Ottawa Brook,45.94356,-60.93908
-79,Abhainn Denys | River Denys,45.84557,-61.13716
-80,Owl Mountain (Valley Mills) | ?,45.85216,-61.08735
-81,Bun Na h-Aibhne | Scotsville,46.18722,-61.15728
-82,Shenacadie,46.01892,-60.65367
-83,Skir Dhu,46.48283,-60.45128
-84,Gleann an Sgìtheanach | Skye Glen,46.03324,-61.20155
-85,An Acarsaid a Deas | South Haven,46.19924,-60.58534
-86,Bràigh Na h-Aibhne | Southwest Margaree,46.27981,-61.14411
-87,Na Pònaichean | St. Rose,46.34714,-61.18350
-88,Srath Lathurna | Strathlorne,46.18348,-61.28432
-89,Tarbot,46.33097,-60.61187
-90,Troy,45.69468,-61.43990
-91,Upper Grand Mira,45.79818,-60.29570
-92,Upper Margaree | ?,46.21201,-61.14223
-93,Upper Southwest Mabou,45.94907,-61.36807
-94,Victoria Bridge,45.82524,-60.28869
-95,Washabuck Bridge,46.01603,-60.88467
-96,West Lake Ainslie,46.10013,-61.20033
-97,Màbu an Iar | West Mabou,46.07661,-61.48093
-98,Woodbine,45.99909,-60.30135
+1,A' Chreag Dhubh | Blackstone,46.132087,-61.301567
+2,A’ Mhira Mhór a Deas | Grand Mira South,45.879558,-60.290922
+3,Abhainn a’ Chùbair | Indian Brook,46.383158,-60.534934
+4,Abhainn Denys | River Denys,45.845565,-61.137164
+5,Acarsaid Nìll | Neils Harbour,46.811400,-60.323200
+6,Am Bràighe | Upper Margaree,46.212012,-61.142226
+7,Am Pòn Mór | Big Pond,45.907437,-60.540004
+8,An Abhainn Dubh | Black River,46.127320,-61.337977
+9,An Abhainn Mheadhanach | Middle River,46.153200,-60.921400
+10,An Abhainn Mhór | Grand River,45.648360,-60.662471
+11,An Acarsaid | Ottawa Brook,45.933133,-60.933327
+12,An Acarsaid | Shenacadie,46.018922,-60.653672
+13,An Acarsaid a Deas | South Haven,46.199242,-60.585344
+14,An Acarsaid Mhàbu | Mabou Harbour,46.081771,-61.420201
+15,An Camus Leathann | Broad Cove,46.261746,-61.271854
+16,An Caolas Beag | Jubilee,45.987065,-60.932696
+17,An Ceap Leathach | Middle Cape,45.867739,-60.619030
+18,An Drochaid | Mabou,46.071400,-61.393200
+19,An Gleann Dubh | Glenville,46.148803,-61.318364
+20,An Gleann Mór | Barra Glen,45.968235,-60.847356
+21,An t-Allt Mór | Big Brook,45.800361,-61.236126
+22,An t-Eilean Mór An Ear | East Boularderie,46.250608,-60.449742
+23,Badaig Mhór | Big Baddeck,46.141835,-60.801069
+24,Bàgh A’ Chaisteil | Castle Bay,45.909002,-60.683797
+25,Bàgh Na h-Àird’ An Ear | East Bay,46.012265,-60.384539
+26,Baghasdal | Boisdale,46.096987,-60.507018
+27,Baile Beag an Uillt | Centreville,46.065286,-61.235901
+28,Baile Iarainn | Ironville,46.134486,-60.460794
+29,Baile nan Éireannach | Irish Vale,45.847478,-60.647462
+30,Baile nan Giolasach | Gillisdale,46.232338,-61.134829
+31,Baile Sheumais | Jamesville,45.948957,-60.852171
+32,Beinn a Tuath | Marble Mountain,45.818362,-61.045216
+33,Beinn Eòin | Ben Eoin,45.972434,-60.434822
+34,Beinn nan Comhachaig | Owl Mountain (Valley Mills),45.852162,-61.087352
+35,Beinn Noah | Hillsdale,45.932999,-61.418187
+36,Boston Ùr | New Boston,45.974823,-60.071356
+37,Bràigh Na h-Aibhne | Southwest Margaree,46.279813,-61.144113
+38,Bràigh na h-Aibhneadh | Glendale,45.816292,-61.300458
+39,Bràigh na h-Aibhneadh | Kingsville,45.782542,-61.323630
+40,Bràigh na h-Aibhneadh | Maple Brook,45.816967,-61.283472
+41,Bucklaw,46.012500,-60.984100
+42,Bun Na h-Aibhne | Scotsville,46.187223,-61.157278
+43,Camus nan Éireannach | Irish Cove,45.821200,-60.674500
+44,Ceann a' Mhira | Upper Grand Mira,45.798176,-60.295698
+45,Còbh An Fheòir | Hay Cove,45.738184,-60.724825
+46,Còbh nam Breatannach | Breton Cove,46.455571,-60.465728
+47,Còbh Nam Pìobairean | Piper's Cove,45.938669,-60.753041
+48,Còmhnard nam Frangach | Birch Plain,46.517612,-60.433526
+49,Creiginis | Creignish,45.730202,-61.459409
+50,Crìochan Bràigh na h-Aibhneadh | Melford,45.873281,-61.260461
+51,Cùl a' Chnuic Mhòir | Rear Big Hill,46.171483,-60.678440
+52,Cùl An Acarsaid | Rear Ottawa Brook,45.943555,-60.939081
+53,Cùl An Tràigh Mhòr | Rear Big Beach,45.979682,-60.698273
+54,Cùl Eilean na Nollaig | Rear Christmas Island,45.964671,-60.719141
+55,Cùl Rathad Shiùdaig | Hawthorne,45.965712,-61.469849
+56,Cùl Shiudaig | Dennistown,45.845303,-61.388127
+57,Cùl Shiudaig | Rear Judique Chapel,45.866964,-61.466624
+58,Cùl Shiùdaig | Gussieville,45.908492,-61.469579
+59,Deepdale,46.233224,-61.267491
+60,Drochaid Bhioctoria | Victoria Bridge,45.825242,-60.288688
+61,Drochaid Mhira | Marion Bridge,45.980386,-60.213941
+62,Drochaid na h-Aibhne Tuath | North River Bridge,46.305232,-60.621111
+63,Drochaid Uaiseabuc | Washabuck Bridge,46.016027,-60.884673
+64,Dùn-bheagan | Dunvegan,46.297097,-61.233804
+65,Eas na h-Aibhne Móire | Grand River Falls,45.698715,-60.632346
+66,Eilean Mhàrgaraidh | Margaree Island,46.359443,-61.262199
+67,Eilean na Nollaig | Christmas Island,46.003966,-60.580066
+68,Flambus | Framboise,45.717954,-60.364031
+69,Flambus | Framboise Interval,45.683901,-60.433419
+70,Gleann Comhann | Glencoe,45.950749,-61.333917
+71,Gleann Comhann | Glencoe Mills,45.967081,-61.316710
+72,Gleann nam Màgan | Ainslie Glen,46.028219,-61.132531
+73,Gleann nam Piobaire | Piper's Glen,46.198393,-61.118408
+74,Gleann nan Sgitheanach | Skye Glen,46.033243,-61.201546
+75,Léig Gabarus | Gabarus Lake,45.811316,-60.216976
+76,Loch ’ic Eamoinn | MacAdam's Lake,46.026721,-60.432653
+77,Loch Ainslidh a Deas | South Lake Ainslie (Head Lake),46.049885,-61.106306
+78,Loch Ainslidh an Iar | West Lake Ainslie,46.100130,-61.200327
+79,Loch Laomainn | Loch Lomond,45.765793,-60.565833
+80,Màbu an Ear-thuath | North East Mabou,46.099990,-61.400428
+81,Màbu an Iar | West Mabou,46.076605,-61.480932
+82,Màbu an Iar-Dheas | Upper Southwest Mabou,45.949073,-61.368065
+83,Muilnean Clann ’ic Ghilleghuirme | Blues Mills,45.930857,-61.182012
+84,Na Pònaichean | St. Rose,46.347135,-61.183503
+85,Pòn na Maiseadh | Benacadie,45.922400,-60.731500
+86,Pòn na Maiseadh | Benacadie Pond,45.917458,-60.716667
+87,Pòn na Maiseadh An Iar | Benacadie West,45.933426,-60.735664
+88,Port Bàn | Port Ban,46.199714,-61.385193
+89,Rubha 'ic an Rothaich | Munroe's Point,46.269401,-60.600838
+90,Sanndraigh | Iona,45.960232,-60.806941
+91,Sgeir Dhubh | Skir Dhu,46.482834,-60.451282
+92,Siudaig | Judique,45.873657,-61.490040
+93,Siudaig Bheag | Little Judique,45.939616,-61.485704
+94,Solas | Woodbine,45.999092,-60.301351
+95,Sràid an Tàilleir | Highland Hill,45.965655,-60.867606
+96,Srath Lathurna | Strathlorne,46.183481,-61.284318
+97,Tairbeart | Tarbot,46.330967,-60.611874
+98,Taobh Tuath Bàgh an Ear | Northside East Bay,45.999712,-60.434673
+99,Tròidh | Troy,45.694677,-61.439895
 ,,,
 ,Community of Tradition (Scotland),,
-99,Arasaig | Arisaig,56.91160,-5.84580
-100,Bàideanach | Badenoch,56.97520,-4.17680
-101,Barraigh | Barra,56.98730,-7.46500
-102,Cannaigh | Canna,57.06190,-6.54510
-103,Ceann Tàile | Kintail,57.20600,-5.34680
-104,Colla | Coll,56.62090,-6.57200
-105,Eige | Eigg,56.90430,-6.15150
-106,Gleann Comhann | Glencoe,56.66710,-5.02680
-107,Na Hearadh | Harris,57.83450,-6.90460
-108,Leòdhas | Lewis,58.18900,-6.61400
-109,Loch Abair | Lochaber,56.98540,-5.06330
-110,Loch Carrann | Lochcarron,57.40040,-5.49220
-111,Lochalash | Loch Aillse,57.27280,-5.67590
-112,Mórar | Morar,56.95530,-5.65650
-113,Muc | Muck,56.83670,-6.24490
-114,Mùideart | Moidart,56.79690,-5.71140
-115,Muile | Mull,56.31830,-6.18270
-116,Ruma | Rum,57.00010,-6.33330
-117,Sgitheanach | Skye,57.29860,-6.19540
-118,Strath Glas | Strathglass,57.37920,-4.69860
-119,Uibhist | Uist,57.43320,-7.33010
-120,Uibhist a Deas | South Uist,57.25490,-7.33220
-121,Uibhist a Tuath | North Uist,57.58140,-7.28500
+100,An t-Eilean Sgitheanach | Skye,57.298600,-6.195400
+101,Arasaig | Arisaig,56.911600,-5.845800
+102,Bàideanach | Badenoch,56.975200,-4.176800
+103,Barraigh | Barra,56.987300,-7.465000
+104,Bearnaraigh na Hearadh | Berneray Harris,57.721851,-7.187320
+105,Canaigh | Canna,57.061900,-6.545100
+106,Ceann t-Sàil | Kintail,57.206000,-5.346800
+107,Colla | Coll,56.620900,-6.572000
+108,Eige | Eigg,56.904300,-6.151500
+109,Gleann Comhann | Glencoe,56.667100,-5.026800
+110,Leòdhas | Lewis,58.189000,-6.614000
+111,Loch Abar | Lochaber,56.985400,-5.063300
+112,Loch Carrann | Lochcarron,57.400400,-5.492200
+113,Loch Aillse | Lochalsh,57.272800,-5.675900
+114,Mórar | Morar,56.955300,-5.656500
+115,Muc | Muck,56.836700,-6.244900
+116,Mùideart | Moidart,56.796900,-5.711400
+117,Muile | Mull,56.318300,-6.182700
+118,Na Hearadh | Harris,57.834500,-6.904600
+119,Na h-Eileanan A-Staigh | Inner Hebrides,56.623990,-6.166400
+120,Ruma | Rum,57.000100,-6.333300
+121,Sgalpaigh na Hearadh | Scalpay,57.866151,-6.671553
+122,Siorrachd Rois | Ross-shire,57.688020,-5.256443
+123,Strath Ghlais | Strathglass,57.379200,-4.698600
+124,Uibhist | Uist,57.433200,-7.330100
+125,Uibhist a Deas | South Uist,57.254900,-7.332200
+126,Uibhist a Tuath | North Uist,57.581400,-7.285000
 ,,,
 ,,,
 ,,,
@@ -130,33 +134,35 @@
 ,,,
 ,,,
 ,,,
-,,45.770963,-60.209649
-,,45.912517,-60.721784
-,,46.1182,-60.8441
-,,42.3601,-71.0589
-,,46.162368,-60.567686
-,,45.983407,-59.983773
-,,45.87152,-60.300937
-,,47.783254,-61.493572
-,,44.6488,-63.5752
-,,45.225257,-61.868996
-,,46.2314,-61.3032
-,,45.863242,-61.449165
-,,46.340759,-60.99188
-,,46.583619,-60.39699
-,,48.432044,-56.051366
-,,46.416408,-60.47519
-,,50.992396,-86.263566
-,,46.014976,-61.530066
-,,46.2012,-61.2145
-,,45.968972,-60.851481
-,,46.236801,-60.099356
-,,42.695925,-71.153669
-,,45.656531,-60.875147
-,,46.1367,-60.1942
-,,46.2414,-60.2332
-,,46.1132,-60.2214
-,,45.983454,-60.167631
-,,46.185825,-60.937202
-,,46.044347,-60.802826
-,,46.548336,-60.412603
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
