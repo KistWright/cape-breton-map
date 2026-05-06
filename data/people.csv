@@ -1,56 +1,56 @@
 ﻿Person number,Informant ID,Informant Last Name,Informant Maiden Name,Informant First Name,Nickname/Familiar Name,Cinneadh,Sloinneadh-breithe,Ainm,Sloinneadh,Dates,Place number,Number of Recordings,,,
 1,BEATDA02,Beaton,,Dan Angus,,Peutan,,Dòmhnall Aonghas,Dòmhnall Aonghais mac Fhionnlaigh 'ic Iain 'ic Iain 'ic Fhionnlaigh Mhóir,1903 - 1996,1,14,,1903,1996
-2,GILLAM02,Gillis,MacIsaac,Annie Mae,,Giollasach,NicÌosag,Annag,Annag ni'n Sheonaidh Bhig ‘ic Alasdair,1907 - 1980,1,2,,1907,1980
-3,GILLLA01,Gillis,,Lauchie,,Giollasach,,Lachlan,Lachlann mac Eardsaidh `ic Lachlainn Mhóir,1913 - 1980,2,13,,1913,1980
-4,SHAWJO04,Shaw,,John,,Seathach,,Seògan,Seògan Màiri Dhanaidh,1910 - 2000,3,54,,1910,2000
+2,GILLAM02,Gillis,MacIsaac,Annie Mae,,Ghilleasach,NicÌosag,Annag,Annag ni'n Sheonaidh Bhig ‘ic Alasdair,1907 - 1980,1,2,,1907,1980
+3,GILLLA01,Gillis,,Lauchie,,Gilleasach,,Lachlann,Lachlann mac Eardsaidh `ic Lachlainn Mhóir,1913 - 1980,2,13,,1913,1980
+4,SHAWJO04,Shaw,,John,,Seathach,,Seogan,Seògan Màiri Dhanaidh,1910 - 2000,3,54,,1910,2000
 5,MACKMA02,MacKenzie,MacLennan,Maude,,NicCoinnich,NicIllFhinnein,Maude,Maud ni'n Fhraing mac Alasdair 'ic Dhòmhnuill Thàilleir,1894 - 1991,4,1,,1894,1991
 6,MACDJ04,MacDonald,,Johnny,Johnny Dan Angus,Dòmhnullach,,Seonaidh,Seonaidh mac Dhòmhnaill ‘ic Dhòmhaill ‘ic Fhilib ‘ic Dhòmhnaill ‘ic Chaluim,1919 - 1988,11,9,,1919,1988
 7,MACLRH04,MacLellan,MacNeil,Rhodena,,NicIllFhaolain,NicNìll,Rhodena,Rhodena ni'n Dòmhnuill Iain ‘ic Mhìcheil D ‘ic Dhòmhnaill Dhotair,1928 - 2010,11,3,,1928,2010
-8,MACNDO04,Ratchford (MacNeil),Ratchford ,Mary E. ,Dolly,Ratchford (NicNìll),Ratchford,Doilidh,,1918 - 2007,90,1,,1918,2007
-9,MACNSA04,MacNeil,MacNeil,Sarah Anne,Sadie,NicNìll,NicNìll,Mórag Annag,Sarah Ann ni'n Ruairidh D 'ic Dhòmhnaill Mhóir,1904 - 1986,11,2,,1904,1986
+8,MACNDO04,Ratchford (MacNeil),Ratchford,Mary E.,Dolly,Ratchford (NicNìll),Ratchford,Doilidh,,1918 - 2007,90,1,,1918,2007
+9,MACNSA04,MacNeil,MacNeil,Sarah Anne,Sadie,NicNìll,NicNìll,Mórag Anna,Sarah Ann ni'n Ruairidh D 'ic Dhòmhnaill Mhóir,1904 - 1986,11,2,,1904,1986
 10,RODGKA04,Rodgers,MacLeod,Katie Ann,,NicLeòid,NicLeòid,Ceiteag,Catriona ni'n Thormoid Chaluim,1892 - 1984,48,1,,1892,1984
 11,MACKJI01,MacKinnon,,Jim,,MacFhionghain,,Seumas,Steafan Iain Pheigi Ailein,1905 - 1978,7,7,,1905,1978
 12,MACKST01,MacKinnon,,Stephen,,MacFhionghain,,Steafan,Steafan Iain Peigi Ailein,1902 - 1984,7,26,,1902,1984
 13,MACDA02,MacDonald,,Angus,Angus Dan Allan California,Dòmhnullach,,Aonghas,Aonghas Dhòmhnuill Ailein Dhòmhnuill,1906 - 1978,8,1,,1906,1978
-14,MACDA04,MacDonald,,Alec,,Dòmhnullach,,Alasdair,Alasdair Aonghais Iain Aonghais,,9,5,,,
+14,MACDA04,MacDonald,,Alexander John,Alec,Dòmhnullach,,Alasdair,Alasdair Aonghais Iain Aonghais,1905 - 1980,9,5,,1905,1980
 15,MACQDA04,MacQuarrie,,Dan,,MacGuaire,,Dòmhnall,Dòmhnull Chaluim Dhòmhnuill Ghuaire,1890 - 1988,9,2,,1890,1988
 16,MACQDU04,MacQuarrie,,Duncan,,MacGuaire,,Donnchadh,Donnchadh Dhomhnuill Lachlainn Ghuaire,1899 - 1981,9,3,,1899,1981
 17,MACAJA03,MacAskill,,John Angus,Johnny Angus,MacAsgaill,,Iain Aonghas,Iain Choinnich Dhòmhnuill Aonghais,1922 - 1996,10,5,,1922,1996
 18,MACLDK03,MacLeod,,Dan K.,Danny Kate Sarah,MacLeòid,,Danaidh,Danaidh Ceit Sara,1909 - 1986,10,10,,1909,1986
-19,MACKDU03,MacKay,,Duncan,D.A.,MacAoidh,,Donnchadh,Donnchadh Alasdair Dhonnchaidh Alasdair,,10,2,,,
-20,MORRMA03,Morrison,,Malcolm,Little Malcolm ,Moireasdan,,Calum,Calum Aonghais Mhurchaidh,1914 - 1999,65,4,,1914,1999
+19,MACKDU03,MacKay,,Duncan,D. A.,MacAoidh,,Donnchadh,Donnchadh Alasdair Dhonnchaidh Alasdair,,10,2,,,
+20,MORRMA03,Morrison,,Malcolm,Little Malcolm,Moireasdan,,Calum,Calum Aonghais Mhurchaidh,1914 - 1999,65,4,,1914,1999
 21,MACDC04,MacDonald,,Charles,Holy Charlie,Dòmhnullach,,Teàrlach,Charles Malcolm John Donald,1905 - 1990,62,7,,1905,1990
 22,MACDJS02,MacDonald,,John Simon,,Dòmhnullach,,Iain Saoimein,Iain Saoimein,1900 - 1983,14,8,,1900,1983
 23,RANKDF02,Rankin,,Dan Finlay,,MacFhraing,,Dòmhnall Fionnlagh,Dòmhnall Aonghais Bhàin,1908 - 1981,14,16,,1908,1981
-24,GILLDA02,Gillis,,Dan Allan,,Giollasach,,Dòmhnull,Dòmhnall 'Illeasbuig Mac Aonghais ic Alasdair,1908 - 2005,15,12,,1908,2005
-25,KENNM02,Kennedy,Kennedy,Margaret,Peggy,Ceanadach,,Peigi,Peigi ni'n Iain 'ic Dhòmhnuill,1868 - 1978,15,5,,1868,1978
-26,MACLADE02,MacLellan,,Archibald,Archie Dan,MacIllFhaolain,,Gilleasbuig,Gilleasbuig Eòghainn Dhòmhnaill 'ic Aonghais 'ic Aonghais 'ic Iain 'ic Iain 'ic Dhòmhnaill ,1900 - 1989,15,62,,1900,1989
+24,GILLDA02,Gillis,,Dan Allan,,Gilleasach,,Dòmhnull,Dòmhnall 'Illeasbuig Mac Aonghais ic Alasdair,1908 - 2005,15,12,,1908,2005
+25,KENNM02,Kennedy,,Margaret,Peggy,Cheanadach,,Peigi,Peigi ni'n Iain 'ic Dhòmhnuill,1868 - 1978,15,5,,1868,1978
+26,MACLADE02,MacLellan,,Archibald,Archie Dan,MacIllFhaolain,,Gilleasbuig,Gilleasbuig Eòghainn Dhòmhnaill 'ic Aonghais 'ic Aonghais 'ic Iain 'ic Iain 'ic Dhòmhnaill,1900 - 1989,15,62,,1900,1989
 27,MACLFM02,MacLellan,MacLellan,Flora Mae,,NicIllFhaolain,NicIllFhaolain,Flòraidh,Flòraidh Eóghainn Dhòmhnaill 'ic Aonghuis,1909 - 2007,15,14,,1909,2007
-28,MATHKE04,Matheson,,Kenneth,"Kenny Sketch, Kenny Chaluim Sketch",Mathanach,,Coinneach,Coinneach Chaluim Dhòmhnaill,1907 - 1994,16,10,,1907,1994
+28,MATHKE04,Matheson,,Kenneth,Kenny Sketch | Kenny Chaluim Sketch,Mathanach,,Coinneach,Coinneach Chaluim Dhòmhnaill,1907 - 1994,16,10,,1907,1994
 29,MACNJN01,MacNeil,,Joe Neil,,MacNìll,,Eòs,Eòs Nìll Bhig,1908 - 1996,17,584,,1908,1996
-30,MACDOA02,MacDonald,,Angus,Angus Cù,Domhnullach,,Aonghas,Aonghas Dhòmhaill Iain Ruaidh,1910 - 2001,18,2,,1910,2001
-31,MACIND02,MacInnis,,Neil Dan,,MacAonghais,,Niall ,Niall mac Ailein Aonghais Iain,1893 - 1993,19,1,,1893,1993
+30,MACDOA02,MacDonald,,Angus,Angus Cù,Dòmhnullach,,Aonghas,Aonghas Dhòmhaill Iain Ruaidh,1910 - 2001,18,2,,1910,2001
+31,MACIND02,MacInnis,,Neil Dan,,MacAonghais,,Niall,Niall mac Ailein Aonghais Iain,1893 - 1993,19,1,,1893,1993
 32,MACNJF04,MacNeil,,James Francis,Jim Francis,MacNìll,,Seumas,Seumas Mhìcheil Mhurchaidh,1921 - 1985,20,4,,1921,1985
 33,MACNJD01,MacNeil,,John Dan,,MacNìll,,Iain,"John Dan Nìll Mac na Bantraich, Iain Dhòmhnaill Néil Eòin Chaluim 'ic Iain Bhàin",1909 - 1988,20,17,,1909,1988
 34,MACNJR04,MacNeil,,John Rory,,MacNìll,,Iain Ruairidh,Iain Ruairidh Mhìcheil Steabhain Ruairidh ‘ic Dhòmhnaill Òig,1915 - ?,20,6,,1915,?
 35,MACNSR04,MacNeil,,Stephen Rory,,MacNìll,,Steafan,Steabhan Ruairidh Mhìcheil Steabhain Ruairidh ‘ic Dhòmhnaill Òig,1897 - 1989,20,3,,1897,1989
 36,MACLMA02,MacLean,,Malcolm,,MacIllEathain,,Calum,Calum Eòghainn ‘ic Eòghainn Òig ‘ic Eòghainn Bàn,1896 - 1989,21,2,,1896,1989
 37,PATTDM01,Patterson,,Dan Murdock,,MacIllPhàdruig,,Dòmhnall,Dòmhnuill Sheana/Dòmhnaill Fhlòraidh Iain Dall Nìll Òig Nìll,1909 - 1992,22,6,,1909,1992
-38,MACAM04,MacAulay,MacKay,Margaret,Maggie,NicAmhlaigh,NicAoidh,Mairead,Mairead Dhòmhnuill Nìll,,23,1,,,
+38,MACAM04,MacAulay,MacKay,Margaret,Maggie,NicAmhlaigh,NicAoidh,Mairead,Mairead Dhòmhnuill Nìll,1897 - ?,23,1,,1897,?
 39,MACKNE04,MacKay,,Neil,,MacAoidh,,Niall,Niall Dhòmhnuill Nìll,1898 - 1978,23,9,,1898,1978
 40,MACLAL04,MacLean,,Alec,,MacIllEathain,,Alasdair,Alasdair Chaluim Chaluim,1908 - ?,23,17,,1908,?
 41,MACIDA01,MacInnis,,Daniel Alexander,Danny Alec,MacAonghais,,Dòmhnall,Dòmhnuill Alasdair Nìll Mhìcheil Ruairidh,1896 - 1982,24,8,,1896,1982
 42,MORRPE01,Morrison,,Peter,Peter Joe,Moireasdan,,Peadar,Peadar Mhicheil Dhonnchaidh,1902 - 1986,24,1,,1902,1986
-43,MACSHU01,MacSween,,Hugh,Hughie R. ,MacSuain,,Eóghann,Eóghann Eachuinn Dhòmhnuill Iain mac Eoghainn,1903 - 1988,25,2,,1903,1988
+43,MACSHU01,MacSween,,Hugh,Hughie R.,MacSuain,,Eóghann,Eóghann Eachuinn Dhòmhnuill Iain mac Eoghainn,1903 - 1988,25,2,,1903,1988
 44,CAMPJN01,Campbell,,John Neil,,Caimbeul,,Iain Niall,Iain Niall Iain Mhìcheil Dhòmhnuill Iain,1903 - ?,26,3,,1903,?
 45,MACIJO01,MacIntyre,,Joe,Joe Alex,Mac an t-Saoir,,Eòs,Eòs mac Iain Thormaid 'ac Iain,1909 - 1981,26,16,,1909,1981
 46,MACLMA01,MacLean,MacDonald,Margaret,,NicIllEathain,Dhòmhnullach,Mairead,Mairead bean Ruairidh Iagain Ruairidh,1909 - 2008,26,51,,1909,2008
 47,MACLJM02,MacLellan,,James M.,Jimmy M.,MacIllFhaolain,,Seumas M.,Seumas mac Sheumais a' Chlachair,1892 - 1983,27,2,,1892,1983
 48,MACDJL01,MacDonald,,Joe Lawrence,,Dòmhnullach,,Eòs,Eòs Labhrainn mac Iain J. 'ic Iain 'ic Lachlainn a' Bhuachaille,1910 - 1997,28,18,,1910,1997
-49,GOLDAL01,Goldie,,Alec,,Ó Goillidhe,,Alasdair,,1915 - 2004,29,10,,1915,2004
-50,MACNEL01,MacNeil,MacMullin,Elizabeth,Lizzie,NicNìll,NicIlleMhaoil,Ealasaid,Ealasaid ni'n Aonghais 'ic Alasdair 'ic Nìll 'ic Iain 'ic Mhurchaidh,1892 - 1986,29,12,,1892,1986
-51,GILLN02,Gillis,,Neil,,Giollasach,,Niall ,Niall Shandaidh Sheumais ,1912 - 1985,30,1,,1912,1985
-52,GILLN04,Gillis,,Neil John,,Giollasach,,Niall,Niall mac Ruairidh ‘ac Nìll ‘ic Iain Bhàin 'ic Eòin,1916 - 2001,31,8,,1916,2001
+49,GOLDAL01,Goldie,,Alec,,Mac an Òrach,,Alasdair,,1915 - 2004,29,10,,1915,2004
+50,MACNEL01,MacNeil,MacMillan,Elizabeth,Lizzie,NicNìll,NicIlleMhaoil,Ealasaid,Ealasaid ni'n Aonghais 'ic Alasdair 'ic Nìll 'ic Iain 'ic Mhurchaidh,1892 - 1986,29,12,,1892,1986
+51,GILLN02,Gillis,,Neil,,Gilleasach,,Niall,Niall Shandaidh Sheumais,1912 - 1985,30,1,,1912,1985
+52,GILLN04,Gillis,,Neil John,,Gilleasach,,Niall,Niall mac Ruairidh ‘ac Nìll ‘ic Iain Bhàin 'ic Eòin,1916 - 2001,31,8,,1916,2001
 53,MACNDR04,MacNeil,,Dan Rory,,MacNìll,,Dòmhnall,Dan Rory Mhurchaidh,1907 - 1986,31,10,,1907,1986
 54,MACNJK01,MacNeil,,John K.,,MacNìll,,Iain,Iain Mhurchaidh Eòin Mhóir,1891 - 1979,31,3,,1891,1979
 55,MACLAL02,MacLean,,Alec,,MacIllEathain,,Alasdair,Alasdair Uilleim Shandaidh Uilleim,1913 - 1987,32,3,,1913,1987
@@ -58,104 +58,104 @@
 57,MACMMA01,MacMillan,MacMillan,Mary Ann,,NicIlleMhaoil,NicIlleMhaoil,Màiri Anna,Màiri Ceit Mhóir,1906 - ?,33,34,,1906,?
 58,MACLAL01,MacLeod,,Allan,,MacLeòid,,Ailean,Ailean Ruairidh Aonghais Dhòmhnaill Uilleim,1928 - 2016,36,7,,1928,2016
 59,MACLDO01,MacLeod,,Donald,,MacLeòid,,Dòmhnall,Dòmhnall Ruairidh Aonghais Dhòmhnaill Uilleim,1922 - 1990,36,4,,1922,1990
-60,MACPDA01,MacPherson,,Dan A.,,Mac a' Phearsain,,Dòmhnall,,,36,16,,,
-61,MACLDO02,MacLellan,,Dougall,The left-handed fiddler,MacIllFhaolain,,Dùghall,Dùghall Aonghais a' Ghobhainn,1916 - 1997,37,1,,1916,1997
-62,MACEMA02,MacEachern,MacLellan,Mary Ann,,NicEachairn,NicIllEathain,Màiri Anna,Màiri Anna ni'n Dhòmhnaill Raghnaill,1898 - 1997,56,7,,1898,1997
-63,CHISH02,Chisholm,,Hugh,,Sisealach,,Eóghann,Eòghann Aonghais Chrìsdein,1906 - 2005,38,3,,1906,2005
-64,MACEPA02,MacEachern,,Peter,,MacEachairn,,Pàdraig,Pàdruig Aonghais Sìne/ Pàdruig Aonghais Iain 'ic Dhòmhnaill 'is Phàdraig Bhàin 'ic Raghnaill ,1917 - 2003,38,2,,1917,2003
+60,MACPDA01,MacPherson,,Dan A.,,Mac a' Phearsain,,Dòmhnall,,1905 - 1990s,36,16,,1905,1990s
+61,MACLDO02,MacLellan,,Dougall,The Left-Handed Fiddler,MacIllFhaolain,,Dùghall,Dùghall Aonghais a' Ghobhainn,1916 - 1997,37,1,,1916,1997
+62,MACEMA02,MacEachern,MacLellan,Mary Ann,,NicEachairn,NicIllFhaolain,Màiri Anna,Màiri Anna ni'n Dhòmhnaill Raghnaill,1898 - 1997,56,7,,1898,1997
+63,CHISH02,Chisholm,,Hugh,,Siseal,,Eóghann,Eòghann Aonghais Chrìsdein,1906 - 2005,38,3,,1906,2005
+64,MACEPA02,MacEachern,,Patrick,,MacEachairn,,Pàdraig,Pàdruig Aonghais Sìne/ Pàdruig Aonghais Iain 'ic Dhòmhnaill 'is Phàdraig Bhàin 'ic Raghnaill,1917 - 2003,38,2,,1917,2003
 65,MACIAD02,MacInnis,,Allan Dan,,MacAonghais,,Ailean,Ailean Dan Heanaidh,1887 - 1980,38,1,,1887,1980
-66,MACIRBA02,MacInnis,,Roddie,Roddie Beag,MacAonghais,,Ruairidh,Ruairidh Beag mac Aonghais Eóghainn Iain,1903 - 1995,38,12,,1903,1995
+66,MACIRBA02,MacInnis,,Roderick,Roddie Beag,MacAonghais,,Ruairidh,Ruairidh Beag mac Aonghais Eóghainn Iain,1903 - 1995,38,12,,1903,1995
 67,MACDJR02,MacDonald,,John Rory,,Dòmhnullach,,Iain,Iain Ruairidh mac Dhòmhnaill Ruairidh ‘ic Iain ‘ic Eòghainn Mhór,1898 - 1981,39,1,,1898,1981
-68,MACIR02,MacInnis,,Roddie,Roddie Alec,MacAonghais,,Rodaidh,Rodaidh Ailig Ruairidh ,1910 - 2005,39,4,,1910,2005
+68,MACIR02,MacInnis,,Roderick,Roddie,MacAonghais,,Rodaidh,Rodaidh Ailig Ruairidh,1910 - 2005,39,4,,1910,2005
 69,MACKJI02,MacKay,,Jimmy,,MacAoidh,,Seumas,Seumas mac Aonghais 'ic Iain 'ic Uilleim 'ic Mhurchaidh,1913 - 1992,39,13,,1913,1992
 70,MACDT04,MacDonald,,Thomas,Tommy Peggy,Dòmhnullach,,Tòmaidh,Tomaidh Peigi Thòmais,1904 - 1980,46,10,,1904,1980
 71,MACLJM04,MacLeod,,Jessie Mary,,NicLeòid,,Seònag,Seònag Mairead ni'n Dòmhnaill 'ic Iain 'ic Dhòmhnaill,1899 - 1990?,46,3,,1899,1990?
-72,MACEI02,MacEachern,MacEachern,Isobel,Bella,NicEachairn,NicEachairn,Iseabail,Bella ni'n Eóghainn mac Iain Alasdair Dhonnchaidh,1882 - 1981,40,0,,1882,1981
-73,NICHDO01,Nicholson,,Donald,,MacNeacail,,Dòmhnall,Dòmhnaill Alasdair ,1890 - 1981,41,1,,1890,1981
+72,MACEI02,MacEachern,MacEachern,Isabel,Bella,NicEachairn,NicEachairn,Iseabail,Bella ni'n Eóghainn mac Iain Alasdair Dhonnchaidh,1882 - 1981,40,0,,1882,1981
+73,NICHDO01,Nicholson,,Donald,,MacNeacail,,Dòmhnall,Dòmhnaill Alasdair,1890 - 1981,41,1,,1890,1981
 74,COLLJ02,Collins,,Jimmy,,Ó Coileáin,,Seumas,Seumas mac Aonghais ‘ic Alasdair Iain,1899 - 1984,42,14,,1899,1984
-75,MACLNA02,MacLean,,Neil Allan,,MacIllEathain,,Niall ,Niall Alaidh Alasdair,1897 - 1992,42,3,,1897,1992
-76,MACNMA01,MacNeil,MacDonald,Mary ,,NicNìll,Dhòmhnullach,Màiri,Màiri ni'n Iain Iain,1906 - 1997,43,1,,1906,1997
+75,MACLNA02,MacLean,,Neil Allan,,MacIllEathain,,Niall,Niall Alaidh Alasdair,1897 - 1992,42,3,,1897,1992
+76,MACNMA01,MacNeil,MacDonald,Mary,,NicNìll,Dhòmhnullach,Màiri,Màiri ni'n Iain Iain,1906 - 1997,43,1,,1906,1997
 77,MACDAR02,MacDonald,,Archie Rory,,Dòmhnullach,,Gilleasbuig,Gilleasbuig mac Ruairidh Chaluim Iain,1902 - 1980,77,3,,1902,1980
 78,JOHNJN03,Johnston,,Joe Neil,,MacIain,,Iain Niall,Eòs Nìll Dhòmhnuill Alasdair,1909 - 1996,45,4,,1909,1996
 79,MACNJA01,MacNeil,,James,,MacNìll,,Seumas,,,47,2,,,
 80,MACDH02,MacDonald,,Hector,Hector Hughie,Dòmhnullach,,Eachann,Eachainn Alasdair Dhòmhnaill Eòghainn Duibh Dhòmhnaill Bhàin,1892 - 1979,49,4,,1892,1979
-81,MACIDA02,MacInnis,,Dan Angus,D.A.,MacAonghais,,Dòmhnall,Dòmhnaill mac Iain Dhonnchaidh,1900 - 1993,49,3,,1900,1993
+81,MACIDA02,MacInnis,,Dan Angus,D. A.,MacAonghais,,Dòmhnall,Dòmhnaill mac Iain Dhonnchaidh,1900 - 1993,49,3,,1900,1993
 82,WILLJO02,Williams,,Johnny,,MacUilleim,,Seonaidh,Seonaidh Aonghuis Bhig,1914 - 2005,50,59,,1914,2005
 83,MACRJE04,MacRae,Morrison,Jessie,,NicRàth,Mhoireasdan,Seònaid,Seònaid ni'n Chrisdein Dhòmhnaill Mhóir Aonghais an Tàilleir,1908 - 1995,51,3,,1908,1995
-84,MACLNO04,MacLean,,Norman,,MacIlleathain,,Tormad,Tormad Pheadair Ruairidh 'Illeasbuig,1898 - 1989,52,10,,1898,1989
-85,MACNMI01,MacNeil,,Michael John,Mike the Prompter,MacNìll,,Mìcheil,Mìcheal Iain Mhìcheil Dhòmhnaill Bhen,1916 - 1987,53,2,,1916,1987
+84,MACLNO04,MacLean,,Norman,,MacIllEathain,,Tormad,Tormad Pheadair Ruairidh 'Illeasbuig,1898 - 1989,52,10,,1898,1989
+85,MACNMI01,MacNeil,,Michael John,Mike the Prompter,MacNìll,,Mìcheal,Mìcheal Iain Mhìcheil Dhòmhnaill Bhen,1916 - 1987,53,2,,1916,1987
 86,MACKAR01,MacKenzie,,Archie,Archie Alec,MacCoinnich,,Gilleasbuig,Gilleasbuig mac Eàirdsidh Sheumais,1907 - 1995,54,24,,1907,1995
 87,MACKHU04,MacKenzie,,Hugh,Hughie Francis,MacCoinnich,,Eóghann,Eóghann Eairsidh Sheumais,1895 - 1971,54,1,,1895,1971
 88,MACKJE01,MacKenzie,,Joe,,MacCoinnich,,Eòs,Eòs Ailig Eachainn Sheumais,1920 - 1995,54,3,,1920,1995
-89,MACKJJ01,MacKenzie,,John Joe,Johnny Archie,MacCoinnich,,Jonaidh,Jonaidh Eàirdsidh Dhòmhnaill Bhig,1911 - 1985,54,11,,1911,1985
+89,MACKJJ01,MacKenzie,,John Joe,Johnny Archie,MacCoinnich,,Jonaidh Eàirdsidh,Jonaidh Eàirdsidh Dhòmhnaill Bhig,1911 - 1985,54,11,,1911,1985
 90,MACLJA01,MacLean,,Joe Allan,,MacIllEathain,,Eòs Ailean,Eòs Ailean mac Ruairidh Chaluim Ghobha,1888 - 1982,54,79,,1888,1982
-91,MACLPE01,MacLean,,Peter,,MacIlleathain,,Peadar,Peadar Jack Pheadair Chaluim Ghobha,1913 - 2013,54,3,,1913,2013
+91,MACLPE01,MacLean,,Peter,,MacIllEathain,,Peadar,Peadar Jack Pheadair Chaluim Ghobha,1913 - 2013,54,3,,1913,2013
 92,MACLTH01,MacLean,,Thomas R.,Tom,MacIllEathain,,Tòmas,Tòmas mac Ruairidh Chaluim Ghobha,1886 - 1981,54,1,,1886,1981
-93,GILLD02,Gillis,,Duncan,,Giollasach,,Donnchadh,Donnchadh Dhòmhnaill Aonghais Bhàin,1894 - 1981,55,8,,1894,1981
+93,GILLD02,Gillis,,Duncan,,Gilleasach,,Donnchadh,Donnchadh Dhòmhnaill Aonghais Bhàin,1894 - 1981,55,8,,1894,1981
 94,CAMPGU02,Campbell,,Gussie,,Caimbeul,,Aonghas,Aonghas mac Aonghais Thòmais,1916 - 2002,58,4,,1916,2002
 95,FORTI02,Fortune,,Isabel,,Ó Foirtcheirn,,Iseabail,Iseabail ni'n Bhaltair Aonghais,1914 - 2006,57,9,,1914,2006
-96,MACDHDS02,MacDonell,,Hughie Dan,,MacDhòmhnuill,,Eòghann,Eóghann mac Sheumais Ruairidh Iain,1898 - 1976,59,0,,1898,1976
-97,MACDS02,MacDonald,MacLellan,Sadie,,Dhòmhnullach,NicIllFhaolain,Mòrag,Mórag ni'n Aonghais ‘ic Dhòmhnaill,1889 - 1980,59,1,,1889,1980
-98,MACKJD02,MacKinnon,,John Dan,,MacFhionghain,,Iain ,Iain mac Phàdruig Iain,1912 - 1989,59,17,,1912,1989
-99,MACNDJ01,MacNeil,,Dan Joe,"Dan Joe the Sailor, Dan Joe Lauchie",MacNìll,,Danaidh,Dòmhnaill Lachainn Iain Alasdair,1909 - 1988,59,6,,1909,1988
+96,MACDHDS02,MacDonell,,Hughie Dan,,MacDhòmhnuill,,Eóghann,Eóghann mac Sheumais Ruairidh Iain,1898 - 1976,59,0,,1898,1976
+97,MACDS02,MacDonald,MacLellan,Sadie,,Dhòmhnullach,NicIllFhaolain,Mórag,Mórag ni'n Aonghais ‘ic Dhòmhnaill,1889 - 1980,59,1,,1889,1980
+98,MACKJD02,MacKinnon,,John Dan,,MacFhionghain,,Iain,Iain mac Phàdruig Iain,1912 - 1989,59,17,,1912,1989
+99,MACNDJ01,MacNeil,,Dan Joe,Dan Joe the Sailor | Dan Joe Lauchie,MacNìll,,Danaidh,Dòmhnaill Lachainn Iain Alasdair,1909 - 1988,59,6,,1909,1988
 100,MACKJR01,MacKeigan,,John Ranald,John Rannie,MacÌgein,,Iain Raghnall,Iain Raghnall Dhòmhnuill Iain,1904 - 1998,61,22,,1904,1998
 101,MONRRO01,Monroe,,Rod,Rory William,Rothach,,Ruairidh,Ruairidh Dhòmhnuill Ruairidh,1914 - 1984,61,2,,1914,1984
-102,MACDGE02,MacDougall?,Gillis,Elizabeth,,Dhòmhnullach,NicIllÌosa,Ealasaid,Ealasaid ni'n Ruairidh an t-Saoir,1903 - 1990,64,1,,1903,1990
+102,MACDGE02,MacDonald,Gillis,Elizabeth,Lizzie,Dhòmhnullach,NicIllÌosa,Ealasaid,Ealasaid ni'n Ruairidh an t-Saoir,1894 - 1988,64,1,,1894,1988
 103,MACLLD02,MacLellan,,Lachlann,Lauchie Dan N.,MacIllFhaolain,,Lachlann,Lachlann Dhòmhnaill Nìll,1910 - 1991,64,156,,1910,1991
 104,MACLAD02,MacLellan,,Alec Dan,Alec Dan Angus Y.,MacIllFhaolain,,Alasdair,Alasdair mac Aonghais Y,1906 - 1992,66,8,,1906,1992
 105,TAKESA01,Taker,MacKinnon,Sadie,,Taker,NicFhionghain,Mórag,,1889 - ?,67,4,,1889,?
 106,MACCH03,MacCormick,,Hector,,MacCormaig,,Eachann,Eachann Iain Iain,1906 - 1986,68,3,,1906,1986
-107,MACAJ03,MacAskill,,John,Jack,MacAsgaill,,Iagan,Iagan Dhòmhnaill Iain,,69,1,,,
-108,GILLM02,Gillis,,Murdoch,Murdoch Dora,Giollasach,,Murchadh,Murchadh Ghilleasbuig Mhurchaidh,1902 - 1993,74,12,,1902,1993
+107,MACAJ03,MacAskill,,John,Jack,MacAsgaill,,Iagan,Iagan Dhòmhnaill Iain,1905 - 1987,69,1,,1905,1987
+108,GILLM02,Gillis,,Murdoch,Murdoch Dora,Gilleasach,,Murchadh,Murchadh Ghilleasbuig Mhurchaidh,1902 - 1993,74,12,,1902,1993
 109,MACDB02,MacDonald,MacDonald,Mary Evelyn,Bobbie,Dhòmhnullach,Dhòmhnullach,Màiri,Bobbie ni'n Iain Alasdair ‘ic Shandaidh Aonghais ‘ic Alasdair,1934 - 2024,70,0,,1934,2024
-110,MACDSW01,MacDonald,,Sandy William,,Dòmhnullach,,Alasdair,Sandaidh Uilleim Illeasbuig Ailein mac Iain a' Mhuilleir ,1891 - 1982,70,17,,1891,1982
-111,MACDHU02,MacDonald,,Hugh,Hughie Donald Hughie,Dòmhnullach,,Eòghann,Eòghann Dhòmhnaill Eòghainn Aonghais 'Illeasbuig,1905 - 1990,71,1,,1905,1990
+110,MACDSW01,MacDonald,,Sandy William,,Dòmhnullach,,Alasdair,Sandaidh Uilleim Illeasbuig Ailein mac Iain a' Mhuilleir,1891 - 1982,70,17,,1891,1982
+111,MACDHU02,MacDonald,,Hugh,Hughie Donald Hughie,Dòmhnullach,,Eóghann,Eòghann Dhòmhnaill Eòghainn Aonghais 'Illeasbuig,1905 - 1990,71,1,,1905,1990
 112,MACNJA02,MacNeill,MacKinnon,Flora Jane,Janie,NicNìll,NicFhionghain,Sìne,Sìne ni'n Nìll Lodaidh Nìll Ghilleasbuig,1881 - 1979,72,5,,1881,1979
 113,CAMPMA02,Campbell,MacEachern,Margaret Sarah,Maggie,Chaimbeul,NicEachairn,Mairead,Bean Dhonnchaidh Phàdruig / Mairead ni'n Teàrlaich Eòghainn Ruaidh,1888 - 1985,35,1,,1888,1985
 114,GAUDA02,Gaudes,Campbell,Mary Agnes,,Gaudes,Chaimbeul,Màiri,Màiri Nìll Thearlaich,1900 - 1983,35,1,,1900,1983
-115,MACDOS02,MacDonell,MacEachern,Sarah,,NicDhòmhnuill,NicEachainn,Mòrag,Mòrag ni'n Chaluim,1895 - 1895,35,2,,1895,1895
+115,MACDOS02,MacDonell,MacEachern,Sarah,,NicDhòmhnuill,NicEachainn,Mórag,Mòrag ni'n Chaluim,1895 - 1895,35,2,,1895,1895
 116,MACEJA02,MacEachern,,John Alex,,MacEachairn,,Iain Alasdair,Iain Dhòmhnaill Iain Lachlainn,1899 - 1995,35,11,,1899,1995
 117,MACDDO01,MacDonald,,Donald,Donald Munroe,Dòmhnullach,,Dòmhnall,Dòmhnall mac Fhionnlaigh,1919 - 1993,75,2,,1919,1993
-118,MACDPH01,MacDonald,,Philip,Phillip Donald Sandy,Dòmhnullach,,Fionnlagh,Fionnlagh Dhòmhnaill Alasdair ,1907 - 1995,75,15,,1907,1995
-119,CURREB01,Currie,Harrietha,Effie Bella,,NicMhuiridh,Harrietha,Oighrig Bealag,Oighrig Bealag,1901 - 1990,76,46,,1901,1990
+118,MACDPH01,MacDonald,,Philip,Philip Donald Sandy,Dòmhnullach,,Fionnlagh,Fionnlagh Dhòmhnaill Alasdair,1907 - 1995,75,15,,1907,1995
+119,CURREB01,Currie,Harrietha,Effie Bella,,NicMhuirich,Harrietha,Oighrig Bealag,Oighrig Bealag,1901 - 1990,76,46,,1901,1990
 120,MORRKA01,Morrison,,Kenneth,Kenny Allan,Moireasdan,,Coinneach,Coinneach Dhòmhnaill Choinnich,1926 - 2020,79,1,,1926,2020
-121,GILLAJ02,Gillis,,Angus J.,,Giollasach,,Aonghas,Aonghas mac Eoghain Ruairidh,1911 - 1981,80,10,,1911,1981
+121,GILLAJ02,Gillis,,Angus J.,,Gilleasach,,Aonghas,Aonghas mac Eoghain Ruairidh,1911 - 1981,80,10,,1911,1981
 122,BEATAL02,Beaton,,Alexander,,Peutan,,Alasdair,Alasdair Dhòmhnaill Fhionnlaidh 'ic Dhòmhnaill,1903 - 1988,81,11,,1903,1988
 123,MACLJ02,MacLennan,,Johnny,,MacIllInnein,,Seonaidh,Seonaidh mac Dhonnchaidh ‘ic Mhurchaidh Eoghainn Dhonnchaidh,1908 - 1989,83,7,,1908,1989
-124,GILLAR02,Gillis,,Alec R.,Big Alec,Giollasach,,Alasdair/Ailig,Alasdair Aonghais Alasdair,1910 - 2003,84,6,,1910,2003
+124,GILLAR02,Gillis,,Alec R.,Big Alec,Gilleasach,,Alasdair,Alasdair Aonghais Alasdair,1910 - 2003,84,6,,1910,2003
 125,MACECA02,MacEachen,,Charles,,MacEachainn,,Teàrlach,Tearlach Eoghainn a' Mhuilein,1898 - 1993,84,1,,1898,1993
-126,MACNJO02,MacNeil,,John Dan,Johnny,MacNìll,,Iain ,Iain Dhòmhnaill Bhàin,1890 - 1990,84,11,,1890,1990
+126,MACNJO02,MacNeil,,John Dan,Johnny,MacNìll,,Iain,Iain Dhòmhnaill Bhàin,1890 - 1990,84,11,,1890,1990
 127,MACDD04,MacDonald,,Daniel,Danny,Dòmhnullach,,Danaidh,Danaidh Dhòmhnaill Bhàin,1904 - 1985,62,1,,1904,1985
 128,SMITMA04,Smith,,Malcolm,,Mac a' Ghobhainn,,Calum,Calum Uilleam Murchaidh 'ic Iain 'ic Iain,1909 - 1993,62,15,,1909,1993
 129,MACLRO02,MacLean,,Rory,Ruairidh Mathanach,MacIllEathain,,Ruairidh,Ruairidh Mathanach,1882 - 1978,73,1,,1882,1978
-130,PATTKA01,Patterson,MacNeil,Catherine,"Kate, Katie, Ceatag Ailein",MacIllPhàdruig,NicNìll,Catrìona,Catrìona nighean Ailein Chaluim Pìobaire | Ceatag Ailein,1872 - 1964,85,3,,1872,1964
-131,PATTLU01,Byrne ,Patterson,Lucy,Patterson,Byrne ,MacIllPhàdruig,Liùsaidh,Lucy n'in Chatrìona ni'n Ailein Chaluim Pìobaire,1920 - 1990,85,4,,1920,1990
+130,PATTKA01,Patterson,MacNeil,Catherine,Kate | Katie | Ceatag Ailein,NicIllPhàdruig,NicNìll,Catrìona,Catrìona nighean Ailein Chaluim Pìobaire | Ceatag Ailein,1872 - 1964,85,3,,1872,1964
+131,PATTLU01,Byrne,Patterson,Lucy,,Ó Broin,MacIllPhàdruig,Liùsaidh,Lucy n'in Chatrìona ni'n Ailein Chaluim Pìobaire,1920 - 1990,85,4,,1920,1990
 132,MACKDA01,MacKenzie,,Dan,Bomber,MacCoinnich,,Dòmhnall,Dòmhall Sheònaidh Iain Fhionnlaigh,1910 - 1984,86,12,,1910,1984
 133,MACNMJ01,MacNeil,,Malcolm J.,,MacNìll,,Calum,Calum Sheumais N.,1895 - 1982,86,5,,1895,1982
 134,MACNDN01,MacNeil,,Dan Neil,Danny Neil,MacNìll,,Dòmhnall,Dòmhnall Nìll Eòin Mhóir,1906 - 1985,87,32,,1906,1985
 135,MACNC01,MacNeil,MacKenzie,Christina,Christie,NicNìll,NicCoinnich,Ciorstag,Ciorstag Sheonaidh Iain Nìll,1914 - 1990,87,6,,1914,1990
-136,RANKHD02,Rankin,,Hugh D.,Hughie D. ,MacFhraing,,Eoghann,Eoghann Raghnaill Alasdair Aonghais Iain,1907 - 1985,88,2,,1907,1985
+136,RANKHD02,Rankin,,Hugh D.,Hughie D.,MacFhraing,,Eóghann,Eoghann Raghnaill Alasdair Aonghais Iain,1907 - 1985,88,2,,1907,1985
 137,RANKPE02,Rankin,,Peter,Peter Angus,MacFhraing,,Peadar,Peadar Alasdair Dhonnchaidh Mhóir,1909 - 1985,88,20,,1909,1985
 138,MACIC02,MacIntosh,,Collie,Collie Angain,Mac an Tòisich,,Coilidh,Collie Angain Dhòmhnaill a' Chùbair,1914 - 1985,34,10,,1914,1985
 139,CARMHE04,Carmichael,,Hector,,MacIlleMhìcheil,,Eachann,Eachann mac Eachainn Ghilleasbaig | Eachann Mór,1888 - 1981,89,6,,1888,1981
-140,MACNMI04,MacNeil,,Michael,,MacNìll,,Mìcheil,Migi mac Bean Nilleig Ruairi Eòin a' Phlant,1917 - 1995,90,7,,1917,1995
-141,MACLFL01,MacLean,MacKinnon,Florence,Flora,NicIllEathain,MacFhionghain,Flòraidh,Flòraidh Bheag,1905 - 1998,12,11,,1905,1998
+140,MACNMI04,MacNeil,,Michael,,MacNìll,,Mìcheal,Migi mac Bean Nilleig Ruairi Eòin a' Phlant,1917 - 1995,90,7,,1917,1995
+141,MACLFL01,MacLean,MacKinnon,Florence,Flora,NicIllEathain,NicFhionghain,Flòraidh,Flòraidh Bheag,1905 - 1998,12,11,,1905,1998
 142,MACDCA02,MacDonald,MacDonald,Catherine,Katie,Dhòmhnullach,Dhòmhnullach,Ceatag,Bean Seonaidh Raghnaill | Ceatag an t-Saoir | Ceatag ni'n 'Illeasbuig 'ic Iain Mhóir 'ic Ruairidh,1877 - 1982,92,7,,1877,1982
 143,MACIDU02,MacIsaac,,Duncan,Duncan Archie J.,MacÌosaig,,Donnchadh,Donnchadh Ghilleasbuig,1902 - 1996,92,9,,1902,1996
 144,MACIDH02,MacInnis,,Dan Hughie,Hughie Henny,MacAonghais,,Eóghann,Eóghainn Nìll Eóghainn Iain,1904 - 1984,93,1,,1904,1984
-145,MACEAL02,MacEachern,,Allan,Allan the Butcher,MacEachairn,,Ailean,Ailean a' Bhùidseir Dheirg mac Iain ,1908 - 1994,93,7,,1908,1994
-146,MACEAN02,MacEachern,,Andrew,Andrew the Butcher,MacEachairn,,Anndra,Anndra a' Bhùidseir Dheirg mac Iain ,1912 - 1988,93,1,,1912,1988
+145,MACEAL02,MacEachern,,Allan,Allan the Butcher,MacEachairn,,Ailean,Ailean a' Bhùidseir Dheirg mac Iain,1908 - 1994,93,7,,1908,1994
+146,MACEAN02,MacEachern,,Andrew,Andrew the Butcher,MacEachairn,,Anndra,Anndra a' Bhùidseir Dheirg mac Iain,1912 - 1988,93,1,,1912,1988
 147,MACLAM04,MacLeod,MacDermid,Annie Mae,,NicLeòid,NicDhiarmaid,Anna,Anna ni'n Shandaidh Choinnich Iain,1912 - 2005,91,1,,1912,2005
-148,MACLMA04,MacLeod,,Malcolm Angus,,MacLeòid,,Calum,Calum Thormoid Chaluim,1898 - 1978,48,12,,1898,1978
+148,MACLMA04,MacLeod,,Malcolm Angus,,MacLeòid,,Calum,Calum Thormoid Chaluim,1897 - 1979,48,12,,1897,1979
 149,MACLRA02,MacLellan,,Ronald,,MacIllFhaolain,,Raghnall,Raghnall Ailein Raghnaill Mhóir,1904 - 1985,96,1,,1904,1985
 150,MACNMA04,MacNeil,,Malcolm,Maxie Dan Angus,MacNìll,,Calum,Maxie mac Dhòmhnaill Aonghais Iain Aonghais Eòin,1927 - 2015,95,2,,1927,2015
-151,MACEDW01,MacEachern,,Donald,,NicEachairn,,Dòmhnall,Dòmhnall mac Sheonaidh Dhòmhnaill Òig 'ic Aonghais,1914 - 2003,98,6,,1914,2003
+151,MACEDW01,MacEachern,,Donald,,MacEachairn,,Dòmhnall,Dòmhnall mac Sheonaidh Dhòmhnaill Òig 'ic Aonghais,1914 - 2003,98,6,,1914,2003
 152,MACLMDA04,MacLean,,Murdoch Dan,,MacIllEathain,,Murchadh,Murchadh Ailein Mhóir Mhurchaidh Bhig Mhurchaidh Iain,1904 - 1999,97,4,,1904,1999
 153,MACDD02,MacDonald,,Dougall,Dougie the Gill,Dòmhnullach,,Dùghall,Dùghall mac Alasdair ‘c Aonghais ‘ic Alasdair Bhàin,1901 - 1985,99,40,,1901,1985
 154,MACKJO01,MacKinnon,,John,,MacFhionghain,,Iain,Iain mac Iain Iain Eachainn,1902 - 1996,44,2,,1902,1996
-155,MACIIS02,MacIsaac,Gillis,Isabelle,Bella,NicIosaig,NicIllÌosa,Bella,Iseabail ni'n Alasdair Eòghainn Aonghais,1882 - 1983,6,30,,1882,1983
-156,CHISEN02,Chisholm,MacIsaac,Ena,,Sisealach,NicÌosag,Ena,Ena Nighean Iain 'ic Eóin na h-Aibhneadh,1908 - 1996,82,1,,1908,1996
+155,MACIIS02,MacIsaac,Gillis,Isabelle,Bella,NicÌosaig,NicIllÌosa,Iseabail,Iseabail ni'n Alasdair Eòghainn Aonghais,1882 - 1983,6,30,,1882,1983
+156,CHISEN02,Chisholm,MacIsaac,Ena,,Shiseal,NicÌosag,Ena,Ena Nighean Iain 'ic Eóin na h-Aibhneadh,1908 - 1996,82,1,,1908,1996
 157,MACADJ01,MacArthur,,Donald John,,MacArtair,,Dòmhnall Iain,Dòmhnall Iain mac Iain,1901 - ?,60,8,,1901,?
-158,MACKMA04,MacKenzie,Devoe,Mary Anne,,NicCoinnich,Devoe,Màiri Anna,Màiri Anna ni'n Eilidh Eachainn Eòin,1901 - 1983,63,3,,1901,1983
+158,MACKMA04,MacKenzie,Devoe,Mary Ann,,NicCoinnich,Devoe,Màiri Anna,Màiri Anna ni'n Eilidh Eachainn Eòin,1901 - 1983,63,3,,1901,1983
 159,SMITPE02,Smith,MacDonald,Peggy,,Nic a' Ghobhainn,NicDhòmhnuill,Peigi,Peigi bean Sheumais Alasdair Pheadail,1884 - 1982,78,9,,1884,1982
 160,CAMPMA01,Campbell,,Malcolm,,Caimbeul,,Calum,Calum mac Ghilleasbaig Chaluim an Tàillear,1911 - ?,94,11,,1911,?
